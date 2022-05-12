@@ -14,16 +14,15 @@
 - Edit crm/urls.py
 delete -> from leads.views import home_page
 delete -> path('', home_page)
-```bash
-from django.urls import path, include
+	```bash
+	from django.urls import path, include
 
-urlpatterns = [
-	path('admin/', admin.site.urls),
-	path('leads/', include('leads.urls', namespace="leads"))
-]
-```bash
+	urlpatterns = [
+		path('admin/', admin.site.urls),
+		path('leads/', include('leads.urls', namespace="leads"))
+	]
+	```bash
 
-Test: navigate to 127.0.0.1:8000/leads/all
-OR 127.0.0.1:8000/leads/
+Test: navigate to `https://127.0.0.1:8000/leads/all` OR `https://127.0.0.1:8000/leads/`
 
 
