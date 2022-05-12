@@ -53,4 +53,68 @@ delete -> path('', home_page)
 
 Test: navigate to `https://127.0.0.1:8000/leads/all` OR `https://127.0.0.1:8000/leads/`
 
+### 20 Lead's list
+- Change home_page.html name to lead_list.html (leads/templates/leads/lead_list.html)
+	```python
+	def lead_list(request):
+		leads = Lead.objects.all()
+		context = {
+			"leads": leads
+		}
+		return render(request, "leads/lead_list.html", context)
+	```
+	
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
