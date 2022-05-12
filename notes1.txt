@@ -1,0 +1,307 @@
+1 Create & activate the virstual enviroment (VSCODE)
+--------------------------------------------
+python -m venv enviroment
+env/Scripts/activate  OR source env/Scripts/activate (linux or MING)
+
+2. Check packages
+------------------
+pip freeze
+
+3. Install django
+------------------
+pip install django==3.1.4
+pip freeze > requirements.txt
+
+4 Create the project
+---------------------
+django-admin startproject crm .
+
+5 Add the gitignore
+-------------------
+https://github.com/github/gitignore/blob/main/Pythongitignore
+
+6 Run the server
+----------------
+python manage.py runserver (port if necessary)
+
+7 Run migrate
+--------------
+python manage.py migrate
+
+8 Create the app  (for users/leads/payments)
+-----------------
+python manage.py startapp leads
+
+9 Add the new app 'leads' into the settings of the project
+----------------------------------------------------
+In crm>settings.py
+INSTALLED_APPS = [
+    'django.contrib.admin',
+    'django.contrib.auth',
+    'django.contrib.contenttypes',
+    'django.contrib.sessions',
+    'django.contrib.messages',
+    'django.contrib.staticfiles',
+    'leads'
+]
+
+10 Open models & edit & run
+-----------------------------
+leads > models.py
+
+Create the Model Lead
+class Lead(models.Model):
+    first_name = models.CharField(max_length=20)
+    last_name = models.CharField(max_length=20)
+    age = models.IntegerField(default=0)
+
+
+python manage.py makemigrations   (create the 001_initial.py, auth_user is created, db.sqlite3 needs to be deleted in custom user)
+python manage.py migrate  (create the database/applying leads.0001_initial)
+
+
+10.1 Install SQLite
+
+
+11. Create a model Agent  (every Lead will have an agent)
+-------------------------
+In leads > models.py
+class Agent(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    
+12. Add a customizable User model
+---------------------------------
+- In leads > models.py
+
+from django.contrib.auth.models import AbstractUser
+
+class User(AbstractUser):
+	pass
+	
+- In crm/settings.py
+AUTH_USER_MODEL = 'leads.User'
+
+- Delete 001_initial.py and db.sqlite3 files
+python manage.py makemigrations
+python manage.py migrate
+
+13 Models Managers
+-------------------
+python manage.py shell
+from leads.models import Lead
+Lead.objects.all()
+<QuerySet []>
+
+- Creating a superuser
+python manage.py createsuperuser
+user: jose
+email: jose@email.com
+password: 1
+
+python manage.py shell
+	
+from django.contrib.auth import get_user_model
+User = get_user_model()
+User.objects.all()
+	<QuerySet [<User: jose>]>
+
+from leads.models import Agent
+admin_user = User.objects.get(username="jose")
+admin_user
+	<User: jose>
+
+agent = Agent.objects.create(user=admin_user)
+exit()
+
+14 Configure the Agent to show up the email 
+----------------------------
+class Agent(models.Model):
+	user = models.OneToOnefield(User, on_delete=models.CASCADE)
+	
+	def __str__(self):
+		return self.user.email
+		
+python manage.py shell
+from leads.models import Agent
+Agent.objects.all()
+	<Queryset [<Agent: jose@mail.com>]>
+
+from leads.models import Lead
+jose_agent = Agent.objects.get(user__email="jose@mail.com")
+jose_agent
+	<Agent: jose@mail.com>
+Lead.objects.create(first_name="Joe", last_name="Soap", age=35, agent=jose_agent)
+	<Lead: LEAD OBJECT (1)>
+exit()
+
+- Configure Lead
+	def __str__(self):
+		return f"{self.first_name} {self.last_name}"
+		
+python manage.py shell
+from lead.models import Lead
+Lead.objects.all()
+	<QuerySet [<Lead: Joe Soap>]>
+
+15(15) Forms and create view
+----------------------------
+Run the server and go to
+127.0.0.1/admin
+
+Login with the superuser
+Username: jose
+Password: 1
+
+- Add the user to show up in the admin site
+Go to leads/admin.py
+
+from .models import User, Lead, Agent
+
+admin.site.register(User)
+admin.site.register(Lead)
+admin.site.register(Agent)
+
+- Check 127.0.0.1/admin
+Leads
+Agents	+Add Change
+Leads	+Add Change
+Users	+Add Change
+
+- The output of Agents can be configured
+leads/models.py
+def __str__(self):
+		return self.user.username
+		
+The User/Agents/Leads can be created/modified/deleted in the
+127.0.0.1/admin
+
+16 Add a home_page to display "hello world"
+-------------------------------------------
+- In leads/views.py
+
+from django.http import HttpResponse
+
+def home_page(request):
+	return HttpResponse("Hello World")
+
+- In crm/urls.py
+
+from leads.views import home_page
+urlpatterns = [
+	path('admin/', admin.site.urls),
+	path('', home_page)
+]
+
+17 Add a html page
+------------------
+- Inside the app leads create the forlders templates/leads
+- Inside leads/templates/leads create & edit the file home_page.html
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset = "UTF-8">
+	<meta name = "viewport" content="width=device-width", initial-scale=1.0>
+	<title>Document</title>
+</head>
+<body>
+	<h1>Hello world</h1>
+	<p>Here is our HTML template</p>
+</body>
+</html> 
+
+- Go to leads/views.py
+def home_page(request):
+	return render(request,"leads/home_page.html" )
+
+- Create a general 'templates' folder in crm (crm/templates)
+- Make the folder searcheable
+- Edit crm/settings.py
+TEMPLATES = [
+	{
+		'BACKEND': 'django.template.backends.django.Djangotemplates',
+		'DIRS': [BASE_DIR / "templates"],
+	}
+]
+
+- Create the html in crm/templates/second_page.html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset = "UTF-8">
+	<meta name = "viewport" content="width=device-width, initial-scale=1.0>
+	<title>Document</title>
+</head>
+<body>
+	<h1>Hello world</h1>
+	<p>This is the second page</p>
+</body>
+</html>
+
+- Go to leads/views.py
+def home_page(request):
+	return render(request, "second_page.html" )
+	
+18 Context
+----------
+- Create the context variable in leads/views.py
+def home_page(request):
+	context = {
+		"name" : Joe",
+		"age" : 35
+	}
+	return render(request,"second_page.html",context)
+
+- In templates/second_page.html
+<body>
+	<h1>Hello world</h1>
+	<p>This is the second page</p>
+	{{ name }}
+	{{ age }}
+</body>
+
+- Using the database, looping the data
+- In leads/views.py
+from .models import Lead
+
+def home_page(request):
+	leads = Lead.objects.all()
+	context = {
+		"leads": leads
+	}
+	return render(request,"secon_page.html",context)
+- In templates/second_page.html
+<body>
+	<ul>
+		{% for lead in leads %}
+		<li>{{ lead }} </li>
+		{% endfor %}
+	</ul>
+</body>
+
+19 Urls in the app, namespaces
+-------------------------------
+- Create & edit leads/urls.py
+
+from django.urls import path
+from .views import home_page
+
+app_name = "leads"
+urlpatterns = [
+	path('all/', home_page)  OR path('', home_page)
+]
+
+- Edit crm/urls.py
+delete -> from leads.views import home_page
+delete -> path('', home_page)
+
+x from leads.views import home_page
+from django.urls import path, include
+
+urlpatterns = [
+	path('admin/', admin.site.urls),
+	path('leads/', include('leads.urls', namespace="leads"))
+]
+
+Test: navigate to 127.0.0.1:8000/leads/all
+OR 127.0.0.1:8000/leads/
