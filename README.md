@@ -4,12 +4,12 @@
 	```bash
 	python -m venv enviroment
 	source env/Scripts/activate
-	```bash
+	```
 - In VSCODE
 	```bash
 	python -m venv enviroment
 	env/Scripts/activate
-	```bash
+	```
 ### 2 
 ### 3
 ### 4
@@ -49,7 +49,7 @@ delete -> path('', home_page)
 		path('admin/', admin.site.urls),
 		path('leads/', include('leads.urls', namespace="leads"))
 	]
-	```bash
+	```
 
 Test: navigate to `https://127.0.0.1:8000/leads/all` OR `https://127.0.0.1:8000/leads/`
 
