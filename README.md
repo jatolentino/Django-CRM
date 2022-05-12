@@ -238,7 +238,7 @@ Test: `https://127.0.0.1/leads/create`
 		form = LeadForm()
 		if request.method == "POST":
 			print('Receiving a post request')
-			form = Leadform(request.POST)
+			form = LeadForm(request.POST)
 			if form.is_valid():
 				print("the form in valid"P)
 				print(form.cleaned_data)
@@ -280,11 +280,59 @@ Test: `https://127.0.0.1/leads/create`
 	: 
 	```
 ### 22 Using Django ModelsForm
+- Edit leads/forms.py
+	```python
+	from django import forms
+	from .models import Lead
+	
+	class LeadModelForm(forms.ModelForm):
+		class Meta:
+			model = Lead
+			fields = (
+				'first_name',
+				'last_name',
+				'age',
+				'agent',
+			)
+	```
+- Edit leads/views.py, change LeadForm -> LeadModelForm
+	```python
+	from .forms import LeadForm, LeadModelForm
+	
+	def lead_create(request):
+		form = LeadModelForm()
+		if request.method == "POST":
+			form = LeadModelForm(request.POST)
+			if form.is_valid():
+				first_name = form.cleaned_data['first_name']
+				last_name = form.cleaned_data['last_name']
+				age = form.cleaned_nadata['age']
+				agent = form.cleaned_data['agent']
+				Lead.objects.create(
+					first_name=first_name,
+					last_name=last_name,
+					age=age,
+					agent=agent
+				)
+				print("The lead has been created")
+		
+		context = {
+			"form": LeadForm()
+		}
+		return render(request, "leads/lead_create.html", context)
+	```
 
-
-
-
-
+- Edit the Forms from leads/lead_list.html 
+	```html
+	<body>
+		<a href="/leads/create/">  Create a new lead</a>
+		<hr />
+		<h1> This is all of uour leads</h1>
+		{% for lead in leads %}
+		
+		{5 endfor %)
+	</body>
+	```
 
 
 
