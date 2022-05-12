@@ -29,7 +29,7 @@
 ### 18
 ### 19 Urls in the app, namespaces
 - Create & edit leads/urls.py
-  ```bash
+  ```python
   from django.urls import path
   from .views import home_page
 
@@ -42,7 +42,7 @@
 - Edit crm/urls.py
 delete -> from leads.views import home_page
 delete -> path('', home_page)
-	```bash
+	```python
 	from django.urls import path, include
 
 	urlpatterns = [
