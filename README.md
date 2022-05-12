@@ -1,5 +1,5 @@
 # Deploy in Django
-### 1 Create & activate the virstual enviroment (VSCODE)
+### 1 Create & activate the virtual enviroment
 - In MINGW
 	```bash
 	python -m venv enviroment
@@ -63,6 +63,38 @@ Test: navigate to `https://127.0.0.1:8000/leads/all` OR `https://127.0.0.1:8000/
 		}
 		return render(request, "leads/lead_list.html", context)
 	```
+- Edit leads/urls.py
+	```python
+	from django.urls import path
+	from .views import lead_list
+	app_name = "leads"
+	urlpatterns = [
+		path('', lead_list)
+	]
+	```
+- Add style to lead_list.html
+	```html
+	<title>Document</title>
+	<style>
+		.lead {
+			padding-top: 10px;
+			padding-bottom: 10px;
+			padding-left: 6px;
+			padding-right: 6px;
+			margin-top: 10px;
+			background-color: #f6f6f6;
+			width: 100%;
+		}
+	</style>
+	
+	<body>
+		<h1> This is all of our leads</h1>
+		{% for lead in leads %}
+			<div class="lead">
+				{{ lead.first_name }}
+			</div>
+		{% endfor %}
+	</body>	
 	
 
 
