@@ -259,8 +259,8 @@ Test: `https://127.0.0.1/leads/create`
 		}
 		return render(request, "leads/lead_create.html", context)
 	```
-- Test: Go to `https://127.0.0.1:8000/leads/create/` and create a lead, submit
-	Verify in `https://127.0.0.1:8000/leads/`
+- Test: Go to `https://127.0.0.1:8000/leads/create/` and create a lead, then SUBMIT <br>
+	Verify in `https://127.0.0.1:8000/leads/` <br>
 	Verify the prompt in the VS code or check in `https://127.0.0.1:8000/admin/leads/lead/`
 	
 - Redirect the create page to another tab
