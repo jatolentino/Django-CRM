@@ -582,7 +582,7 @@ Test: `https://127.0.0.1/leads/create`
 		<h1> This is all of our lead lead</h1>
 		{% for lead in leads %}
 			<div class="lead">
-				<a href="{% url 'leads:lead-deatail' lead.pk %}"> {{ lead.first_name }} {{ lead.last_name }}</a>. Age: {{ lead.age }}
+				<a href="{% url 'leads:lead-detail' lead.pk %}"> {{ lead.first_name }} {{ lead.last_name }}</a>. Age: {{ lead.age }}
 			</div>
 		{% endfor %}
 	{% endblock content %}
@@ -634,6 +634,7 @@ Edit the crm/templates/scripts.html
 	      <span class="ml-3 text-xl"> CRM </span>
 	    </a>
 	    <nav class="md:ml-auto flex flex-wrap items-center text-base justify-center">
+	      <a href="{% url 'leads:lead-list' %}" class="mr-5 hover:text-gray-900">Leads/a>
 	      <a class="mr-5 hover:text-gray-900">Sign up</a>
 	    </nav>
 	    <a href="{% url 'leads:lead-list' %}" class="inline-flex items-center bg-gray-100 border-0 py-1 px-3 focus:outline-none hover:bg-gray-200 rounded text-base mt-4 md:mt-0">Login
@@ -663,8 +664,7 @@ Edit the crm/templates/scripts.html
 		</body>
 		</html>
 	```
-- Add the landing page from 
-- Create the file templates/landing.html and add the code from HERO 2nd option of https://tailblocks.cc/
+- Create the file templates/landing.html and add the code from HERO 2nd option at https://tailblocks.cc/
 	```html
 	{% extends 'base.html' %}
 	{% block content %}
@@ -690,16 +690,53 @@ Edit the crm/templates/scripts.html
 	def landing_page(request):
 		return render(request, "landing.html")
 	```
-- Create the paths in crm/usrl.py
+- Create the paths in crm/urls.py
 	```python
 	 :
 	 from leads.views import landing_page
 	 urlpatterns = {
 	 :
 	 path('', landing_page, name='landing-page'),
-	 
+	 :
+	 ]
 	```
-
+- Format the leads/lead_list.html from tailwindcss (FEATURE, 4th option) inside the {% block content %}
+	```html
+	{% extends "base.html" %}
+	{% block content %}
+		<section class="text-gray-600 body-font">
+		  <div class="container px-5 py-24 mx-auto flex flex-wrap">
+		    <div class="flex flex-wrap -m-4">
+		    
+		     {% for lead in leads %}
+		      <div class="p-4 lg:w-1/2 md:w-full">
+			<div class="flex border-2 rounded-lg border-gray-200 border-opacity-50 p-8 sm:flex-row flex-col">
+			  <div class="w-16 h-16 sm:mr-8 sm:mb-0 mb-4 inline-flex items-center justify-center rounded-full bg-indigo-100 text-indigo-500 flex-shrink-0">
+			    <svg fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="w-8 h-8" viewBox="0 0 24 24">
+			      <path d="M22 12h-4l-3 9L9 3l-3 9H2"></path>
+			    </svg>
+			  </div>
+			  <div class="flex-grow">
+			    <h2 class="text-gray-900 text-lg title-font font-medium mb-3">{{ lead.first_name }} {{ lead.last_name }}</h2>
+			    <p class="leading-relaxed text-base">Blue bottle crucifix vinyl post-ironic four dollar toast 
+			    vegan taxidermy. Gastropub indxgo juice poutine.</p>
+			    <a href="{% url 'leads:lead-detail' lead.pk %}" class="mt-3 text-indigo-500 inline-flex items-center">View this lead
+			      <svg fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" 
+			      stroke-width="2" class="w-4 h-4 ml-2" viewBox="0 0 24 24">
+				<path d="M5 12h14M12 5l7 7-7 7"></path>
+			      </svg>
+			    </a>
+			  </div>
+			</div>
+		      </div>
+		     {% endfor %}
+		     
+		    </div>
+		  </div>
+		</section>
+	{% endblock content %}
+	```
+	
 
 
 
