@@ -51,7 +51,8 @@ delete -> path('', home_page)
 	]
 	```
 
-Test: navigate to `https://127.0.0.1:8000/leads/all` OR `https://127.0.0.1:8000/leads/`
+Test: navigate to `https://127.0.0.1:8000/leads/all` OR `https://127.0.0.1:8000/leads/` <br>
+Compiled in the branch at [`https://github.com/jatolentino/Django-notes/tree/jatolentino-ver-1.0`](./Ver-1.0/)
 
 ### 20 Lead's list
 - Change home_page.html name to lead_list.html (leads/templates/leads/lead_list.html)
