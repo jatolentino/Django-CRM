@@ -55,7 +55,7 @@ Test: navigate to `https://127.0.0.1:8000/leads/all` OR `https://127.0.0.1:8000/
 Compiled in the branch of [`ver-1.0`](https://github.com/jatolentino/Django-notes/tree/jatolentino-ver-1.0)
 
 ### 20 Lead's list
-- Change home_page.html name to lead_list.html (leads/templates/leads/lead_list.html)
+- Change home_page.html name to lead_list.html (leads/templates/leads/lead_list.html) and edit leads/views.py `def home_page(request)` -> `def lead_list`
 	```python
 	def lead_list(request):
 		leads = Lead.objects.all()
