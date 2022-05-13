@@ -97,7 +97,7 @@ Compiled in the branch at [`ver-1.0`](https://github.com/jatolentino/Django-note
 		{% endfor %}
 	</body>	
 	```
-Test in: `https://127.0.0.1:8000/leads/
+Test in: `https://127.0.0.1:8000/leads/`
 
 - Create another view for the details of the leads in leads/views.py
 	```python
