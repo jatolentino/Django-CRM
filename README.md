@@ -128,10 +128,8 @@ Test in: `http://127.0.0.1:8000/leads/`
 		{% endfor %}
 	</body>
 	```
-Test: `http://127.0.0.1:8000/leads/1/`
+Test: `http://127.0.0.1:8000/leads/1/` <br>
 ![Project Image](https://github.com/jatolentino/Django-notes/blob/main/sources/img/Step%2019%20-%20test-2.jpg)
-`https://github.com/jatolentino/Django-notes/blob/main/sources/img/Step%2019%20-%20test-2.jpg`
-`https://github.com/josetv91/Autonomous-UAV/blob/main/Images/control%20loop.png`
 - Modify the lead_detail, in leads/views.py
 	```python
 	def lead_detail(request, pk):
