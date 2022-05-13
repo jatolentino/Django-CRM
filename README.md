@@ -118,6 +118,7 @@ Test in: `https://127.0.0.1:8000/leads/
 - Add links to the lead in leads/templates/leads/lead_list.html
 	```html
 	<body>
+		<a href="/leads/create'">Create a new lead</a>
 		<h1> This is all of our lead lead</h1>
 		{% for lead in leads %}
 			<div class="lead">
@@ -295,7 +296,7 @@ Test: `https://127.0.0.1/leads/create`
 				'agent',
 			)
 	```
-- Edit leads/views.py, change LeadForm -> LeadModelForm
+- Simplify using LeadModelForm: edit leads/views.py, change LeadForm -> LeadModelForm
 	```python
 	from .forms import LeadForm, LeadModelForm
 	
@@ -304,50 +305,195 @@ Test: `https://127.0.0.1/leads/create`
 		if request.method == "POST":
 			form = LeadModelForm(request.POST)
 			if form.is_valid():
-				first_name = form.cleaned_data['first_name']
-				last_name = form.cleaned_data['last_name']
-				age = form.cleaned_nadata['age']
-				agent = form.cleaned_data['agent']
-				Lead.objects.create(
-					first_name=first_name,
-					last_name=last_name,
-					age=age,
-					agent=agent
-				)
-				print("The lead has been created")
-		
+				form.save()
+				return rediret("/leads")
 		context = {
 			"form": LeadForm()
 		}
 		return render(request, "leads/lead_create.html", context)
 	```
 
-- Edit the Forms from leads/lead_list.html 
+- Edit leads/lead_details.html 
 	```html
 	<body>
-		<a href="/leads/create/">  Create a new lead</a>
+		<a href="/leads">  Go back to leads</a>
 		<hr />
-		<h1> This is all of uour leads</h1>
-		{% for lead in leads %}
-		
-		{5 endfor %)
+		<h1>This is the details of {{ lead.first_name }}</h1>
+		<p>This persons age: {{ lead.age }} </p>
+		<p>The agent responsible for this lead is : {{ lead.agent }}</p>
 	</body>
 	```
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+### 23 Create the lead_update model
+- In lead/views.py
+	```python
+	def lead_update(request, pk):
+		lead = Lead.objects.get(id=pk)
+		form = LeadForm()
+		if reques.method == "POST":
+			form = LeadForm(request.POST)
+			if form.is_valid():
+				first_name = form.cleaned_data['first_name']
+				last_name = form.cleaned_data['last_name']
+				age = form.cleaned_data['age']
+				lead.first_name = first_name
+				lead.last_name = last_name
+				lead.age = age
+				lead.save()
+				return redirect("/leads")
+		context = {
+			"form": form,
+			"lead": lead
+		}
+		return render(request, "leads/lead_update.html", context)
+		```
+- Edit leads/urls.py
+	```python
+	from .views import lead_list, lead_detail, lead_create
+	app_name = "leads"
+	
+	urlpatterns = [
+		path('', lead_list),
+		path('<int:pk>/', lead_detail),
+		path('<int:pk>/update/', lead_update),
+		path('create'/, lead_create),
+		]
+		```
+- Create the templates/leads/lead_update.html file
+	```html
+	<!DOCTYPE html>
+	<html lang="end">
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<title>Document</title>
+	</head>
+	<body>
+		<a href="/lead">Go back to leads</a>
+		<hr />
+		<h1>Update lead: {{ lead.first_name }} {{ lead.last_name }}</h1>
+		<form method="post">
+			{% csrf_token %}
+			{{ form.as_p }}
+			<button type="submit">Submit</button>
+		</form>
+	</body>
+	</html>
+	```
+- Simplify the lead_update model with LeadModelform
+	```python
+	def lead_update(request, pk):
+		lead = Lead.objects.get(id=pk)
+		form = LeadModelForm(instance=lead)
+		if reques.method == "POST":
+			form = LeadModelForm(request.POST, instance=lead)
+			if form.is_valid():
+				form.save()
+				return redirect("/leads")
+		context = {
+			"form": form,
+			"lead": lead
+		}
+		return render(request, "leads/lead_update.html", context)
+	```
+### 24 Create the model delete
+- in lead/views.py, create the lead_delete model
+	```python
+	lead = Lead.objects.get(id=pk)
+	lead.delete()
+	return redirect("/leads")
+	```
+- Edit the leads/urls.py
+	```python
+	from .views import lead_list, lead_detail, lead_create, lead_update
+	app_name = "lead"
+	
+	urlpatterns = [
+		path('', lead_list),
+		path('<int:pk>', lead_detail),
+		path('<int:pk>/update/', lead_update),
+		path('<int:pk>/delete/', lead_delete),
+		path('create/', lead_create),
+	]
+	```
+- Add a delete and update button the lead_detail.html page
+	```html
+	<body>
+		<a href="/leads">  Go back to leads</a>
+		<hr />
+		<h1>This is the details of {{ lead.first_name }}</h1>
+		<p>This persons age: {{ lead.age }} </p>
+		<p>The agent responsible for this lead is : {{ lead.agent }}</p>
+		<hr />
+		<a href="/leads/{{ lead.pk }}/update/">Update</a>
+		<a href="/leads/{{ lead.pk }}/delete/">Delete</a>
+	</body>
+	```
+### 25 Change URLs' names
+- Edit the leads/urls.py
+	```html
+	:
+	urlpatterns = [
+		path('', lead_list, name='lead-list'),
+		path('<int:pk>/', lead_detail, name='lead-detail'),
+		path('<int:pk>/update/', lead_update, name='lead-update'),
+		path('<int:pd>/delete/', lead_delete, name='lead-delete'),
+		path('create/', lead_create, name='lead-create'),     <!-- i.e. path('create-a-lead/', lead_create, name='lead-create'),-->
+	]
+- Change to the URL's name in leads/lead_detail.html: from this <a href="/leads">Go back..  -> <a href="{% url 'leads:lead-list' %">Go back..
+	```html
+	<body>
+		<a href="{% url 'leads:lead-create' %">Create a new lead</a>
+		<hr />
+		<h1>This is the details of {{ lead.first_name }}</h1>
+		<p>This persons age: {{ lead.age }} </p>
+		<p>The agent responsible for this lead is : {{ lead.agent }}</p>
+		<hr />
+		<a href="{% url 'lead:lead-update' lead.pk %}">Update</a>
+		<a href="{% url 'lead:lead-delete' lead.pk %}">Delete</a>
+	</body>
+	```
+	
+- Change to the URL's name in leads/lead_list.html: from this <a href="/leads/create">Create..  -> <a href="{% url 'leads:lead-create' %">Create..
+	```html
+	<body>
+		<a href="{% url 'leads:lead-create' %">Create a new lead</a>
+		<h1> This is all of our lead lead</h1>
+		{% for lead in leads %}
+			<div class="lead">
+				<a href="{% url 'lead:lead-detail' lead.pk %}"> {{ lead.first_name }} {{ lead.last_name }}</a>. Age: {{ lead.age }}
+			</div>
+		{% endfor %}
+	</body>
+	```
+	
+- Change to the URL's name in leads/lead_create.html: <a href="/lead">Go back... -> <a href="{% url 'leads:lead-detail' %}">Go back...
+	```html
+	<body>
+		<a href="{% url 'lead:lead-list' %}"> Go back to leads</a>
+		<hr />
+		<h1> Create a new lead</h1>
+		<form method="post"> <!-- form method="post" action="/leads/another-url/"> -->
+			{% csrf_token %}
+			{{ form.as_p }}
+			<button type="submit" >Submit</button>
+		</form>
+	</body>
+	```
+- Change to the URL's name in leads/lead_update.html: <a href="/lead">Go back... -> <a href="{% url 'leads:lead-detail' %}">Go back...
+	```html
+	<body>
+		<a href="{% url 'leads:lead-detail' lead.pk %}">Go back to {{ lead.first_name }} {{ lead.last_name }} </a>
+		<hr />
+		<h1>Update lead: {{ lead.first_name }} {{ lead.last_name }}</h1>
+		<form method="post">
+			{% csrf_token %}
+			{{ form.as_p }}
+			<button type="submit">Submit</button>
+		</form>
+	</body>
+	```
+### 26 Create a template
+- In 
 
 
 
