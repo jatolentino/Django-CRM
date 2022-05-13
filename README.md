@@ -479,7 +479,7 @@ Test: `https://127.0.0.1/leads/create`
 		</form>
 	</body>
 	```
-- Change to the URL's name in leads/lead_update.html: <a href="/lead">Go back... -> <a href="{% url 'leads:lead-detail' %}">Go back...
+- Change to the URL's name in leads/lead_update.html: `<a href="/lead">Go back...` -> `<a href="{% url 'leads:lead-detail' %}">Go back...`
 	```html
 	<body>
 		<a href="{% url 'leads:lead-detail' lead.pk %}">Go back to {{ lead.first_name }} {{ lead.last_name }} </a>
