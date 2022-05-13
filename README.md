@@ -51,7 +51,7 @@ delete -> path('', home_page)
 	]
 	```
 
-Test: navigate to `https://127.0.0.1:8000/leads/all` OR `https://127.0.0.1:8000/leads/` <br>
+Test: navigate to `http://127.0.0.1:8000/leads/all` OR `http://127.0.0.1:8000/leads/` <br>
 Compiled in the branch of [`ver-1.0`](https://github.com/jatolentino/Django-notes/tree/jatolentino-ver-1.0)
 
 ### 20 Lead's list
@@ -97,7 +97,7 @@ Compiled in the branch of [`ver-1.0`](https://github.com/jatolentino/Django-note
 		{% endfor %}
 	</body>	
 	```
-Test in: `https://127.0.0.1:8000/leads/`
+Test in: `http://127.0.0.1:8000/leads/`
 
 - Create another view for the details of the leads in leads/views.py
 	```python
@@ -128,7 +128,7 @@ Test in: `https://127.0.0.1:8000/leads/`
 		{% endfor %}
 	</body>
 	```
-Test: `https://127.0.0.1:8000/leads/1/`
+Test: `http://127.0.0.1:8000/leads/1/`
 - Modify the lead_detail, in leads/views.py
 	```python
 	def lead_detail(request, pk):
@@ -199,7 +199,7 @@ Test: `https://127.0.0.1:8000/leads/1/`
 		path('create', lead_create),
 	]
 	```
-Test: `https://127.0.0.1/leads/create`
+Test: `http://127.0.0.1/leads/create`
 
 - Create & edit the file forms in templates/leads/forms.py
 	```github
@@ -261,9 +261,9 @@ Test: `https://127.0.0.1/leads/create`
 		}
 		return render(request, "leads/lead_create.html", context)
 	```
-- Test: Go to `https://127.0.0.1:8000/leads/create/` and create a lead, then SUBMIT <br>
-	Verify in `https://127.0.0.1:8000/leads/` <br>
-	Verify the prompt in the VS code or check in `https://127.0.0.1:8000/admin/leads/lead/`
+- Test: Go to `http://127.0.0.1:8000/leads/create/` and create a lead, then SUBMIT <br>
+	Verify in `http://127.0.0.1:8000/leads/` <br>
+	Verify the prompt in the VS code or check in `http://127.0.0.1:8000/admin/leads/lead/`
 	
 - Redirect the create page to another tab
 	In leads/view.py
