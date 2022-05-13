@@ -439,7 +439,7 @@ Test: `https://127.0.0.1/leads/create`
 		path('<int:pd>/delete/', lead_delete, name='lead-delete'),
 		path('create/', lead_create, name='lead-create'),     <!-- i.e. path('create-a-lead/', lead_create, name='lead-create'),-->
 	]
-- Change to the URL's name in leads/lead_detail.html: from this <a href="/leads">Go back..  -> <a href="{% url 'leads:lead-list' %">Go back..
+- Change to the URL's name in leads/lead_detail.html: from this <a href="/leads"> Go back..  -> <a href="{% url 'leads:lead-list' %"> Go back..
 	```html
 	<body>
 		<a href="{% url 'leads:lead-create' %">Create a new lead</a>
