@@ -118,7 +118,7 @@ Test in: `https://127.0.0.1:8000/leads/
 - Add links to the lead in leads/templates/leads/lead_list.html
 	```html
 	<body>
-		<a href="/leads/create'">Create a new lead</a>
+		<a href="/leads/create">Create a new lead</a>
 		<h1> This is all of our lead lead</h1>
 		{% for lead in leads %}
 			<div class="lead">
@@ -313,7 +313,7 @@ Test: `https://127.0.0.1/leads/create`
 		return render(request, "leads/lead_create.html", context)
 	```
 
-- Edit leads/lead_details.html 
+- Edit leads/lead_detail.html 
 	```html
 	<body>
 		<a href="/leads">  Go back to leads</a>
@@ -439,10 +439,10 @@ Test: `https://127.0.0.1/leads/create`
 		path('<int:pd>/delete/', lead_delete, name='lead-delete'),
 		path('create/', lead_create, name='lead-create'),     <!-- i.e. path('create-a-lead/', lead_create, name='lead-create'),-->
 	]
-- Change to the URL's name in leads/lead_detail.html: from this <a href="/leads"> Go back..  -> <a href="{% url 'leads:lead-list' %"> Go back..
+- Change to the URL's name in leads/lead_detail.html: from this `<a href="/leads"> Go back..`  -> `<a href="{% url 'leads:lead-list' %"> Go back..`
 	```html
 	<body>
-		<a href="{% url 'leads:lead-create' %">Create a new lead</a>
+		<a href="{% url 'leads:lead-list' %">Go back to leads</a>
 		<hr />
 		<h1>This is the details of {{ lead.first_name }}</h1>
 		<p>This persons age: {{ lead.age }} </p>
@@ -453,11 +453,11 @@ Test: `https://127.0.0.1/leads/create`
 	</body>
 	```
 	
-- Change to the URL's name in leads/lead_list.html: from this <a href="/leads/create">Create..  -> <a href="{% url 'leads:lead-create' %">Create..
+- Change to the URL's name in leads/lead_list.html: from this `<a href="/leads/create">Create..`  -> `<a href="{% url 'leads:lead-create' %">Create..`
 	```html
 	<body>
 		<a href="{% url 'leads:lead-create' %">Create a new lead</a>
-		<h1> This is all of our lead lead</h1>
+		<h1> This is all of our leads</h1>
 		{% for lead in leads %}
 			<div class="lead">
 				<a href="{% url 'lead:lead-detail' lead.pk %}"> {{ lead.first_name }} {{ lead.last_name }}</a>. Age: {{ lead.age }}
@@ -466,7 +466,7 @@ Test: `https://127.0.0.1/leads/create`
 	</body>
 	```
 	
-- Change to the URL's name in leads/lead_create.html: <a href="/lead">Go back... -> <a href="{% url 'leads:lead-detail' %}">Go back...
+- Change to the URL's name in leads/lead_create.html: `<a href="/lead">Go back...` -> `<a href="{% url 'leads:lead-detail' %}">Go back...`
 	```html
 	<body>
 		<a href="{% url 'lead:lead-list' %}"> Go back to leads</a>
@@ -493,14 +493,116 @@ Test: `https://127.0.0.1/leads/create`
 	</body>
 	```
 ### 26 Create a template
-- In 
-
-
-
-
-
-
-
+- Create base.html in crm/templates/
+	```html
+	<!DOCTYPE html>
+	<html lang="end">
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<title>CRM</title>
+		<style>
+			.lead {
+				padding-top: 10px;
+				padding-bottom: 10px;
+				padding-left: 6px;
+				padding-right: 6px;
+				margin-top: 10px;
+				background-color: #f6f6f6;
+				width: 100%;
+			}
+		</style>
+	</head>
+	<body>
+		{% block content %}
+		{% endblock content %}
+	</body>
+	</html>
+	```	
+- Update the leads/lead_list.html file
+	```html
+	{% extends "base.html" %}
+	{% block content %}
+		<a href="{% url 'leads:lead-create' %">Create a new lead</a>
+		<h1> This is all of our leads</h1>
+		{% for lead in leads %}
+			<div class="lead">
+				<a href="{% url 'lead:lead-detail' lead.pk %}"> {{ lead.first_name }} {{ lead.last_name }}</a>. Age: {{ lead.age }}
+			</div>
+		{% endfor %}
+	{% endblock content %}
+	```
+- Update the leads/lead_detail.html file
+	```html
+	{% extends "base.html" %}
+	{% block content %}
+		<a href="{% url 'leads:lead-list' %">Go back to leads</a>
+		<hr />
+		<h1>This is the details of {{ lead.first_name }}</h1>
+		<p>This persons age: {{ lead.age }} </p>
+		<p>The agent responsible for this lead is : {{ lead.agent }}</p>
+		<hr />
+		<a href="{% url 'lead:lead-update' lead.pk %}">Update</a>
+		<a href="{% url 'lead:lead-delete' lead.pk %}">Delete</a>
+	{% endblock content %}
+	```
+- Update the leads/lead_update.html file
+	```html
+	{% extends "base.html" %}
+	{% block content %}
+		<a href="{% url 'leads:lead-detail' lead.pk %}">Go back to {{ lead.first_name }} {{ lead.last_name }} </a>
+		<hr />
+		<h1>Update lead: {{ lead.first_name }} {{ lead.last_name }}</h1>
+		<form method="post">
+			{% csrf_token %}
+			{{ form.as_p }}
+			<button type="submit">Submit</button>
+		</form>	
+	{% endblock content %}
+	```
+- Update the leads/lead_create.html file
+	```html
+	{% extends "base.html" %}
+	{% block content %}
+		<a href="{% url 'lead:lead-list' %}"> Go back to leads</a>
+		<hr />
+		<h1> Create a new lead</h1>
+		<form method="post">		<!-- form method="post" action="/leads/another-url/"> -->
+			{% csrf_token %}
+			{{ form.as_p }}
+			<button type="submit" >Submit</button>
+		</form>
+	{% endblock content %}
+	```
+- Update the leads/lead_list.html file
+	```html
+	{% extends "base.html" %}
+	{% block content %}
+		<a href="{% url 'leads:lead-create' %}">Create a new lead</a>
+		<h1> This is all of our lead lead</h1>
+		{% for lead in leads %}
+			<div class="lead">
+				<a href="{% url 'leads:lead-deatail' lead.pk %}"> {{ lead.first_name }} {{ lead.last_name }}</a>. Age: {{ lead.age }}
+			</div>
+		{% endfor %}
+	{% endblock content %}
+	```
+- Example to create ah html script file crm/templates/scripts.html and include it on the base.html <br>
+Edit the crm/templates/scripts.html
+	```javascript
+	<script>
+	console.log("hello")
+	</script>
+	```
+- Include the scripts in base.html
+	```html
+	:
+	<body>
+		{% block content %}
+		{% endblock content %}
+		{% include "scripts.html" %}
+	</body>
+	```
 
 
 
