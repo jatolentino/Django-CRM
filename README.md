@@ -129,13 +129,9 @@ Test in: `http://127.0.0.1:8000/leads/`
 	</body>
 	```
 Test: `http://127.0.0.1:8000/leads/1/` <br>
-<!--
 <p align="center">
-<img src="https://github.com/jatolentino/Django-notes/blob/main/sources/img/Step19-test-2.png">
--->
 <img src="https://raw.githubusercontent.com/jatolentino/Django-notes/main/sources/img/Step19-test-2.png">
 </p>
-
 - Modify the lead_detail, in leads/views.py
 	```python
 	def lead_detail(request, pk):
