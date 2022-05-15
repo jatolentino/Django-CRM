@@ -129,14 +129,14 @@ Test in: `http://127.0.0.1:8000/leads/`
 	</body>
 	```
 Test: `http://127.0.0.1:8000/leads/1/` <br>
-        ![My Image](/sources/img/Step19-test-2.png) <br>
 <!--
-<a target="_blank" rel="noopener noreferrer" href="https://github.com/jatolentino/Django-notes/tree/jatolentino-ver-1.0">
-    <p align="center">
-    <img src="https://raw.githubusercontent.com/jatolentino/Django-notes/main/sources/img/Step%2019%20-%20test-2.jpg">
-    </p>
-</a>
+<p align="center">
+<img src="https://github.com/jatolentino/Django-notes/blob/main/sources/img/Step19-test-2.png">
 -->
+<p align="center">
+<img src="https://raw.githubusercontent.com/jatolentino/Django-notes/main/sources/img/Step19-test-2.png">
+</p>
+
 - Modify the lead_detail, in leads/views.py
 	```python
 	def lead_detail(request, pk):
@@ -184,15 +184,11 @@ Test: `http://127.0.0.1:8000/leads/1/` <br>
 		path('<int:pk>/', lead_detail)
 	]
 	```
-    Test: `http://127.0.0.1:8000/leads/1/` <br>
-            ![My Image](/sources/img/Step20-test-3.png) <br>
-<!--
-<a target="_blank" rel="noopener noreferrer" href="https://github.com/jatolentino/Django-notes/tree/jatolentino-ver-1.0">
-    <p align="center">
+
+    Test 20-3: `http://127.0.0.1:8000/leads/1/` <br>
+    <p>
     <img src="https://raw.githubusercontent.com/jatolentino/Django-notes/main/sources/img/Step20-test-3.png">
     </p>
-</a>
--->
 ### 21  Create leads with Forms
 - Create the lead_create in leads/views.py
 	```python
@@ -227,14 +223,10 @@ Test: `http://127.0.0.1:8000/leads/1/` <br>
 	]
 	```
     Test 21-1: `http://127.0.0.1/leads/create` <br>
-            ![My Image](/sources/img/Step21-test-1.png) <br>
-    <!--
-    <a target="_blank" rel="noopener noreferrer" href="https://github.com/jatolentino/Django-notes/tree/jatolentino-ver-1.0">
-        <p align="center">
-        <img src="https://raw.githubusercontent.com/jatolentino/Django-notes/main/sources/img/Step21-test-1.png">
-        </p>
-    </a>
-    -->
+    <p>
+    <img src="https://raw.githubusercontent.com/jatolentino/Django-notes/main/sources/img/Step21-test-1.png">
+    </p>
+    
 - Create & edit the file forms in crm/leads/forms.py
 	```python
 	from django import forms
@@ -299,14 +291,9 @@ Test: `http://127.0.0.1:8000/leads/1/` <br>
         Verify in `http://127.0.0.1:8000/leads/` <br>
         Verify the prompt in the VS code or check in `http://127.0.0.1:8000/admin/leads/lead/`
         <br>
-                ![My Image](/sources/img/Step21-test-2.png)
-        <!--
-        <a target="_blank" rel="noopener noreferrer" href="https://github.com/jatolentino/Django-notes/tree/jatolentino-ver-1.0">
-            <p align="center">
-            <img src="https://raw.githubusercontent.com/jatolentino/Django-notes/main/sources/img/Step21-test-21.png">
-            </p>
-        </a>
-        -->
+        <p>
+            <img src="https://raw.githubusercontent.com/jatolentino/Django-notes/main/sources/img/Step21-test-2.png">
+        </p>
         Compiled in the branch of [`ver-1.1`](https://github.com/jatolentino/Django-notes/tree/jatolentino-ver-1.1)
 - Redirect to `http://127.0.0.1:8000/leads/` after creating a user
 	In leads/view.py
@@ -368,15 +355,9 @@ Test: `http://127.0.0.1:8000/leads/1/` <br>
 	</body>
 	```
     Test 21-3: Go to `http://127.0.0.1:8000/leads/` <br>
-    ![My Image](/sources/img/Step21-test-3.png)
-    <!--
-    <a target="_blank" rel="noopener noreferrer" href="https://github.com/jatolentino/Django-notes/tree/jatolentino-ver-1.2">
-        <p align="center">
-        <img src="https://raw.githubusercontent.com/jatolentino/Django-notes/main/sources/img/Step21-test-3.png">
-        </p>
-    </a>
-    -->
-    <!--Compiled in the branch of [`ver-1.2`](https://github.com/jatolentino/Django-notes/tree/jatolentino-ver-1.2) -->
+    <p>
+    <img src="https://raw.githubusercontent.com/jatolentino/Django-notes/main/sources/img/Step21-test-3.png">
+    </p>
 ### 23 Create the lead_update model
 - In lead/views.py
 	```python
@@ -450,15 +431,9 @@ Test: `http://127.0.0.1:8000/leads/1/` <br>
 		return render(request, "leads/lead_update.html", context)
 	```
     Test 23.1 Go to `http://127.0.0.1:8000/leads/1/update/` and update/edit <br>
-
-    ![My Image](/sources/img/Step23-test-1.png)
-    <!--
-    <a>
-        <p align="center">
-        <img src="https://raw.githubusercontent.com/jatolentino/Django-notes/main/sources/img/Step23-test-1.png">
-        </p>
-    </a>
-    -->
+    <p>
+    <img src="https://raw.githubusercontent.com/jatolentino/Django-notes/main/sources/img/Step23-test-1.png">
+    </p>
 
 ### 24 Create the model delete
 - In lead/views.py, create the lead_delete model
@@ -495,15 +470,9 @@ Test: `http://127.0.0.1:8000/leads/1/` <br>
 	</body>
 	```
     Test 24.1 Go to `http://127.0.0.1:8000/leads/`, choose a lead to be deleted <br>
-
-    ![My Image](/sources/img/Step24-test-1.png)
-    <!--
-    <a>
-        <p align="center">
-        <img src="https://raw.githubusercontent.com/jatolentino/Django-notes/main/sources/img/Step23-test-1.png">
-        </p>
-    </a>
-    -->
+    <p>
+    <img src="https://raw.githubusercontent.com/jatolentino/Django-notes/main/sources/img/Step24-test-1.png">
+    </p>
 ### 25 Change URLs' names
 - Edit the leads/urls.py
 	```python
@@ -704,7 +673,7 @@ Edit the crm/templates/scripts.html
 		</html>
 	```	
 
-- Create the file templates/navbar.html and add the navbar header from https://tailblocks.cc/
+- Create the file crm/templates/navbar.html and add the navbar header from https://tailblocks.cc/
 	```html
 	<header class="text-gray-600 body-font">
 	  <div class="container mx-auto flex flex-wrap p-5 flex-col md:flex-row items-center">
@@ -715,7 +684,7 @@ Edit the crm/templates/scripts.html
 	      <span class="ml-3 text-xl"> CRM </span>
 	    </a>
 	    <nav class="md:ml-auto flex flex-wrap items-center text-base justify-center">
-	      <a href="{% url 'leads:lead-list' %}" class="mr-5 hover:text-gray-900">Leads/a>
+	      <a href="{% url 'leads:lead-list' %}" class="mr-5 hover:text-gray-900">Leads</a>
 	      <a class="mr-5 hover:text-gray-900">Sign up</a>
 	    </nav>
 	    <a href="{% url 'leads:lead-list' %}" class="inline-flex items-center bg-gray-100 border-0 py-1 px-3 focus:outline-none hover:bg-gray-200 rounded text-base mt-4 md:mt-0">Login
@@ -745,6 +714,10 @@ Edit the crm/templates/scripts.html
 		</body>
 		</html>
 	```
+    Test 27.1 Go to `http://127.0.0.1:8000/leads/`
+    <p>
+    <img src="https://raw.githubusercontent.com/jatolentino/Django-notes/main/sources/img/Step27-test-1.png">
+    </p>
 - Create the file templates/landing.html and add the code from HERO 2nd option at https://tailblocks.cc/
 	```html
 	{% extends 'base.html' %}
@@ -781,6 +754,11 @@ Edit the crm/templates/scripts.html
 	 :
 	 ]
 	```
+    Test 27.2 Go to `http://127.0.0.1:8000`
+    <br>
+    <p>
+    <img src="https://raw.githubusercontent.com/jatolentino/Django-notes/main/sources/img/Step27-test-2.png">
+    </p>
 - Format the leads/lead_list.html from tailwindcss (FEATURE, 4th option) inside the {% block content %}
 	```html
 	{% extends "base.html" %}
@@ -829,6 +807,11 @@ Edit the crm/templates/scripts.html
 		</section>
 	{% endblock content %}
 	```
+    Test 27.3 Go to `http://127.0.0.1:8000/leads/`
+    <p>
+    <img src="https://raw.githubusercontent.com/jatolentino/Django-notes/main/sources/img/Step27-test-3.png">
+    </p>
+    
 - Format the leads/lead_detail.html from tailwindcss (ECOMMERCE, 2nd option) inside the {% block content %}	
 	```html
 	{% extends "base.html" %}
@@ -841,7 +824,7 @@ Edit the crm/templates/scripts.html
 			<h2 class="text-sm title-font text-gray-500 tracking-widest">Lead</h2>
 			<h1 class="text-gray-900 text-3xl title-font font-medium mb-4">{{ lead.first_name }} {{ lead.last_name }}</h1>
 			<div class="flex mb-4">
-			  <a href="{% url 'leads:lead-detail' lead.pk %}" class="flex-grow border-b-2 border-gray-300 py-2 text-lg px-1">Overview</a>  <!-- interchaged -->
+			  <a href="{% url 'leads:lead-detail' lead.pk %}" class="flex-grow text-indigo-500 border-b-2 border-indigo-500 py-2 text-lg px-1">Overview</a>  <!-- interchaged -->
 			  <a class="flex-grow border-b-2 border-gray-300 py-2 text-lg px-1">Reviews</a>		<!-- interchaged -->
 			  <a href="{% url 'leads:lead-update' lead.pk %}" class="flex-grow border-b-2 border-gray-300 py-2 text-lg px-1">Update Details</a> <!-- interchaged -->
 			</div>
@@ -933,4 +916,118 @@ Edit the crm/templates/scripts.html
 		-->
 	{% endblock content %}
 	```
+    Test 27.4 Go to `http://127.0.0.1:8000/leads/update`
+    <p>
+    <img src="https://raw.githubusercontent.com/jatolentino/Django-notes/main/sources/img/Step27-test-4.png">
+    </p>
+### 28 Using classes & replacing the functions
+- Create a templates/leads/delete.html
+    ```html
+    {% extends "base.html" %}
+    {% block content %}
+        <a href="{% url 'leads:lead-list' %}"> Go back to leads</a>
+        <hr />
+        <h1>Are you sure you want to delete this lead?</h1>
+        <form method="post"> <!-- form method="post" action="/leads/another-url/"> -->
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button type="submit" >Submit</button>
+        </form>
+    {% endblock content %}
+    ```
+- In leads/views.py, add class LandingPageView using `django.viwes.generic`
+    ```python
+    form django.shortcuts import render, redirect, reverse
+    from django.viwes.generic import (TemplateView, ListView, DetailView,
+    CreateView, DeleteView)
 
+    class LandingPageView(TemplateView):
+        template_name = "landing.html"
+    #def landing_page(request):
+    #   return render(request, "landing.html")
+
+    class LeadListView(ListView):
+        template_name = "leads/lead_list.html"
+        queryset = Lead.objects.all()
+        context_object_name = "leads"
+    #def lead_list(request):
+    #   leads = Lead.objects.all()
+    #   context = {
+    #     "leads": leads
+    #    }
+    #   return render(request, "leads/lead_list.htnl)
+
+    def LeadDetailView(DetailView):
+        template_name = "leads/lead_detail.html"
+        queryset = Lead.objects.all
+        context_object_name = "lead"
+	#def lead_detail(request, pk):
+	#	lead = Lead.objects.get(id=pk)
+	#	context = {
+	#		"lead": lead
+	#	}
+	#   return render(request, "leads/lead_detail.html", context)
+
+    def LeadDeleteView(Deleteview):
+        template_name = "leads/lead_delete.html"
+        queryset = Lead.objects.all()
+        def get_success_url(self):
+            return reverse("leads:lead-list")
+    #def lead_delete(request, pk):
+    #    lead = Lead.objects.get(id=pk)
+    #    lead.delete()
+    #    return redirect("/leads")
+
+    def LeadUpdateView(UpdateView):
+        template_name = "leads/lead_update.html"
+        queryset = Lead.objects.all()
+        form_class = LeadModelForm
+        def get_success_url(self):
+            return reverse("leads:lead-list")    
+	#def lead_update(request, pk):
+	#	lead = Lead.objects.get(id=pk)
+	#	form = LeadModelForm(instance=lead)
+	#	if request.method == "POST":
+	#		form = LeadModelForm(request.POST, instance=lead)
+	#		if form.is_valid():
+	#			form.save()
+	#			return redirect("/leads")
+	#	context = {
+	#		"form": form,
+	#		"lead": lead
+	#	}
+
+    ```
+- Edit the crm/urls.py
+    ```python
+    from leads.views import landing_page, LandingPageView, LeadListView
+    :
+    urlpatterns = [
+        :
+        #path('', landing_page, name='landing-page'),
+        path('', LandingPageview.as_view(), name='landing_page'),
+        path('', include('leads.urls', namespace="leads"))
+        :
+    ]
+    ```
+- Edit the leads/urls.py
+    ```python
+    from .views import (lead_list, lead_detail, lead_create, lead_update, lead_delete, LeadListView, LeadDetailView, LeadCreateView, LeadDeleteView, 
+    LeadUpdateView)
+    
+    app_name = "leads"
+
+    urlpatterns = [
+        path('', LeadListView.as_view(), name='lead-list'),
+        path('<int:pk>/', LeadDetailView.as_view(), name='lead-detail'),
+        path('create/', LeadCreateView.as_view(), name='lead-create'),
+        path('<int:pk>/update/', LeadUpdateView.as_view(), name='lead-update'),
+        path('<int:pk>/delete/', LeadDeleteView.as_view(), name='lead-delete'),
+        #path('', lead_list, name='lead-list'),
+        #path('<int:pk>/', lead_detail, name='lead-detail'),
+        #path('<int:pk>/update/', lead_update, name='lead-update'),
+        #path('<int:pk>/delete/', lead_delete, name='lead-delete'),
+        #path('create/', lead_create, name='lead-create')
+    ]
+    ```
+   
