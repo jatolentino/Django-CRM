@@ -376,7 +376,7 @@ Test: `http://127.0.0.1:8000/leads/1/` <br>
         </p>
     </a>
     -->
-    <!--Compiled in the branch of [`ver-1.2`](https://github.com/jatolentino/Django-notes/tree/jatolentino-ver-1.2) -->
+    Compiled in the branch of [`ver-1.2`](https://github.com/jatolentino/Django-notes/tree/jatolentino-ver-1.2)
 ### 23 Create the lead_update model
 - In lead/views.py
 	```python
@@ -568,7 +568,7 @@ Test: `http://127.0.0.1:8000/leads/1/` <br>
 		</form>
 	</body>
 	```
-    Compiled in the branch of [`ver-1.2`](https://github.com/jatolentino/Django-notes/tree/jatolentino-ver-1.2)
+    Compiled in the branch of [`ver-1.3`](https://github.com/jatolentino/Django-notes/tree/jatolentino-ver-1.3)
 ### 26 Create a template
 - Create base.html in crm/templates/
 	```html
@@ -599,15 +599,13 @@ Test: `http://127.0.0.1:8000/leads/1/` <br>
 - Update the leads/lead_list.html file
 	```html
 	{% extends "base.html" %}
-
 	{% block content %}
-        <a href="{% url 'leads:lead-create' %}">Create a new lead</a>
-        <hr />
-	    <h1> This is all of our leads</h1>
-	    {% for lead in leads %}
-            <div class="lead">
-                <a href="{% url 'leads:lead-detail' lead.pk %}"> {{ lead.first_name }} {{ lead.last_name }}</a>. Age: {{ lead.age }}
-            </div>
+		<a href="{% url 'leads:lead-create' %">Create a new lead</a>
+		<h1> This is all of our leads</h1>
+		{% for lead in leads %}
+			<div class="lead">
+				<a href="{% url 'leads:lead-detail' lead.pk %}"> {{ lead.first_name }} {{ lead.last_name }}</a>. Age: {{ lead.age }}
+			</div>
 		{% endfor %}
 	{% endblock content %}
 	```
@@ -615,55 +613,54 @@ Test: `http://127.0.0.1:8000/leads/1/` <br>
 	```html
 	{% extends "base.html" %}
 	{% block content %}
-		<a href="{% url 'leads:lead-list' %}">Go back to leads</a>
-        <hr />
-        <h1>This is the details of {{ lead.first_name }}</h1>
-        <p>This persons age: {{ lead.age }} </p>
-        <p>The agent responsible for this lead is : {{ lead.agent }}</p>
-        <hr />
-        <a href="{% url 'leads:lead-update' lead.pk %}">Update</a>
-        <a href="{% url 'leads:lead-delete' lead.pk %}">Delete</a>
+		<a href="{% url 'leads:lead-list' %">Go back to leads</a>
+		<hr />
+		<h1>This is the details of {{ lead.first_name }}</h1>
+		<p>This persons age: {{ lead.age }} </p>
+		<p>The agent responsible for this lead is : {{ lead.agent }}</p>
+		<hr />
+		<a href="{% url 'leads:lead-update' lead.pk %}">Update</a>
+		<a href="{% url 'leads:lead-delete' lead.pk %}">Delete</a>
 	{% endblock content %}
 	```
 - Update the leads/lead_update.html file
 	```html
 	{% extends "base.html" %}
 	{% block content %}
-        <a href="{% url 'leads:lead-detail' lead.pk %}">Go back to {{ lead.first_name }} {{ lead.last_name }} </a>
-        <hr />
-        <h1>Update lead: {{ lead.first_name }} {{ lead.last_name }}</h1>
-        <form method="post">
-            {% csrf_token %}
-            {{ form.as_p }}
-            <button type="submit">Submit</button>
-        </form>
+		<a href="{% url 'leads:lead-detail' lead.pk %}">Go back to {{ lead.first_name }} {{ lead.last_name }} </a>
+		<hr />
+		<h1>Update lead: {{ lead.first_name }} {{ lead.last_name }}</h1>
+		<form method="post">
+			{% csrf_token %}
+			{{ form.as_p }}
+			<button type="submit">Submit</button>
+		</form>	
 	{% endblock content %}
 	```
 - Update the leads/lead_create.html file
 	```html
 	{% extends "base.html" %}
 	{% block content %}
-        <a href="{% url 'leads:lead-list' %}"> Go back to leads</a>
-        <hr />
-        <h1> Create a new lead</h1>
-        <form method="post"> <!-- form method="post" action="/leads/another-url/"> -->
-            {% csrf_token %}
-            {{ form.as_p }}
-            <button type="submit" >Submit</button>
-        </form>
+		<a href="{% url 'leads:lead-list' %}"> Go back to leads</a>
+		<hr />
+		<h1> Create a new lead</h1>
+		<form method="post">		<!-- form method="post" action="/leads/another-url/"> -->
+			{% csrf_token %}
+			{{ form.as_p }}
+			<button type="submit" >Submit</button>
+		</form>
 	{% endblock content %}
 	```
 - Update the leads/lead_list.html file
 	```html
 	{% extends "base.html" %}
 	{% block content %}
-        <a href="{% url 'leads:lead-create' %}">Create a new lead</a>
-        <hr />
-        <h1> This is all of our leads</h1>
-        {% for lead in leads %}
-            <div class="lead">
-                <a href="{% url 'leads:lead-detail' lead.pk %}"> {{ lead.first_name }} {{ lead.last_name }}</a>. Age: {{ lead.age }}
-            </div>
+		<a href="{% url 'leads:lead-create' %}">Create a new lead</a>
+		<h1> This is all of our lead lead</h1>
+		{% for lead in leads %}
+			<div class="lead">
+				<a href="{% url 'leads:lead-detail' lead.pk %}"> {{ lead.first_name }} {{ lead.last_name }}</a>. Age: {{ lead.age }}
+			</div>
 		{% endfor %}
 	{% endblock content %}
 	```
@@ -683,7 +680,6 @@ Edit the crm/templates/scripts.html
 		{% include "scripts.html" %}
 	</body>
 	```
-    Compiled in the branch of [`ver-1.3`](https://github.com/jatolentino/Django-notes/tree/jatolentino-ver-1.3)
 ### 27 Adding Tailwindcss
 - Go to https://v2.tailwindcss.com/docs/installation#using-tailwind-via-cdn and edit templates/base.html
 	```html
