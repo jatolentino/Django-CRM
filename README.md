@@ -181,7 +181,7 @@ Test: `http://127.0.0.1:8000/leads/1/` <br>
 	```
 
     Test 20-3: `http://127.0.0.1:8000/leads/1/` <br>
-    <p>
+    <p align="center">
     <img src="https://raw.githubusercontent.com/jatolentino/Django-notes/main/sources/img/Step20-test-3.png">
     </p>
 ### 21  Create leads with Forms
@@ -218,7 +218,7 @@ Test: `http://127.0.0.1:8000/leads/1/` <br>
 	]
 	```
     Test 21-1: `http://127.0.0.1/leads/create` <br>
-    <p>
+    <p align="center">
     <img src="https://raw.githubusercontent.com/jatolentino/Django-notes/main/sources/img/Step21-test-1.png">
     </p>
     
@@ -286,7 +286,7 @@ Test: `http://127.0.0.1:8000/leads/1/` <br>
         Verify in `http://127.0.0.1:8000/leads/` <br>
         Verify the prompt in the VS code or check in `http://127.0.0.1:8000/admin/leads/lead/`
         <br>
-        <p>
+        <p align="center">
             <img src="https://raw.githubusercontent.com/jatolentino/Django-notes/main/sources/img/Step21-test-2.png">
         </p>
         Compiled in the branch of [`ver-1.1`](https://github.com/jatolentino/Django-notes/tree/jatolentino-ver-1.1)
@@ -350,7 +350,7 @@ Test: `http://127.0.0.1:8000/leads/1/` <br>
 	</body>
 	```
     Test 21-3: Go to `http://127.0.0.1:8000/leads/` <br>
-    <p>
+    <p align="center">
     <img src="https://raw.githubusercontent.com/jatolentino/Django-notes/main/sources/img/Step21-test-3.png">
     </p>
 ### 23 Create the lead_update model
@@ -426,7 +426,7 @@ Test: `http://127.0.0.1:8000/leads/1/` <br>
 		return render(request, "leads/lead_update.html", context)
 	```
     Test 23.1 Go to `http://127.0.0.1:8000/leads/1/update/` and update/edit <br>
-    <p>
+    <p align="center">
     <img src="https://raw.githubusercontent.com/jatolentino/Django-notes/main/sources/img/Step23-test-1.png">
     </p>
 
@@ -465,7 +465,7 @@ Test: `http://127.0.0.1:8000/leads/1/` <br>
 	</body>
 	```
     Test 24.1 Go to `http://127.0.0.1:8000/leads/`, choose a lead to be deleted <br>
-    <p>
+    <p align="center">
     <img src="https://raw.githubusercontent.com/jatolentino/Django-notes/main/sources/img/Step24-test-1.png">
     </p>
 ### 25 Change URLs' names
@@ -710,7 +710,7 @@ Edit the crm/templates/scripts.html
 		</html>
 	```
     Test 27.1 Go to `http://127.0.0.1:8000/leads/`
-    <p>
+    <p align="center">
     <img src="https://raw.githubusercontent.com/jatolentino/Django-notes/main/sources/img/Step27-test-1.png">
     </p>
 - Create the file templates/landing.html and add the code from HERO 2nd option at https://tailblocks.cc/
@@ -751,7 +751,7 @@ Edit the crm/templates/scripts.html
 	```
     Test 27.2 Go to `http://127.0.0.1:8000`
     <br>
-    <p>
+    <p align="center">
     <img src="https://raw.githubusercontent.com/jatolentino/Django-notes/main/sources/img/Step27-test-2.png">
     </p>
 - Format the leads/lead_list.html from tailwindcss (FEATURE, 4th option) inside the {% block content %}
@@ -803,7 +803,7 @@ Edit the crm/templates/scripts.html
 	{% endblock content %}
 	```
     Test 27.3 Go to `http://127.0.0.1:8000/leads/`
-    <p>
+    <p align="center">
     <img src="https://raw.githubusercontent.com/jatolentino/Django-notes/main/sources/img/Step27-test-3.png">
     </p>
     
@@ -912,7 +912,7 @@ Edit the crm/templates/scripts.html
 	{% endblock content %}
 	```
     Test 27.4 Go to `http://127.0.0.1:8000/leads/update`
-    <p>
+    <p align="center">
     <img src="https://raw.githubusercontent.com/jatolentino/Django-notes/main/sources/img/Step27-test-4.png">
     </p>
 ### 28 Using classes & replacing the functions
