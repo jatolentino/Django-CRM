@@ -44,6 +44,7 @@ def lead_detail(request, pk):
 # 		"form": LeadForm()
 # 	}
 # 	return render(request, "leads/lead_create.html", context)
+
 def lead_create(request):
 	form = LeadModelForm()
 	if request.method == "POST":
@@ -74,3 +75,6 @@ def lead_delete(request, pk):
     lead = Lead.objects.get(id=pk)
     lead.delete()
     return redirect("/leads")
+
+def landing_page(request):
+	return render(request, "landing.html")
