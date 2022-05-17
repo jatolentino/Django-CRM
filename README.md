@@ -17,12 +17,12 @@
 ### 6 Run the server
 ### 7 Run migrate
 ### 8 Create the app  (for users/leads/payments)
-### 9
-### 10
-### 11
-### 12
-### 13
-### 14
+### 9 Add the new app 'leads' into the settings of the project
+### 10 Open models & edit & run
+### 11 Create a model Agent  (every Lead will have an agent)
+### 12 Add a customizable User model
+### 13 Models Managers
+### 14 Configure the Agent to show up the email
 ### 15
 ### 16
 ### 17
