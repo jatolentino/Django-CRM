@@ -12,9 +12,9 @@
 	```
 ### 2 Check packages
 ### 3 Install django
-### 4
-### 5
-### 6
+### 4 Create the project
+### 5 Add the gitignore
+### 6 Run the server
 ### 7
 ### 8
 ### 9
