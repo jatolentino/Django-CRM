@@ -15,8 +15,8 @@
 ### 4 Create the project
 ### 5 Add the gitignore
 ### 6 Run the server
-### 7
-### 8
+### 7 Run migrate
+### 8 Create the app  (for users/leads/payments)
 ### 9
 ### 10
 ### 11
