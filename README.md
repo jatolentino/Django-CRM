@@ -23,10 +23,10 @@
 ### 12 Add a customizable User model
 ### 13 Models Managers
 ### 14 Configure the Agent to show up the email
-### 15
-### 16
-### 17
-### 18 
+### 15 Forms and create view
+### 16 Add a home_page to display "hello world"
+### 17 Add a html page
+### 18 Context
 
 
 ### 19 Urls in the app, namespaces
