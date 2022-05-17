@@ -11,7 +11,7 @@
 	env/Scripts/activate
 	```
 ### 2 Check packages
-### 3
+### 3 Install django
 ### 4
 ### 5
 ### 6
