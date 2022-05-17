@@ -10,7 +10,7 @@
 	python -m venv enviroment
 	env/Scripts/activate
 	```
-### 2 
+### 2 Check packages
 ### 3
 ### 4
 ### 5
