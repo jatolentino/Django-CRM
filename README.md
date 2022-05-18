@@ -99,9 +99,68 @@ python manage.py startapp leads
 	Lead.objects.all()
 	```
 	Output: `<QuerySet []>`
-
+- Creating a superuser
+	```bash
+	python manage.py createsuperuser
+	```
+- Check the user, in the terminal `python manage.py shell`
+	```bash
+	from django.contrib.auth import get_user_model
+	User = get_user_model()
+	User.objects.all()
+	```
+	Output: `<QuerySet [<User: jose>]>`
+	```bash
+	from leads.models import Agent
+	admin_user = User.objects.get(username="jose")
+	admin_user	
+	```
+	Output: `<User: jose>`
+	```bash
+	agent = Agent.objects.create(user=admin_user)
+	exit()
+	```
 ### 14 Configure the Agent to show up the email
+- Edit leads/models.py
+	```python
+	class Agent(models.Model):
+		user = models.OneToOnefield(User, on_delete=models.CASCADE)
 
+		def __str__(self):
+			return self.user.email
+	```
+- In ther terminal `python manage.py shell`
+	```bash
+	from leads.models import Agent
+	Agent.objects.all()
+	```
+	Output: `<Queryset [<Agent: jose@mail.com>]>`
+	```bash
+	from leads.models import Lead
+	jose_agent = Agent.objects.get(user__email="jose@mail.com")
+	jose_agent
+	```
+	Output: `<Agent: jose@mail.com>`
+	```bash
+	Lead.objects.create(first_name="Joe", last_name="Soap", age=35, agent=jose_agent)
+	```
+	Output: `<Lead: LEAD OBJECT (1)>`
+- Edit leads/models/py
+	```python
+	class Lead(models.Model):
+		first_name = models.CharField(max_length=20)
+	    	last_name = models.CharField(max_length=20)
+	    	age = models.IntegerField(default=0)
+		
+		def __str__(self):
+			return f"{self.first_name} {self.last_name}"
+    
+	class Agent(models.Model):
+		user = models.OneToOneField(User, on_delete=models.CASCADE)	
+		def __str__(self):
+			return self.user.email
+			
+	```
 ### 15 Forms and create view
 
 ### 16 Add a home_page to display "hello world"
