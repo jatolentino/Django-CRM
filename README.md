@@ -97,7 +97,8 @@ python manage.py startapp leads
 	```bash
 	from leads.models import Lead
 	Lead.objects.all()
-		<QuerySet []>
+	```
+	Output: `<QuerySet []>`
 
 ### 14 Configure the Agent to show up the email
 
