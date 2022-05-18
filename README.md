@@ -11,9 +11,9 @@
 	env/Scripts/activate
 	```
 ### 2 Check packages
-	```bash
-	pip freeze
-	```
+```bash
+pip freeze
+```
 ### 3 Install django
 	```bash
 	pip install django==3.1.4
