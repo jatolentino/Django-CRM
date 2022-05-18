@@ -1209,7 +1209,7 @@ Edit the crm/templates/scripts.html
     ```
 - In leads/views.py, add class LandingPageView using `django.viwes.generic`
     ```python
-    form django.shortcuts import render, redirect, reverse
+    from django.shortcuts import render, redirect, reverse
     from django.viwes.generic import (TemplateView, ListView, DetailView,
     CreateView, DeleteView)
 
