@@ -11,21 +11,49 @@
 	env/Scripts/activate
 	```
 ### 2 Check packages
+	```bash
+	pip freeze
+	```
 ### 3 Install django
+	```bash
+	pip install django==3.1.4
+	pip freeze > requirements.txt
+	```
 ### 4 Create the project
+	```bash
+	django-admin startproject crm .
+	```
 ### 5 Add the gitignore
+- Create the gitignire file and fill with: `https://github.com/github/gitignore/blob/main/Pythongitignore`
+
 ### 6 Run the server
+	```bash
+	python manage.py runserver (port if necessary)
+	```
 ### 7 Run migrate
+	```bash
+	python manage.py migrate
+	```
 ### 8 Create the app  (for users/leads/payments)
+
 ### 9 Add the new app 'leads' into the settings of the project
+
 ### 10 Open models & edit & run
+
 ### 11 Create a model Agent  (every Lead will have an agent)
+
 ### 12 Add a customizable User model
+
 ### 13 Models Managers
+
 ### 14 Configure the Agent to show up the email
+
 ### 15 Forms and create view
+
 ### 16 Add a home_page to display "hello world"
+
 ### 17 Add a html page
+
 ### 18 Context
 
 
