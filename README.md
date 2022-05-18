@@ -15,30 +15,56 @@
 pip freeze
 ```
 ### 3 Install django
-	```bash
-	pip install django==3.1.4
-	pip freeze > requirements.txt
-	```
+```bash
+pip install django==3.1.4
+pip freeze > requirements.txt
+```
 ### 4 Create the project
-	```bash
-	django-admin startproject crm .
-	```
+```bash
+django-admin startproject crm .
+```
 ### 5 Add the gitignore
 - Create the gitignire file and fill with: `https://github.com/github/gitignore/blob/main/Pythongitignore`
 
 ### 6 Run the server
-	```bash
-	python manage.py runserver (port if necessary)
-	```
+```bash
+python manage.py runserver (port if necessary)
+```
 ### 7 Run migrate
-	```bash
-	python manage.py migrate
-	```
+```bash
+python manage.py migrate
+```
 ### 8 Create the app  (for users/leads/payments)
-
+```bash
+python manage.py startapp leads
+```
 ### 9 Add the new app 'leads' into the settings of the project
-
-### 10 Open models & edit & run
+- In crm/setting.py, edit
+	```python
+	INSTALLED_APPS = [
+	    'django.contrib.admin',
+	    'django.contrib.auth',
+	    'django.contrib.contenttypes',
+	    'django.contrib.sessions',
+	    'django.contrib.messages',
+	    'django.contrib.staticfiles',
+	    'leads'
+	]
+	```
+### 10 Open models, edit & run
+- In leads/models.py, create the model Lead as a class
+	```python
+	class Lead(models.Model):
+	    first_name = models.CharField(max_length=20)
+	    last_name = models.CharField(max_length=20)
+	    age = models.IntegerField(default=0)
+	```
+- In the terminal
+	```bash
+	python manage.py makemigrations  # create the 001_initial.py, auth_user is created, db.sqlite3 needs to be deleted in custom user
+	python manage.py migrate	 # create the database/applying leads.0001_initial
+	```
+- In VS CODE install SQLite to see the database
 
 ### 11 Create a model Agent  (every Lead will have an agent)
 
