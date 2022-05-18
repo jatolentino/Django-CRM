@@ -67,10 +67,37 @@ python manage.py startapp leads
 - In VS CODE install SQLite to see the database
 
 ### 11 Create a model Agent  (every Lead will have an agent)
-
+- In leads/models.py
+	```python
+	class Agent(models.Model):
+	    user = models.OneToOneField(User, on_delete=models.CASCADE)
+	```
 ### 12 Add a customizable User model
-
+- In leads/models.py
+	```python
+	from django.contrib.auth.models import AbstractUser
+	
+	class User(AbstractUser)L
+		pass
+	```
+- In crm/settings.py
+	```python
+	AUTH_USER_MODEL = "leads.User"
+	```
+- Delete 001_initial.py and db.sqlite3 files
+	```bash
+	python manage.py makemigrations
+	python manage.py migrate
+	```
 ### 13 Models Managers
+- Check the leads in the python shell
+	```bash
+	python manage.py shell
+	```
+	```bash
+	from leads.models import Lead
+	Lead.objects.all()
+		<QuerySet []>
 
 ### 14 Configure the Agent to show up the email
 
