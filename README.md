@@ -158,11 +158,18 @@ python manage.py startapp leads
 	class Agent(models.Model):
 		user = models.OneToOneField(User, on_delete=models.CASCADE)	
 		def __str__(self):
-			return self.user.email
-			
+			return self.user.email	
 	```
+- In the terminal
+	```bash
+	python manage.py shell
+	from lead.models import Lead
+	Lead.objects.all()
+	```
+	Output: `<QuerySet [<Lead: Joe Soap>]>`
 ### 15 Forms and create view
-
+- Run the server and go to `http://127.0.0.1/admin`
+- 
 ### 16 Add a home_page to display "hello world"
 
 ### 17 Add a html page
