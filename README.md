@@ -169,7 +169,8 @@ python manage.py startapp leads
 	Output: `<QuerySet [<Lead: Joe Soap>]>`
 ### 15 Forms and create view
 - Run the server and go to `http://127.0.0.1/admin`
-- 
+- Login with the superuser: jose
+- - Add the user to show up in the admin site
 ### 16 Add a home_page to display "hello world"
 
 ### 17 Add a html page
