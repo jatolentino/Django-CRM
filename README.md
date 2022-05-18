@@ -170,14 +170,140 @@ python manage.py startapp leads
 ### 15 Forms and create view
 - Run the server and go to `http://127.0.0.1/admin`
 - Login with the superuser: jose
-- - Add the user to show up in the admin site
+- Add the user to show up in the admin site, go to leads/admin.py
+	```python
+	from .models import User, Lead, Agent
+	
+	admin.site.register(User)
+	admin.site.register(Lead)
+	admin.site.register(Agent)
+	```
+- Check `http://127.0.0.1/admin`
+	output:
+	```bash
+	Leads
+	Agents	+Add  Change
+	Leads	+Add  Change
+	Users	+Add  Change
+	```
+- Configure the output of Agent in leads/models.py
+	```python
+	def __str__(self):
+		return self.user.username
+	```
+- The User/Agents/Leads can be created/modified/deleted in the `http://127.0.0.1/admin`
+
 ### 16 Add a home_page to display "hello world"
+- In leads/views.py
+	```python
+	from django.http import HttpResponse
+	
+	def home_page(request):
+		return HttpResponse("Hello World")
+	```
+- In crm/urls.py
+	```python
+	from leads.views import home_page
+	urlpatterns = [
+		path('admin/', admin.site.urls),
+		path('', home_page)
+	]
+	```
 
 ### 17 Add a html page
-
+- Inside the app leads create the forlders templates/leads
+- Inside leads/templates/leads create & edit the file home_page.html
+	```html
+	<!DOCTYPE html>
+	<html lang="en">
+	<head>
+		<meta charset = "UTF-8">
+		<meta name = "viewport" content="width=device-width", initial-scale=1.0>
+		<title>Document</title>
+	</head>
+	<body>
+		<h1>Hello world</h1>
+		<p>Here is our HTML template</p>
+	</body>
+	</html>
+	```
+- Go to leads/views.py
+	```python
+	def home_page(request):
+		return render(request,"leads/home_page.html" )
+	```
+- Create a general 'templates' folder in crm (crm/templates)
+- Make the folder searcheable
+- Edit crm/settings.py
+	```python
+	TEMPLATES = [
+		{
+			'BACKEND': 'django.template.backends.django.Djangotemplates',
+			'DIRS': [BASE_DIR / "templates"],
+		}
+	]
+	```
+- Create the html in crm/templates/second_page.html
+	```html
+	<!DOCTYPE html>
+	<html lang="en">
+	<head>
+		<meta charset = "UTF-8">
+		<meta name = "viewport" content="width=device-width, initial-scale=1.0>
+		<title>Document</title>
+	</head>
+	<body>
+		<h1>Hello world</h1>
+		<p>This is the second page</p>
+	</body>
+	</html>
+	```
+- Go to leads/views.py
+	```python
+	def home_page(request):
+		return render(request, "second_page.html" )
+	```
 ### 18 Context
+- Create the context variable in leads/views.py
+	```python
+	def home_page(request):
+		context = {
+			"name" : Joe",
+			"age" : 35
+		}
+		return render(request,"second_page.html",context)
+	```
+- In templates/second_page.html
+	```html
+	<body>
+		<h1>Hello world</h1>
+		<p>This is the second page</p>
+		{{ name }}
+		{{ age }}
+	</body>
+	```
+- Using the database, looping the data
+- In leads/views.py
+	```python
+	from .models import Lead
 
-
+	def home_page(request):
+		leads = Lead.objects.all()
+		context = {
+			"leads": leads
+		}
+		return render(request,"secon_page.html",context)
+	```
+- In templates/second_page.html
+	```html
+	<body>
+		<ul>
+			{% for lead in leads %}
+			<li>{{ lead }} </li>
+			{% endfor %}
+		</ul>
+	</body>
+	```
 ### 19 Urls in the app, namespaces
 - Create & edit leads/urls.py
   ```python
