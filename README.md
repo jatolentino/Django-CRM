@@ -1321,7 +1321,8 @@ Edit the crm/templates/scripts.html
         #path('create/', lead_create, name='lead-create')
     ]
     ```
-Compiled in the branch of [`ver-4.0`](https://github.com/jatolentino/Django-notes/tree/jatolentino-ver-4.0)
+	Compiled in the branch of [`ver-1.4`](https://github.com/jatolentino/Django-notes/tree/jatolentino-ver-1.4)
+
 ### 29 Set the static files
 - Create the folder crm/static and add the files main.js (console.log("hi") & style.css
 - Configure the crm/settings.py
