@@ -1681,3 +1681,247 @@ Edit the crm/templates/scripts.html
         def get_success_url(self):
             return reverse("login")
     ```
+### 32 Test django
+- The test python files always start with the string "test_name.py"
+- Test the landing page, edit leads/templatees/leads/tests.py
+    ```python
+    from django.test import TestCase
+    from django.shortcuts import reverse
+
+    class LandingPageTest(TestCase):
+        def test_status_code(self):
+            # TODO some sort of test
+            response = self.client.get(reverse("landing-page"))
+            print(response.content)
+            self.asserEqual(response.status_code, 200) #check status
+            self.asserTemplateUser(response, "landing.html") #check response of page
+        def test_template_name(self):
+            response = self.client.get(reverse("landing-page"))
+            self.assertTemplateUsed(response, "landing.html")
+         def test_get(self):
+            # TODO some sort of test
+            response = self.client.get(reverse("landing-page"))
+            self.asserEqual(response.status_code, 200)
+            self.asserTemplateUser(response, "landing.html")
+    ```
+    Test in console: python manage.py test
+
+- Create a tests folder in crm/leads, to run the tests' files {test_views,test_forms), also add the __init__.py
+    ```python
+    from django.test import TestCase
+    from django.shortcuts import reverse
+
+    class LandingPageTest(TestCase):
+         def test_get(self):
+            response = self.client.get(reverse("landing-page"))
+            self.asserEqual(response.status_code, 200)
+            self.asserTemplateUser(response, "landing.html")
+    ```
+### 33 Authorization restriction
+Restrict users to be only the leads they created
+- Edit leads/views.py, pass the LoginRequiredMixin to the models that require it
+    ```python
+    from django.contrib.ath.mixins import LoginRequiredMixin
+    
+    class LeadListView(LoginRequiredMixin, ListView):
+    :
+    class LeadDetailView(LoginRequiredMixin, DetailView):
+    :
+    class LeadCreateView(LoginRequiredMixin, CreateView):
+    :
+    class LeadUpdateView(LoginRequiredMixin, UpdateView):
+    :
+    class LeadDeleteView(LoginRequiredMixin, DeleteView):
+    :
+    ```
+    Go to `http://127.0.0.1/leads` and verify the restriction with the error
+
+- Modify the redirection so it ca redirect to the login site, go to crm/settings.py
+    ```python
+    :
+    LOGIN_REDIRECT_URL = "/leads"
+    LOGIN_URL = "/login"
+    ```
+- Create a model for the user so that the agent will inherit the userprofile properties
+    ```python
+    class UserProfile(models.Model):
+        user = models.OneToOneField(User, on_delete=models.CASCADE)
+        def __str__(self):
+            return self.user.username
+
+    class Agent(models.Model):
+        user = models.OneToOnefield(User, on_delete=models.CASCADE)
+        organization = models.ForeignKey(UserProfile, on_delete=models.CASCADE)
+        def __str__(self):
+            return self.user.email
+    ```
+- Add the userprofile tab in the database of the admin website, edit leads/admin.py
+
+    ```python
+    from django.contrib import admin
+    from .models import User, Lead, Agent, UserProfile
+
+    admin.site.register(User)
+    admin.site.register(UserProfile)
+    admin.site.register(Lead)
+    admin.site.register(Agent)
+    ```
+- To test, delete the crm/db.sqlite3 database, migrate and create again the superuser
+    ```bash
+    python manage.py migrate
+    python manage.py createsuperuser
+        user: jose
+        password: 1
+    python manage.py runserver
+    ```
+> Note: We wouldn't want to create a user profile for the new users because that process ought be automatic, so the triggering of events is handled by **signals** in Django
+
+### 34 Using signals
+- Edit leads/models.py
+    ```python
+    from django.db.models.signals import post_save
+
+    def post_user_created_signal(sender, instance, created, **kwargs):
+        print(instance, created) #created boolena T/F if the user was or not created
+    
+    post_save.connect(post_user_created_signal, sender=User)
+    ```
+    Test in `http://127.0.0.1:8000/admin/leads/user/`, select a user and then it his profile, click save
+    > For instance the above script depicts a process when a we push the save buttom of a user through the admin site, after clicking the save command, the **event post_user_created_signal** is triggered and shows the name of the user(isntance) in the terminal
+
+- Configure the creation of a userprofile after the user was created, in leads/models.py
+
+    ```python
+    def post_user_created_signal(sender, instance, created, **kwargs):
+        if created:
+            UserProfile.objects.create(user=instance)
+    ```
+
+### 35 Create the Agents app
+- Create the new app in crm folder: <br>
+    `python manage.py starapp agents`
+- Add the agent app in crm/settings.py
+    ```python
+    INSTALLED_APPS = [
+        :
+        'leads',
+        'agents'
+    ]
+    ```
+- Create crm/agents/urls.py and edit
+    ```python
+    from django.urls import path
+    from .views import AgentListView, AgentCreateView
+
+    app_name = 'agents'
+    urlpatterns = [
+        path('', AgenListView.as_view(), name='agent-list'),
+        path('create/', AgentCreateView.as_view(), name='agent-create')
+    ]
+    ```
+- Add the app in crm/urls.py
+    ```python
+    :
+    urlpatterns = [
+        :
+        path('agents/', include('agents.urls', namespace='agents')),
+        :
+    ]
+    ```
+- Edit the agents/views.py file
+    ```python
+    from django.views import generic
+    from django.contrib.auth.mixins import LoginRequiredMixin
+    from leads.models import Agent
+    from django.shortcuts import reverse
+    from .forms import AgentModelForm
+
+    class AgentListView(LoginRequiredMixin, generic.ListView):
+        template_name = "agents/agent_list.html"
+        def get_queryset(self):
+            return Agent.objects.all()
+    
+    class AgentCreateView(LoginRequiredMixin, generic.CreateView):
+        template_name = "agents/agent_create.html"
+        form_class = AgentModelForm
+
+        def get_success_url(self):
+            return reverse("agents:agent-list")
+
+        def form_valid(self, form):
+            agent = form.save(commit=False)
+            agent.organization = self.request.user.userprofile  #agents have a organiz property, Check leads/models.py
+            agent.save() #agent is save in the organization
+            return super(AgentcreateView, self).form_valid(form)
+    ```
+
+- Create the templates folder inside the agents app (crm/agents/templates) and then the folder crm/agents/templates/agents.<br>
+Inside agents/templates/agents/ create the agent_list.html file and edit it <br>
+    ```html
+    {% extends "base.html" %}
+        {% block content %}
+            <section class="text-gray-600 body-font">
+            <div class="container px-5 py-24 mx-auto flex flex-wrap">
+                <div class="w-full mb-6 py-6 flex justify-between items-center border-b border-gray-200">
+                    <div>
+                    <h1 class="text-4xl text-gray-800">Agents</h1>
+                </div>
+                <div>
+                    <a class="text-gray-500 hover:text-blue-500" href="{% url 'agents:agent-create' %}">Create a new agent</a>
+                </div>
+                </div>
+                <div class="flex flex-wrap -m-4">
+                {% for agent in object_list %}
+                <div class="p-4 lg:w-1/2 md:w-full">
+                <div class="flex border-2 rounded-lg border-gray-200 border-opacity-50 p-8 sm:flex-row flex-col">
+                <div class="w-16 h-16 sm:mr-8 sm:mb-0 mb-4 inline-flex items-center justify-center rounded-full bg-indigo-100 text-indigo-500 flex-shrink-0">
+                    <svg fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="w-8 h-8" viewBox="0 0 24 24">
+                    <path d="M22 12h-4l-3 9L9 3l-3 9H2"></path>
+                    </svg>
+                </div>
+                <div class="flex-grow">
+                    <h2 class="text-gray-900 text-lg title-font font-medium mb-3">{{ agent.user.username }}</h2>
+                    <p class="leading-relaxed text-base">Blue bottle crucifix vinyl post-ironic four dollar toast 
+                    vegan taxidermy. Gastropub indxgo juice poutine.</p>
+                    <a href="{% url 'agents:agent-detail' agent.pk %}" class="mt-3 text-indigo-500 inline-flex items-center">View agent
+                    <svg fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" 
+                    stroke-width="2" class="w-4 h-4 ml-2" viewBox="0 0 24 24">
+                    <path d="M5 12h14M12 5l7 7-7 7"></path>
+                    </svg>
+                    </a>
+                </div>
+                </div>
+                </div>
+                {% endfor %}
+                </div>
+            </div>
+            </section>
+    {% endblock content %}
+    ```
+
+- Create crm/agents/form.py
+    ```python
+    from django import forms
+    from leads.models import Agent
+    class AgentModelForm(forms.ModelForm):
+            class Meta:
+                    model = Agent
+                    fields = (
+                            'user',
+                    )
+    ```
+- Create the agents/templates/agents/agent_create.html
+    ```html
+    {% extends "base.html" %}
+    {% block content %}
+        <a href="{% url 'agents:agent-list' %}"> Go back to agents</a>
+        <hr />
+        <h1> Create a new agent</h1>
+        <form method="post">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button type="submit" >Submit</button>
+        </form>
+    {% endblock content %}
+    ```
+    Test: Go to `http://127.0.0.1:8000/agents/` and click on Create a new agent
