@@ -456,7 +456,6 @@ Test: `http://127.0.0.1:8000/leads/1/` <br>
 		path('<int:pk>/', lead_detail)
 	]
 	```
-
     Test 20-3: `http://127.0.0.1:8000/leads/1/` <br>
     <p align="center">
     <img src="https://raw.githubusercontent.com/jatolentino/Django-notes/main/sources/img/Step20-test-3.png">
