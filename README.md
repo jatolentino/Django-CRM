@@ -2491,3 +2491,183 @@ Inside agents/templates/agents/ create the agent_list.html file and edit it <br>
                 user.set_password(f"{random.randint(0, 100000)}")  #ADDED, need to reset pass
 				:
     ```
+### 42 Password Reset
+- Edit the templates/registration/login.html/
+    ``html
+    {% exntends 'base.html' %}
+    {% block content %}
+    <form method = "post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type = 'submit'>Login</button>
+        <hr />
+        <a href='{% url 'reset-password' %}'>Forgot password?</a>
+    </form>
+    {% endblock content %}
+    ```
+- Create in templates/registration/ the html files: password_reset_done.html, password_reset_email.html, password_reset_forms.html, password_reset_confirm.html
+- Edit and add the class in crm/urls.py
+    ```python
+    from django.contrib.auth.views import (
+    LoginView,
+    LogoutView,
+    PasswordResetView,
+    PasswordResetDoneView,
+    PasswordResetConfirmView,
+    PasswordResetCompleteView,
+    :
+        path('reset-password/', PasswordResetView.as_view(), name='reset-password'),
+        path('reset-reset-done/', PasswordResetDoneView.as_view(), name='password_reset_done'),
+        path('reset-reset-confirm/<uid64>/<token>/', PasswordResetConfirmView.as_view(), name='password_reset_confirm'),
+        path('reset-reset-complete/', PasswordResetDoneView.as_view(), name='password_reset_complete'),
+    ```
+- Edit the password_reset_form.html in crm/templates/registration/
+    ``html
+    {% exntends 'base.html' %}
+    {% block content %}
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type = 'submit'>Reset password</button>
+        <hr />
+        <a href='{% url 'login' %}'>Already have an account?</a>
+    </form>
+    {% endblock content %}
+    ```
+- Edit the password_reset_confirm.html in crm/templates/registration/
+    ```html
+    {% exntends 'base.html' %}
+    {% block content %}
+    <h1> Enter your new password</h1>
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type = 'submit'>Confirm new password</button>
+    </form>
+    {% endblock content %}
+    ```
+- Edit the password_reset_done.html in crm/templates/registration/
+    ```html
+    {% extends "base.html" %}
+        <h1>We have sent you an email to confirm your password reset</h1>
+    {% endblock content %}
+    ```
+- Edit the password_reset_email.html in crm/templates/registration/
+    ```html
+    You've requested to reset your password
+    Please go to the following URL to enter your new password:
+    {{ protocol }}://{{ domain }}/password-reset-confirm/{{ uid }}/{{ token }}/
+    ```
+- Edit the password_reset_complete.html in crm/templates/registration/
+    ```html
+    {% exntends 'base.html' %}
+    {% block content %}
+    
+        <h1>Password reset complete</h1>
+        <p>You have successfully reset your password. 
+            Click <a href="{% url 'login' %}"> here to login</a>
+        </p>
+
+    {% endblock contente %}
+    ```
+    Test: Grab a user and its email already created, go to `http://127.0.0.1:8000/login`, choose Forgot password, and then fill the email.<br>
+    Check the link of the email sent in the terminal, copy the link into the browser and reset the email. Login with the new user's password.
+
+### 43 List leads that have not been assigned yet (only for the organizers)
+- Edit the crm/leads/views.py
+    ```python
+    class LeadListView(ListView):
+        template_name = "leads/lead_list.html"
+        context_object_name = "leads"
+        def get_queryset(self):
+            user = self.reques.user
+            # initial queryset of leads for the entrie organization
+            if user.is_organizer:
+                queryset = Lead.objects.filter(organization=user.userprofile, age__isnull=False)
+            else:
+                queryset = Lead.objects.filter(organization=usert.agent.organization, age__isnull=False)
+                #filter for the agent that is logged in
+                queryset = queryset.filet(agent__user=user)
+            return queryset
+
+        def get_context_data(self, **kwargs):
+            context = super(LeadListView, self).get_context_data(**kwargs)
+            user = self.request.user
+            if user.is_organizer:
+                queryset = Lead.objects.filter(organization=user.userprofile, agent__isnull=True)
+                context.update({
+                    "unassigned_lead": queryset
+                )}
+            return context
+    ```
+- Update the lead_list.html of leads/templates/leads/
+	```html
+	{% extends "base.html" %}
+	{% block content %}
+	<section class="text-gray-600 body-font">
+		<div class="container px-5 py-24 mx-auto flex flex-wrap">
+		    <div class="w-full mb-6 py-6 flex justify-between items-center border-b border-gray-200">
+		    	<div>
+				    <h1 class="text-4xl text-gray-800">Lead</h1>
+			    </div>
+                {% if request.user.is_organizer %}
+                <div>
+                    <a class="text-gray-500 hover:text-blue-500" href="{% url 'leads:lead-create' %}">Create a new lead</a>
+                </div>
+                {% endif %}
+		    </div>
+		    <div class="flex flex-wrap -m-4">
+                {% for lead in leads %}
+                <div class="p-4 lg:w-1/2 md:w-full">
+                    <div class="flex border-2 rounded-lg border-gray-200 border-opacity-50 p-8 sm:flex-row flex-col">
+                        <div class="w-16 h-16 sm:mr-8 sm:mb-0 mb-4 inline-flex items-center justify-center rounded-full bg-indigo-100 text-indigo-500 flex-shrink-0">
+                            <svg fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="w-8 h-8" viewBox="0 0 24 24">
+                                <path d="M22 12h-4l-3 9L9 3l-3 9H2"></path>
+                            </svg>
+                        </div>
+                        <div class="flex-grow">
+                            <h2 class="text-gray-900 text-lg title-font font-medium mb-3">{{ lead.first_name }} {{ lead.last_name }}</h2>
+                            <p class="leading-relaxed text-base">Blue bottle crucifix vinyl post-ironic four dollar toast vegan taxidermy. Gastropub indxgo juice poutine.</p>
+                            <a href="{% url 'leads:lead-detail' lead.pk %}" class="mt-3 text-indigo-500 inline-flex items-center">
+                                View this lead
+                                <svg fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="w-4 h-4 ml-2" viewBox="0 0 24 24">
+                                    <path d="M5 12h14M12 5l7 7-7 7"></path>
+                                </svg>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+		    </div>
+            {% if unassigned_leads.exists %}
+                <div class="mt-5 flex flex-wrap -m-4">
+                    <div class="p-4 w-full">
+                        <h1 class="text-4xl text-gray-800">Unassigned leads</h1>
+                    </div>
+                    {% for lead in unassigned_leads %}
+                    <div class="p-4 w-full lg:w-1/2 md:w-full">
+                        <div class="flex border-2 rounded-lg border-gray-200 border-opacity-50 p-8 sm:flex-row flex-col">
+                            <div class="w-16 h-16 sm:mr-8 sm:mb-0 mb-4 inline-flex items-center justify-center rounded-full bg-indigo-100 text-indigo-500 flex-shrink-0">
+                                <svg fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="w-8 h-8" viewBox="0 0 24 24">
+                                    <path d="M22 12h-4l-3 9L9 3l-3 9H2"></path>
+                                </svg>
+                            </div>
+                            <div class="flex-grow">
+                                <h2 class="text-gray-900 text-lg title-font font-medium mb-3">{{ lead.first_name }} {{ lead.last_name }}</h2>
+                                <p class="leading-relaxed text-base">Blue bottle crucifix vinyl post-ironic four dollar toast vegan taxidermy. Gastropub indxgo juice poutine.</p>
+                                <a href="{% url 'leads:lead-detail' lead.pk %}" class="mt-3 text-indigo-500 inline-flex items-center">
+                                    View this lead
+                                    <svg fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="w-4 h-4 ml-2" viewBox="0 0 24 24">
+                                        <path d="M5 12h14M12 5l7 7-7 7"></path>
+                                    </svg>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                {% endif %}
+            </div>
+		</div>
+	</section>
+	{% endblock content %}
+	```
