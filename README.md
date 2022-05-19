@@ -1431,3 +1431,253 @@ Edit the crm/templates/scripts.html
         #path('create/', lead_create, name='lead-create')
     ]
     ```
+### 29 Set the static files
+- Create the folder crm/static and add the files main.js (console.log("hi") & style.css
+- Configure the crm/settings.py
+    ```python
+    :
+    STATIC_URL = '/static/'
+    STATICFILES_DIRS = [
+        BASE_DIR/ "static"
+    ]
+    STATIC_ROOT = "static_root"
+    ```
+- Edit crm/urls.py and import the settings and static
+    ```python
+    from django.conf import settings
+    from django.conf.urls.static import static
+    :
+    urlpatterns = [
+    path('admin/', admin.site.urls),
+    path('', LandingPageView.as_view(), name='landing_page'),
+    path('leads/', include('leads.urls', namespace="leads"))
+    #static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+    ]
+
+    # access to static only if it's on debug mode
+    if settings.DEBUG:
+        urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+    ```
+    Test: Go to `http:127.0.0.1:8000/static/main.js`<br>
+    `console.log("hi")`
+- Create folders: css, images, js in crm/static and move the files style.css and main.js to those folders
+- Add link to style.css in the templates/base.html
+    ```html
+    {% load static %}
+    
+    <!DOCTYPE html>
+    :
+        <link href = "{% static 'css/styles.css' %}" rel="stylesheet" />
+    ```
+- Call static/js/main.js from the templates/scripts.html file<br>
+  Edit(delete content) o templates/scripts.html
+  ```html
+    {% load static %}
+    <script src="{% static 'js/main.js' %}"></script>
+  ```
+  Test: Go to `http://127.0.0.1:8000` F12 inspect and see the message in the terminal
+### 30 Send emails
+- Edit the leads/views.py (more info check env/lib/python3.7/site-packages/django/core/__init__.py send_mail section)
+    ```python
+    from django.core.mail import send_email
+    :
+    class LeadCreateView(CreateView):
+        :
+        def form_valid(sef, form):
+            send_mail(
+                subject="A lead has been created"
+                message="Go to the website to see the new lead"
+                from_email="test@test.com",
+                recipient_list=["test2@test.com"]
+            )
+        return super(LeadCreateView, self).form_valid(form)
+    ```
+- Edit the email backnd in crm/settings.py
+    ```python
+    :
+    STATIC ROOT = "static_root'
+    :
+    AUTH_USER_MODEL = 'leads.User'
+    EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
+    ```
+
+### 31 Authentication
+- Create the folder crm/templates/registration and the file login.html & logout.html inside
+- Edit the crm/templates/registration/login.html file
+    ```html
+    {% extends 'base.html' %}
+    {% block content %}
+
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type='submit'>Login</button>
+    </form>
+
+    {% endblok content %}
+    ```
+- Edit the crm/templates/registration/logout.html file
+    ```html
+    {% extends 'base.html' %}
+    {% block content %}
+
+    <h2> Thanks for visiting, you have been logged out </h2>
+
+    {% endblok content %}
+    ```
+
+- Import LoginView & LogoutView in crm/urls.py, more info in `env/lib/python3.7/site-packages/django/contrib/auth/views.py`
+    ```python
+    :
+    from django.contrib.auth.views import LoginView, LogoutView
+    :
+    urlpatterns = [
+        path('admin/, admin.site.urls),
+        path('', LandingPageView.as_view(), name='landing-page'),
+        path('leads/', include('leads.urls', name='leads'),
+        path('login/', LoginView.as_view(), name='login'),
+        path('logout/', LogoutView.as_view(), name='logout')
+    ]
+    ```
+- Configure redirect after login, go to crm/settings.py
+    ```python
+    :
+    EMAIL_BACKEND = ...
+    LOGIN_REDIRECT_URL = "/leads"
+    ```
+    Test: Go to `http://127.0.0.1:8000/login/` and test with the superuser or a random user to see the success/error of login
+
+- Configure the navbar after login, in templates/navbar.html
+    ```html
+	<header class="text-gray-600 body-font">
+	  <div class="container mx-auto flex flex-wrap p-5 flex-col md:flex-row items-center">
+	    <a class="flex title-font font-medium items-center text-gray-900 mb-4 md:mb-0">
+	      <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="w-10 h-10 text-white p-2 bg-indigo-500 rounded-full" viewBox="0 0 24 24">
+		<path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"></path>
+	      </svg>
+	      <span class="ml-3 text-xl"> CRM </span>
+	    </a>
+	    <nav class="md:ml-auto flex flex-wrap items-center text-base justify-center">
+	      <a href="{% url 'leads:lead-list' %}" class="mr-5 hover:text-gray-900">Leads</a>
+          {% if not request.user.is_authenticated %}
+	        <a class="mr-5 hover:text-gray-900">Sign up</a>
+          {% endif %}
+	    </nav>
+        {% if request.user.is_aunthenticated %}
+            Logged in as: {{ request.user.username }}
+            <a href="#" class="ml-3 inline-flex items-center bg-gray-100 border-0 py-1 px-3 focus:outline-none hover:bg-gray-200 rounded text-base mt-4 md:mt-0">Logout
+            <svg fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="w-4 h-4 ml-1" viewBox="0 0 24 24">
+            <path d="M5 12h14M12 5l7 7-7 7"></path>
+            </svg>
+            </a>
+        {% else %}
+            <a href="{% url 'leads:lead-list' %}" class="inline-flex items-center bg-gray-100 border-0 py-1 px-3 focus:outline-none hover:bg-gray-200 rounded text-base mt-4 md:mt-0">Login
+            <svg fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="w-4 h-4 ml-1" viewBox="0 0 24 24">
+            <path d="M5 12h14M12 5l7 7-7 7"></path>
+            </svg>
+            </a>
+        {% endif %}
+	  </div>
+	</header>
+	```
+- Create the signup view in leads/views.py
+    ```python
+    :
+    from django.contrib.auth.forms import UserCreationForm
+    :
+
+    class SignupView(CreateView):
+        template_name = "registration/signup.html"
+        form_calss = UserCreationForm
+
+        def get_success_url(self):
+            return reverse("login")
+    ```
+
+- Create the templates/registration/signup.html file
+    ```html
+    {% extends 'base.html' %}
+    {% block content %}
+
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type='submit'>Signup</button>
+    </form>
+
+    {% endblok content %}
+    ```
+- Edit the crm/urls.py
+    ```python
+    :
+    from leads.views import LandingPageView, SignupView
+    :
+    urlpatterns = [
+        path('admin/, admin.site.urls),
+        path('', LandingPageView.as_view(), name='landing-page'),
+        path('leads/', include('leads.urls', name='leads'),
+        path('signup/', SignupView.as_view(), name='signup'),
+        path('login/', LoginView.as_view(), name='login'),
+        path('logout/', LogoutView.as_view(), name='logout')
+    ]
+    ```
+
+- Configure the navbar with the signup templates/navbar.html
+    ```html
+	<header class="text-gray-600 body-font">
+	  <div class="container mx-auto flex flex-wrap p-5 flex-col md:flex-row items-center">
+	    <a class="flex title-font font-medium items-center text-gray-900 mb-4 md:mb-0">
+	      <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="w-10 h-10 text-white p-2 bg-indigo-500 rounded-full" viewBox="0 0 24 24">
+		<path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"></path>
+	      </svg>
+	      <span class="ml-3 text-xl"> CRM </span>
+	    </a>
+	    <nav class="md:ml-auto flex flex-wrap items-center text-base justify-center">
+	      <a href="{% url 'leads:lead-list' %}" class="mr-5 hover:text-gray-900">Leads</a>
+          {% if not request.user.is_authenticated %}
+	        <a href="{% url 'signup' %}" class="mr-5 hover:text-gray-900">Sign up</a>
+          {% endif %}
+	    </nav>
+        {% if request.user.is_aunthenticated %}
+            Logged in as: {{ request.user.username }}
+            <a href="{% url 'logout' %}" class="ml-3 inline-flex items-center bg-gray-100 border-0 py-1 px-3 focus:outline-none hover:bg-gray-200 rounded text-base mt-4 md:mt-0">Logout
+            <svg fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="w-4 h-4 ml-1" viewBox="0 0 24 24">
+            <path d="M5 12h14M12 5l7 7-7 7"></path>
+            </svg>
+            </a>
+        {% else %}
+            <a href="{% url 'login' %}" class="inline-flex items-center bg-gray-100 border-0 py-1 px-3 focus:outline-none hover:bg-gray-200 rounded text-base mt-4 md:mt-0">Login
+            <svg fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="w-4 h-4 ml-1" viewBox="0 0 24 24">
+            <path d="M5 12h14M12 5l7 7-7 7"></path>
+            </svg>
+            </a>
+        {% endif %}
+	  </div>
+	</header>
+	```
+
+- Create the own userform: CustomUserCreationForm in leads/forms.py
+    ```python
+    from django import forms
+    from django.contrib.auth import get_use_model
+    from django.contrib.auth.forms import UserCreationForm, UsernameField
+    from .models import Lead
+    
+    class CustomUserCreationForm(UserCreationForm):
+        class Meta:
+            model = User
+            fields = ("username",)
+            field_classes = {'username: UsernameField'}
+    ```
+- Edit the leads/views.py
+    ```python
+    #from django.contrib.auth.forms import UserCreationForm
+    from .forms import LeadForm, LeadModelForm, CustomUserCreationForm
+    
+    class SignupView(CreateView):
+        template_name = "registration/signup.html"
+        form_calss = CustomUserCreationForm
+
+        def get_success_url(self):
+            return reverse("login")
+    ```
