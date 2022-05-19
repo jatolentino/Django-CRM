@@ -2671,3 +2671,243 @@ Inside agents/templates/agents/ create the agent_list.html file and edit it <br>
 	</section>
 	{% endblock content %}
 	```
+### 44 Assigns agents to unassigned leads
+- In templates/leads/views.py
+    ```python
+    from .forms import LeadForm, LeadModelForm, CustomUserCreationForm, AssignAgentForm
+    :
+    class AssignAgentView(OrganizerAndLoginRequiredMixin, FormView): 
+        template_name = "leads/assign_agent.html"
+        form_class = AssignAgentForm
+
+        def get_form_kwargs(self, *kwargs):
+            kwargs = super(AssignAgentView, self).get_form_kwargs(**kwargs)
+            kwargs.update({
+                "request": self.request
+            }
+            return kwargs
+
+        def get_success_url(self):
+            return reverse("leads:lead-list")
+
+        def form_valid(self, form):
+            #print(form.cleaned_data["agent"])
+            agent = form.cleaned_data["agent"]
+            lead = Lead.objects.get(id=self.kwargs["pk"])
+            lead.agent = agent
+            lead.save()
+            return super(AssignAgentView, self).form_valid(form)
+    ```
+
+- Create the file temlates/leads/assign_agent.html
+    ```html
+    {% extends "base.html" %}
+    {% block content %}
+        <a href="{% url 'leads:lead-list' %}"> Go back to leads</a>
+        <hr />
+        <h1> Assign an agent to this lead</h1>
+        <form method="post"> <!-- form method="post" action="/leads/another-url/"> -->
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button type="Submit" >Submit</button>
+        </form>
+    {% endblock content %}
+    ```
+- In leads/forms.py create the form to assign an agent
+    ```python
+    from .models import Lead Agent
+    class AssignAgentForm(forms.Form):
+        agent = form.ModelChoiceField(queryset=Agent.objects.none())
+        
+        def __init__(self, *arfs, **kwarfs):
+            request = kwargs.pop("request")
+            agents = Agent.objects.filter(organisation=request.user.userprofile)
+            super(AssignAgentForm, self).__init__(*args, **kwargs)
+            self.fields["agent"].queryset = agents
+- Edit the crm/leads/urls.py
+    ```pthon
+    from .views import ( ... AssignAgentView)
+
+    urlpatterns = [
+        path('<int:pk>/assign-agent/', AssignAgentView.as_view(), name='lead-assign'),
+    ]
+    ```
+- Update the leads/templates/lead_list.html
+    ```html
+	<div class="flex-grow">
+		<h2 class="text-gray-900 text-lg title-font font-medium mb-3">{{ lead.first_name }} {{ lead.last_name }}</h2>
+		<p class="leading-relaxed text-base">Blue bottle crucifix vinyl post-ironic four dollar toast vegan taxidermy. Gastropub indxgo juice poutine.</p>
+		<a href="{% url 'leads:assign-agent' lead.pk %}" class="mt-3 text-indigo-500 inline-flex items-center"> <!--this line-->
+			Assign an agent
+			<svg fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="w-4 h-4 ml-2" viewBox="0 0 24 24">
+				<path d="M5 12h14M12 5l7 7-7 7"></path>
+			</svg>
+		</a>
+	</div>
+    ```
+    Test: Assign a lead to an agent
+
+### 45 Adding a feature to categorize via a model
+- In crm/leads/models.py
+    ```python
+    class Lead(models.Model):
+        first_name = models.CharField(max_length=20)
+        last_name = models.CharField(max_length=20)
+        age = models.IntegerFiled(default=0)
+        organization = models.ForeignKey(UserProfile, on_delete=models.CASCADE)
+        agent = models.ForeignKey("Agent", null=True, blank=True, on_delete=models.SET_NULL)
+        category = models.ForeignKey("Category", null=True, blank=True, on_delete=models.SET_NULL)
+
+        def __str__(self):
+            return f"{self.first_name} {self.last_name}"
+
+    class Category(models.Model):
+        name = models.CharField(max_length=30) #New, Contacted, Converted, Unconverted
+        
+        def __str__(self):
+            return self.name
+    ```
+- Modify the crm/leads/admin.py
+    ```python
+    from django.contrib import admin
+    from .models import User, Lead, Agent. UserProfile, Category
+
+    admin.stie.register(Category)
+    admin.site.register(User)
+    admin.site.register(UserProfile)
+    admin.site.register(Lead)
+    admin.site.register(Agent)
+    ```
+    In the terminal: 
+    ```bash
+    python manage.py makemigration
+    python manage.py migrate
+    python manage.py runserver
+    ```
+    Test: Create the categories {Contacted, Converted, Unconverted} from the admin site in `http://127.0.0.1:8000/admin/leads/category/add`
+
+### 46 View the list of categories
+- Edit crm/leads/views.py
+    ```python
+    :
+    class AssignAgentView(LoginRequiredMixin, ListView):
+        template_name = "leads/category_list.html"
+    ```
+- Edit crm/leads/models.py and migrate with null the default properties
+    ```python
+    :
+    class Category(models.Model):
+        name = models.CharField(max_length=30) #New, Contacted, Converted, Unconverted
+        organization = models.ForeignKey(Userprofile, null=True, blank=True, on_delete=models.CASCADE) #adding null and blank so that when the migration is made, the parameters don't require default values
+        def __str__(self):
+            return self.name
+    ```
+    In the terminal run: `python manage.py makemigrations` and `python manage.py migrate`
+- Modify again crm/leads/models.py and migrate without null and blank
+    ```python
+    :
+    class Category(models.Model):
+        name = models.CharField(max_length=30) #New, Contacted, Converted, Unconverted
+        organization = models.ForeignKey(Userprofile, on_delete=models.CASCADE) #adding null and blank so that when the migration is made, the parameters don't require default values
+        def __str__(self):
+            return self.name
+    ```
+    In the terminal run: `python manage.py makemigrations` and choose the option `2) Ignore for now...`, then apply `python manage.py migrate` and despite the error run the server `python manage.py runserver` which yields an uapplied migration error. Go to `http://127.0.0.1:8000/admin/leads/category/` and configure the organization of the categories. Finally stop the server and migrate without problems `python manage.py migrate` and run the server
+
+- In crm/leads/views.py
+    ```python
+    from .models import Lead, Agent, Category
+    :
+    class CategoryListView(LoginRequiredMixin, ListView):
+        template_name = "leads/category_list.html"
+        def get_queryset(self):
+            user = self.request.user
+            if user.is_organizer:
+                queryset = Category.objects.filter(organization=user.userprofile)
+            else:
+                queryset = Category.objects.filter(organization=user.organization)
+            return queryset
+    ```
+- Create crm/leads/templates/leads/category_list.html and paste the grabbed code from Tailblock (PRICING last option) at `https://mertjf.github.io/tailblocks/` inside the block content
+
+    ```html
+    {% extends "base.html" %}
+
+    {% block content %}
+    <section class="text-gray-600 body-font">
+    <div class="container px-5 py-24 mx-auto">
+        <div class="flex flex-col text-center w-full mb-20">
+        <h1 class="sm:text-4xl text-3xl font-medium title-font mb-2 text-gray-900">Categories</h1>
+        <p class="lg:w-2/3 mx-auto leading-relaxed text-base">These categories segment the leads</p>
+        </div>
+        <div class="lg:w-2/3 w-full mx-auto overflow-auto">
+        <table class="table-auto w-full text-left whitespace-no-wrap">
+            <thead>
+            <tr>
+                <th class="px-4 py-3 title-font tracking-wider font-medium text-gray-900 text-sm bg-gray-100 rounded-tl rounded-bl">Name</th>
+                <th class="px-4 py-3 title-font tracking-wider font-medium text-gray-900 text-sm bg-gray-100">Lead Count</th>
+            </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td class="px-4 py-3">Unassigned</td>
+                    <td class="px-4 py-3">{{ unassigned_lead_count }}</td>
+                </tr>
+                {% for category in category_list %}
+                    <tr>
+                        <td class="px-4 py-3">{{ category.name }}</td>
+                        <td class="px-4 py-3">TODO count</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        </div>
+        <div class="flex pl-4 mt-4 lg:w-2/3 w-full mx-auto">
+        <a class="text-indigo-500 inline-flex items-center md:mb-2 lg:mb-0">Learn More
+            <svg fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="w-4 h-4 ml-2" viewBox="0 0 24 24">
+            <path d="M5 12h14M12 5l7 7-7 7"></path>
+            </svg>
+        </a>
+        <button class="flex ml-auto text-white bg-indigo-500 border-0 py-2 px-6 focus:outline-none hover:bg-indigo-600 rounded">Button</button>
+        </div>
+    </div>
+    </section>
+    {% endblock content %}
+    ```
+- Edit crm/leads/views.py
+    ```python
+    class CategoryListView(LoginRequiredMixin, ListView):
+        template_name = "leads/category_list.html"
+        context_object_name = "category_list"
+        def get_context_data(self, **kwargs):
+            context = super(CategoryListView, self).get_context_data(**kwargs)
+            user = self.request.user
+
+            if user.is_organizer:
+                queryset = Lead.objects.filter(organization=user.userprofile)
+            else:
+                queryset = Lead.objects.filter(organization=user.agent.organization)
+
+            context.update({
+                "unassigned_lead_count": queryset.filter(category__isnull=True).count()})
+            return context
+
+        def get_queryset(self):
+            user = self.request.user
+            if user.is_organizer:
+                queryset = Category.objects.filter(organization=user.userprofile)
+            else:
+                queryset = Category.objects.filter(organization=user.organization)
+            return queryset
+    ```
+- Edit crm/leads/urls.py
+    ```python
+    from views.py import( LeadsListViews, ..., AssignAgentView, CategoryListView)
+
+    urlpattern = [
+        :
+        path('categories/', CateogryListView.as_view(), name='category-list'),
+    ]
+    ```
+    Test: Go to `http://127.0.0.1:8000/leads/categories`
+
