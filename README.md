@@ -2911,3 +2911,530 @@ Inside agents/templates/agents/ create the agent_list.html file and edit it <br>
     ```
     Test: Go to `http://127.0.0.1:8000/leads/categories`
 
+### 47 Configure the Category Detail View
+- Edit crm/leads/views.py
+    ```python
+    :
+    class CategoryDetailView(LoginRequiredMixin, DetailView):
+        template_name = "leads/category_detail.html"
+        context_object_name = "category"
+
+        def get_context_data(self, **kwargs):
+            context = super(CategoryDetailView, self).get_context_data(**kwargs)
+            leads self.get_object().leads.all()
+
+            context.update({
+                "leads": leads
+            })
+            return context
+
+        def get_queryset(self):
+            user = self.request.user
+            if user.is_organizer:
+                queryset = Category.objects.filter(organization=user.userprofile)
+            else:
+                queryset = Category.objects.filter(organization=user.organization)
+            return queryset
+    ```
+- Before the previous step, add a tag name (`related_name`) to the Category in the Lead model of crm/leads/models.py
+
+    ```python
+    :
+    class Lead(models.Model):
+        first_name = models.CharField(max_length=20)
+        last_name = models.CharField(max_length=20)
+        age = models.IntegerFiled(default=0)
+        organization = models.ForeignKey(UserProfile, on_delete=models.CASCADE)
+        agent = models.ForeignKey("Agent", null=True, blank=True, on_delete=models.SET_NULL)
+        category = models.ForeignKey("Category", related_name = "leads", null=True, blank=True, on_delete=models.SET_NULL)
+        :
+    ```
+- Create crm/leads/templates/leads/category_detail.html
+    ```html
+    {% extends "base.html" %}
+
+    {% block content %}
+    <section class="text-gray-600 body-font">
+    <div class="container px-5 py-24 mx-auto">
+        <div class="flex flex-col text-center w-full mb-20">
+        <h1 class="sm:text-4xl text-3xl font-medium title-font mb-2 text-gray-900">{{ category.name }}</h1>
+        <p class="lg:w-2/3 mx-auto leading-relaxed text-base">These are the leads under this category</p>
+        </div>
+        <div class="lg:w-2/3 w-full mx-auto overflow-auto">
+        <table class="table-auto w-full text-left whitespace-no-wrap">
+            <thead>
+            <tr>
+                <th class="px-4 py-3 title-font tracking-wider font-medium text-gray-900 text-sm bg-gray-100 rounded-tl rounded-bl">First Name</th>
+                <th class="px-4 py-3 title-font tracking-wider font-medium text-gray-900 text-sm bg-gray-100">Last Name</th>
+            </tr>
+            </thead>
+            <tbody>
+                {% for lead in leads %}
+                    <tr>
+                        <td class="px-4 py-3">{{ lead.first_name }}</td>
+                        <td class="px-4 py-3">{{ lead.last_name }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        </div>
+        <div class="flex pl-4 mt-4 lg:w-2/3 w-full mx-auto">
+        <a class="text-indigo-500 inline-flex items-center md:mb-2 lg:mb-0">Learn More
+            <svg fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="w-4 h-4 ml-2" viewBox="0 0 24 24">
+            <path d="M5 12h14M12 5l7 7-7 7"></path>
+            </svg>
+        </a>
+        <button class="flex ml-auto text-white bg-indigo-500 border-0 py-2 px-6 focus:outline-none hover:bg-indigo-600 rounded">Button</button>
+        </div>
+    </div>
+    </section>
+    {% endblock content %}
+    ```
+    Run in the terminal:
+    ```bash
+    python manage.py makemigrations
+    python manage.py migrate
+    python manage.py runserverv
+    ```
+- Update the category_list
+    ```python
+    from django.urls import path
+    from .views import (LeadListView, ..., CategoryListView, CategoryDetailView)
+
+    urlpatterns = [
+        :
+        path('categories/<int:pk>/', CategoryDetailViews.as_view(), name='category-detail'),
+    ]
+    path
+    ```
+- Update the crm/leads/templates/leads/category_list.html
+    ```html
+    {% for category in category_list %}
+    <tr>
+        <td class="px-4 py-3">
+            <a href="{% url 'leads:category-detail' category.pk %}"> {{ category.name }}</a>
+        </td>
+        <td class="px-4 py-3">TODO count</td>
+    </tr>
+    {% endfor %}
+    ```
+- Configure crm/leads/lead_list.html (line 8)
+    ```html
+    <div>
+        <h1 class="text-4xl text-gray-800">Leads</h1>
+        <a class="text-gray-500 hover:text-blue-500" href="{% url 'leads:category-list' %}">
+            Vuew categories
+        </a>
+    </div>
+    ```
+    Test: Go to `http://`127.0.0.1:8000/admin/leads/lead`, choose a lead a configure his category (i.e. contacted)<br>
+    Then go to `http://`127.0.0.1:8000/leads/`, click on `View categories` and view the `contacted` in the Name column and verify that the user is listed there
+
+- Simplify the selection of leads in the category, in crm/leads/templates/leads/category_detail.html (line 28)
+    ```html
+    <tbody>
+        {% for lead in category.leads.all %} <!-- {% for lead in leads %} -->
+            <tr>
+                <td class="px-4 py-3">{{ lead.first_name }}</td>
+                <td class="px-4 py-3">{{ lead.last_name }}</td>
+            </tr>
+        {% endfor %}
+    </tbody>
+    ```
+    And comment the following section of crm/leads.views.py
+    ```python
+    :
+    class CategoryDetailView(LoginRequiredMixin, DetailView):
+        template_name = "leads/category_detail.html"
+        context_object_name = "category"
+
+        #def get_context_data(self, **kwargs):
+        #    context = super(CategoryDetailView, self).get_context_data(**kwargs)
+        #    leads self.get_object().leads.all()
+        #
+        #    context.update({
+        #        "leads": leads
+        #    })
+        #    return context
+    ```
+- Update the category of a lead, in crm/leads/category_datail.html
+    ```html
+    :
+    <tbody>
+        {% for lead in category.leads.all %} <!-- {% for lead in leads %} -->
+            <tr>
+                <td class="px-4 py-3">
+                    <a class="hover:text-blue-500" href="{% url 'leads:lead-detail' lead.p %}"> {{ lead.first_name }}</td>
+                <td class="px-4 py-3">{{ lead.last_name }}</td>
+            </tr>
+        {% endfor %}
+    </tbody>
+    ```
+- Update crm/leads/lead_detail.html line 15
+    ```html
+    <a href="#" class="flex-grow border-b-2 border-gray-300 py-2 text-lg px-1">
+        Category
+    </a>
+    ```
+- Add the model leadcategoryupdateview in vrm/leads/views.py
+    ```python
+    from .forms import LeadForm, ..., AssignAgentForm, LeadCategoryUpdateForm
+    class LeadCategoryUpdateView(LoginRequiredMixin, UpdateView):
+            template_name = "leads/lead_category_update.html"
+            form_class = LeadCategoryUpdateForm
+
+            def get_queryset(self):
+                user = self.request.user
+                if user.is_organizer:
+                    queryset - Lead.objects.filter(organization=user.userprofile)
+                else:
+                    queryset = Lead.objects.filter(organization=user.agent.organization)
+                    queryset = queryset.fileter(agent__user=user)
+                return queryset
+
+            def get_success_url(self):
+                return reverse("leads:lead-list", kwargs={"pk": self.get_object().id})
+    ```
+- Add the class in crm/leads/forms.py
+    ```python
+    class LeadCategoryUpdateForm(forms.MdelForm):
+        class Meta:
+            model = Lead
+            fields = (
+                'category,
+            )
+    ```
+- Update in crm/leads/urls.py
+    ```python
+    from .views import (LeadListView, ...,CategoryDetailView, LeadCategoryUpdateView)
+    ;
+    urlpatterns = [
+        :
+        path('<int:pk>/category/', LeadCategoryUpdateView.as_view(), name='lead-category-update'),
+    ]
+- Update leads/templates/leads/lead_detail.html, line 15
+   ```html
+    <a href="{% url 'leads:lead-category-update' ead.pk %}" class="flex-grow border-b-2 border-gray-300 py-2 text-lg px-1">
+        Category
+    </a>
+    ```
+- Create the template: leads/templates/leads/lead_category_update.html
+	```html
+	{% extends "base.html" %}
+	{% block content %}
+		<section class="text-gray-600 body-font overflow-hidden">
+		  <div class="container px-5 py-24 mx-auto">
+		    <div class="lg:w-4/5 mx-auto flex flex-wrap">
+		      <div class="lg:w-1/2 w-full lg:pr-10 lg:py-6 mb-6 lg:mb-0">
+			<h2 class="text-sm title-font text-gray-500 tracking-widest">LEAD</h2>
+			<h1 class="text-gray-900 text-3xl title-font font-medium mb-4">{{ lead.first_name }} {{ lead.last_name }}</h1>
+			<div class="flex mb-4">
+			  <a href="{% url 'leads:lead-detail' lead.pk %}" class="flex-grow border-b-2 border-gray-300 py-2 text-lg px-1">Overview</a>  
+			  <a href="{% url 'leads:lead-category-update' lead.pk %}" class="flex-grow text-indigo-500 border-b-2 border-indigo-500 py-2 text-lg px-1">Category</a>
+			  <a href="{% url 'leads:lead-update' lead.pk %}" class="flex-grow border-b-2 border-gray-300 py-2 text-lg px-1">Update Details</a>
+			</div>
+			<form method="post">
+			{% csrf_token %}
+			{{ form.as_p }}
+			<button type="submit">Submit</button>
+			</form>
+			<a href="{% url 'leads:lead-delete' lead.pk %}" class="w-1/2 mt-3 flex ml-auto text-white bg-indigo-500 border-0 py-2 px-6 focus:outline-none hover:bg-indigo-600 rounded">Delete</a>
+		      </div>
+		      <img alt="ecommerce" class="lg:w-1/2 w-full lg:h-auto h-64 object-cover object-center rounded" src="https://dummyimage.com/400x400">
+		    </div>
+		  </div>
+		</section>	
+	{% endblock content %}
+	```
+    And edit the crm/leads/templates/leads/lead_update.html, line 15
+    ```html
+	{% extends "base.html" %}
+	{% block content %}
+		<section class="text-gray-600 body-font overflow-hidden">
+		  <div class="container px-5 py-24 mx-auto">
+		    <div class="lg:w-4/5 mx-auto flex flex-wrap">
+		      <div class="lg:w-1/2 w-full lg:pr-10 lg:py-6 mb-6 lg:mb-0">
+			<h2 class="text-sm title-font text-gray-500 tracking-widest">LEAD</h2>
+			<h1 class="text-gray-900 text-3xl title-font font-medium mb-4">{{ lead.first_name }} {{ lead.last_name }}</h1>
+			<div class="flex mb-4">
+			    <a href="{% url 'leads:lead-detail' lead.pk %}" class="flex-grow border-b-2 border-gray-300 py-2 text-lg px-1">Overview</a>
+			    <a href="{% url 'leads:lead-category-update' lead.pk %}" class = "flex-grow border-b-2 border-gray-300 py-2 text-lg px-2">Category</a>
+                <a href="{% url 'leads:lead-update' lead.pk %}" class="flex-grow text-indigo-500 border-b-2 border-indigo-500 py-2 text-lg px-1">Update Details</a>
+			</div>
+			<form method="post">
+			{% csrf_token %}
+			{{ form.as_p }}
+			<button type="submit">Submit</button>
+			</form>
+			<a href="{% url 'leads:lead-delete' lead.pk %}" class="w-1/2 mt-3 flex ml-auto text-white bg-indigo-500 border-0 py-2 px-6 focus:outline-none hover:bg-indigo-600 rounded">Delete</a>
+		      </div>
+		      <img alt="ecommerce" class="lg:w-1/2 w-full lg:h-auto h-64 object-cover object-center rounded" src="https://dummyimage.com/400x400">
+		    </div>
+		  </div>
+		</section>	
+	{% endblock content %}
+    ```
+    Test by going to: `http://127.0.0.1:8000/leads/1/category` and changing the category of the lead
+### 49 Installing crispy
+- In the terminal
+    ```bash
+    pip install django-crispy-forms
+    pip install crispy-tailwind
+    pip freeze > requirements.txt
+    ```
+- Add the app in crm/settings.py
+    ```python
+    INSTALLED_APPS = [
+        :
+        'agents',
+        'crispy_forms',
+        'crispy_tailwind',
+    ]
+    : #in the bottom
+    :
+    CRISPY_ALLOWED_TEMPLATE_PACKS = "tailwind"
+    CRISPY_TEMPLATE_PACK = "tailwind"
+    ```
+- In templates/registration/login.html, add `{% load tailwind_filters %}` and replace {{ form.as_p }} with {{ form|crispy }} <br>
+Also make the same changes in password_reset_{complete,confirm,done,email,form}.html, signup.html files
+    ```html
+    {% extends 'base.html' %}
+    {% load tailwind_filters %}
+    {% block content %}
+    <div class="max-w-lg mx-auto">
+        <div class="py-5 border-t border-gray-200">
+            <a class = "hover:text-blue-500" href="{% url 'signup' %}">Don't have an account?</a>
+        </div>
+        <form method = "post" class="mt-5">
+            {% csrf_form %}
+            {{ form|crispy }}
+            <button tpe='submit' class="w-full text-white bg-blue-500 hover:bg-blue-600 px-3 py-2 rounded-md">Login</button>
+        </form>
+        <div class="py-5 border-t border-gray-200 mt-5"
+            <a class = "hover:text-blue-500" href="{% url 'reset-password' %}">Forgot password?</a>
+        </div>
+    {% enblock content %}
+    </div>
+    ```
+    Test: Go to `http://127.0.0.1:8000/admin/` and see the changes <br>
+
+    In password_reset_confirm.html
+    ```html
+        {% extends 'base.html' %}
+        {% load tailwind_filters %}
+
+        {% block content %}
+        <div class = "max-w-lg mx-auto">
+            <h1 class="text-4xl text-gray-800">Enter your new password</h1>
+
+            <form method="post">
+                {% csrf_token %}
+                {{ form|crispy }}
+                <button type='submit' class="w-full text-white bg-blue-500 hover:bg-blue-600 px-3 py-2 rounded-md">Confirm new password</button>
+            </form>
+        </div>
+        {% endblock content %}
+    ```
+    In password_reset_form.html
+    ```html
+        {% extends 'base.html' %}
+        {% load tailwind_filters %}
+
+        {% block content %}
+        <div class = "max-w-lg mx-auto">
+            <h1 class="text-4xl text-gray-800">Enter your new password</h1>
+
+            <form method="post" class="mt-5">
+                {% csrf_token %}
+                {{ form|crispy }}
+                <button type='submit' class="w-full text-white bg-blue-500 hover:bg-blue-600 px-3 py-2 rounded-md">Reset password</button>
+            </form>
+            <div class = "py-5 border-t border-gray-200 mt-5">
+                <a class="hover:text-blue-500" href="{% url 'login' %}">Already have an account?</a>
+            </div>
+        </div>
+        {% endblock content %}
+    ```
+    In the drm/templates/registration/signup.html
+    ```html
+    {% extends 'base.html' %}
+    {% load tailwind_filters %}
+    {% block content %}
+    <div class="max-w-lg mx-auto">
+        <form method = "post" class="mt-5">
+            {% csrf_form %}
+            {{ form|crispy }}
+            <button tpe='submit' class="w-full text-white bg-blue-500 hover:bg-blue-600 px-3 py-2 rounded-md">Signup</button>
+        </form>
+        <div class="py-5 border-t border-gray-200 mt-5"
+            <a class = "hover:text-blue-500" href="{% url 'login' %}">Forgot password?</a>
+        </div>
+    {% enblock content %}
+    </div>
+    ```
+    Also edit in leads/templates/leads/lead_create.html
+    ```html
+    {% extends "base.html" %}
+    {% load tailwind_filters %}
+    {% block content %}
+    <div class="max-w-lg mx-auto">
+        <a class="hover:text-blue-500" href="{% url 'leads:lead-list' %}">Go back to leads</a>
+        <div class="py-5 border-t border-gray-200">
+            <h1>Create a new lead</h1
+        </div>
+        <form method="post" class="mt-5">
+            {% csrf_token %}
+            {{ form|crispy }}
+            <button type='submit' class="w-full text-white bg-blue-500 hover:bg-blue-600 px-3 py-2 rounded-md">Submit</button>
+        </form>
+    </div>
+    {% endblock content %}
+    ```
+    In crm/templates/leads/lead_update.html
+    ```html
+	{% extends "base.html" %}
+    {% load tailwind_filters %}
+	{% block content %}
+		<section class="text-gray-600 body-font overflow-hidden">
+		  <div class="container px-5 py-24 mx-auto">
+		    <div class="lg:w-4/5 mx-auto flex flex-wrap">
+		      <div class="lg:w-1/2 w-full lg:pr-10 lg:py-6 mb-6 lg:mb-0">
+			<h2 class="text-sm title-font text-gray-500 tracking-widest">LEAD</h2>
+			<h1 class="text-gray-900 text-3xl title-font font-medium mb-4">{{ lead.first_name }} {{ lead.last_name }}</h1>
+			<div class="flex mb-4">
+			    <a href="{% url 'leads:lead-detail' lead.pk %}" class="flex-grow border-b-2 border-gray-300 py-2 text-lg px-1">Overview</a>
+			    <a href="{% url 'leads:lead-category-update' lead.pk %}" class = "flex-grow border-b-2 border-gray-300 py-2 text-lg px-2">Category</a>
+                <a href="{% url 'leads:lead-update' lead.pk %}" class="flex-grow text-indigo-500 border-b-2 border-indigo-500 py-2 text-lg px-1">Update Details</a>
+			</div>
+			<form method="post">
+                {% csrf_token %}
+                {{ form|crispy }}
+                <button class="w-full text-white bg-blue-500 hover:bg-blue-600 px-3 py-2 rounded-md type="submit">Submit</button>
+			</form>
+            <div class="mt-5 py-5 border-t border-gray-200">
+			<a href="{% url 'leads:lead-delete' lead.pk %}" class="w-1/2 mt-3 text-white bg-indigo-500 border-0 py-2 px-6 focus:outline-none hover:bg-indigo-600 rounded">Delete</a>
+            </div>
+		      </div>
+		      <img alt="ecommerce" class="lg:w-1/2 w-full lg:h-auto h-64 object-cover object-center rounded" src="https://dummyimage.com/400x400">
+		    </div>
+		  </div>
+		</section>	
+	{% endblock content %}
+    ```
+- Update the leads/templates/leads/lead_category_update.html
+	```html
+	{% extends "base.html" %}
+	{% block content %}
+		<section class="text-gray-600 body-font overflow-hidden">
+		  <div class="container px-5 py-24 mx-auto">
+		    <div class="lg:w-4/5 mx-auto flex flex-wrap">
+		      <div class="lg:w-1/2 w-full lg:pr-10 lg:py-6 mb-6 lg:mb-0">
+			<h2 class="text-sm title-font text-gray-500 tracking-widest">LEAD</h2>
+			<h1 class="text-gray-900 text-3xl title-font font-medium mb-4">{{ lead.first_name }} {{ lead.last_name }}</h1>
+			<div class="flex mb-4">
+			  <a href="{% url 'leads:lead-detail' lead.pk %}" class="flex-grow border-b-2 border-gray-300 py-2 text-lg px-1">Overview</a>  
+			  <a href="{% url 'leads:lead-category-update' lead.pk %}" class="flex-grow text-indigo-500 border-b-2 border-indigo-500 py-2 text-lg px-1">Category</a>
+			  <a href="{% url 'leads:lead-update' lead.pk %}" class="flex-grow border-b-2 border-gray-300 py-2 text-lg px-1">Update Details</a>
+			</div>
+			<form method="post">
+			{% csrf_token %}
+			{{ form.as_p }}
+			<button type="submit">Submit</button>
+			</form>
+		    </div>
+		    <img alt="ecommerce" class="lg:w-1/2 w-full lg:h-auto h-64 object-cover object-center rounded" src="https://dummyimage.com/400x400">
+		    </div>
+		  </div>
+		</section>	
+	{% endblock content %}
+	```
+- Update agent/templates/agents/agent_create.html
+    ```html
+    {% extends "base.html" %}
+    {% load tailwind_filter %}
+
+    {% block content %}
+    <div class="max-w-lg mx-auto">
+        <div class="py-5 border border-gray-200">
+            <a class="hover:text-blue-500" href="{% url 'agents:agent-list' %}">Go back to agents</a>
+        </div>
+        <h1 class="text-4xl text-gray-800"> Create a new agent</h1>
+        <form method="post">
+            {% csrf_token %}
+            {{ form|crispy }}
+            <button type="submit" class="w-full text-white bg-blue-500 hover:bg:blue-600 px-3 py-2 rounded-md">Submit</button>
+        </form>
+    {% endblock content %}
+    ```
+    Update agents/templates/agents/agent_update.html
+    ```html
+        {% extends "base.html" %}
+        {% load tailwind_filters %}
+        {% block content %}
+
+            <section class="text-gray-600 body-font overflow-hidden">
+            <div class="container px-5 py-24 mx-auto">
+                <div class="lg:w-4/5 mx-auto flex flex-wrap">
+                <div class="lg:w-1/2 w-full lg:pr-10 lg:py-6 mb-6 lg:mb-0">
+                <h2 class="text-sm title-font text-gray-500 tracking-widest">AGENT</h2>
+                <h1 class="text-gray-900 text-3xl title-font font-medium mb-4">{{ agent.user.username }}</h1>
+                <div class="flex mb-4">
+                <a href="{% url 'agents:agent-detail' agent.pk %}" class="flex-grow border-b-2 border-gray-300 py-2 text-lg px-1">Overview</a>  <!-- interchaged -->
+                <a class="flex-grow border-b-2 border-gray-300 py-2 text-lg px-1">Reviews</a>		<!-- interchaged -->
+                <a href="{% url 'agents:agent-update' agent.pk %}" class="flex-grow text-indigo-500 border-b-2 border-indigo-500 py-2 text-lg px-1">Update Details</a> <!-- interchaged -->
+                </div>
+                <form method="post">
+                {% csrf_token %}
+                {{ form|crispy }}
+                <button type="submit" class="w-full text-white bg-blue-500 hover:bg:blue-600 px-3 py-2 rounded-md">Submit</button>
+                </form>
+                <div class="mt-5 py-5 border-t border-gray-200">
+			        <a href="{% url 'agents:agent-delete' agent.pk %}" class="w-1/2 mt-3 text-white bg-indigo-500 border-0 py-2 px-6 focus:outline-none hover:bg-indigo-600 rounded">Delete</a>
+                </div>
+                <img alt="ecommerce" class="lg:w-1/2 w-full lg:h-auto h-64 object-cover object-center rounded" src="https://dummyimage.com/400x400">
+                </div>
+            </div>
+            </section>	
+        {% endblock content %}
+    ```
+- Update the agent_delete.html
+    ```html
+    {% extends "base.html" %}
+    {% load tailwind_filters %}
+
+    {% block content %}
+    <div class="max-w-lg mx-auto">
+        <div class="py-5 border-b border-gray-200">
+            <a class="hover:text-blue-500" href="{% url 'agents:agent-list' %}">Go back to agents</a>
+        </div>
+
+        <h1 class="text-3xl text-gray-800">Are you sure you want to delete this agent?</h1>
+        <form method="post" class="mt-5">
+            {% csrf_token %}
+            {{ form|cripsy }}
+            <button type="submit" class="w-full text-white bg-blue-500 hover:bg:blue-600 px-3 py-2 rounded-md">Submit</button>
+        </form>
+    </div>
+    {% endblock content %}
+    ``
+
+- Update the lead_delete.html
+    ```html
+    {% extends "base.html" %}
+    {% load tailwind_filters %}
+
+    {% block content %}
+    <div class="max-w-lg mx-auto">
+        <div class="py-5 border-b border-gray-200">
+            <a class="hover:text-blue-500" href="{% url 'leads:lead-list' %}">Go back to leads</a>
+        </div>
+
+        <h1 class="text-3xl text-gray-800">Are you sure you want to delete this lead?</h1>
+        <form method="post" class="mt-5">
+            {% csrf_token %}
+            {{ form|cripsy }}
+            <button type="submit" class="w-full text-white bg-blue-500 hover:bg:blue-600 px-3 py-2 rounded-md">Submit</button>
+        </form>
+    </div>
+    {% endblock content %}
+    ```
