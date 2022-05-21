@@ -38,6 +38,7 @@ python manage.py migrate
 ```bash
 python manage.py startapp leads
 ```
+
 ### 9 Add the new app 'leads' into the settings of the project
 - In crm/setting.py, edit
 	```python
