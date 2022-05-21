@@ -243,6 +243,7 @@ python manage.py startapp leads
 		}
 	]
 	```
+	
 - Create the html in crm/templates/second_page.html
 	```html
 	<!DOCTYPE html>
