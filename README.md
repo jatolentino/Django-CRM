@@ -51,6 +51,7 @@ python manage.py startapp leads
 	    'leads'
 	]
 	```
+	
 ### 10 Open models, edit & run
 - In leads/models.py, create the model Lead as a class
 	```python
