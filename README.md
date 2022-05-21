@@ -60,6 +60,7 @@ python manage.py startapp leads
 	    last_name = models.CharField(max_length=20)
 	    age = models.IntegerField(default=0)
 	```
+	
 - In the terminal
 	```bash
 	python manage.py makemigrations  # create the 001_initial.py, auth_user is created, db.sqlite3 needs to be deleted in custom user
