@@ -82,6 +82,7 @@ python manage.py startapp leads
 	class User(AbstractUser)L
 		pass
 	```
+	
 - In crm/settings.py
 	```python
 	AUTH_USER_MODEL = "leads.User"
