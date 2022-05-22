@@ -133,6 +133,7 @@ python manage.py startapp leads
 		def __str__(self):
 			return self.user.email
 	```
+	
 - In ther terminal `python manage.py shell`
 	```bash
 	from leads.models import Agent
