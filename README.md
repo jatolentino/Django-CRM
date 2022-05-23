@@ -269,6 +269,7 @@ python manage.py startapp leads
 	def home_page(request):
 		return render(request, "second_page.html" )
 	```
+	
 ### 18 Context
 - Create the context variable in leads/views.py
 	```python
