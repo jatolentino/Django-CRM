@@ -1683,7 +1683,28 @@ Restrict users to be only the leads they created
     python manage.py runserver
     ```
 > Note: We wouldn't want to create a user profile for the new users because that process ought be automatic, so the triggering of events is handled by **signals** in Django
+## CHECKED UP UNTIL HERE
+## CHECKED UP UNTIL HERE
+### 34 Using signals
+- Edit leads/models.py
+    ```python
+    from django.db.models.signals import post_save
 
+    def post_user_created_signal(sender, instance, created, **kwargs):
+        print(instance, created) #created boolena T/F if the user was or not created
+    
+    post_save.connect(post_user_created_signal, sender=User)
+    ```
+    Test in `http://127.0.0.1:8000/admin/leads/user/`, select a user and then it his profile, click save
+    > For instance the above script depicts a process when a we push the save buttom of a user through the admin site, after clicking the save command, the **event post_user_created_signal** is triggered and shows the name of the user(isntance) in the terminal
+
+- Configure the creation of a userprofile after the user was created, in leads/models.py
+
+    ```python
+    def post_user_created_signal(sender, instance, created, **kwargs):
+        if created:
+            UserProfile.objects.create(user=instance)
+    ```
 ### 35 Create the Agents app
 - Create the new app in crm folder: <br>
     `python manage.py starapp agents`
