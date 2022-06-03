@@ -1680,6 +1680,10 @@ Restrict users to be only the leads they created
     python manage.py createsuperuser
         user: jose
         password: 1
+    python manage.py makemigrations
+    1
+    2
+    python manage.py migrate
     python manage.py runserver
     ```
 > Note: We wouldn't want to create a user profile for the new users because that process ought be automatic, so the triggering of events is handled by **signals** in Django
