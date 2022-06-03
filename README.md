@@ -1331,7 +1331,7 @@ Edit the crm/templates/scripts.html
 	Compiled in the branch of [`ver-1.4`](https://github.com/jatolentino/Django-notes/tree/jatolentino-ver-1.4)
 
 ### 29 Set the static files
-- Create the folder crm/static and add the files main.js (console.log("hi") & style.css
+- Create the folder ./static and add the files main.js (console.log("hi") & style.css
 - Configure the crm/settings.py
     ```python
     :
@@ -1343,6 +1343,7 @@ Edit the crm/templates/scripts.html
     ```
 - Edit crm/urls.py and import the settings and static
     ```python
+    :
     from django.conf import settings
     from django.conf.urls.static import static
     :
@@ -1375,23 +1376,27 @@ Edit the crm/templates/scripts.html
     <script src="{% static 'js/main.js' %}"></script>
   ```
   Test: Go to `http://127.0.0.1:8000` F12 inspect and see the message in the terminal
+
 ### 30 Send emails
 - Edit the leads/views.py (more info check env/lib/python3.7/site-packages/django/core/__init__.py send_mail section)
     ```python
-    from django.core.mail import send_email
+    from django.core.mail import send_mail
     :
     class LeadCreateView(CreateView):
-        :
-        def form_valid(sef, form):
-            send_mail(
-                subject="A lead has been created"
-                message="Go to the website to see the new lead"
-                from_email="test@test.com",
-                recipient_list=["test2@test.com"]
-            )
-        return super(LeadCreateView, self).form_valid(form)
+    template_name = "leads/lead_create.html"
+    form_class = LeadModelForm
+    def get_success_url(self):
+        return "/leads"
+    def form_valid(self, form):
+        send_mail(
+            subject="A lead has been created",
+            message="Go to the website to see the new lead",
+            from_email="test@test.com",
+            recipient_list=["test2@test.com"]
+        )
+        return super(LeadCreateView, self).form_valid(form)  
     ```
-- Edit the email backnd in crm/settings.py
+- Edit the email backend in crm/settings.py
     ```python
     :
     STATIC ROOT = "static_root'
@@ -1399,9 +1404,9 @@ Edit the crm/templates/scripts.html
     AUTH_USER_MODEL = 'leads.User'
     EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
     ```
-
+    Test: Create a lead in `http:127.0.0.1:8000/leads/create` and check on the VS console the email that has been sent alering that a new lead has been created.
 ### 31 Authentication
-- Create the folder crm/templates/registration and the file login.html & logout.html inside
+- Create the folder `registration` in crm/templates/ and the file login.html & logout.html inside
 - Edit the crm/templates/registration/login.html file
     ```html
     {% extends 'base.html' %}
@@ -1413,7 +1418,7 @@ Edit the crm/templates/scripts.html
         <button type='submit'>Login</button>
     </form>
 
-    {% endblok content %}
+    {% endblock content %}
     ```
 - Edit the crm/templates/registration/logout.html file
     ```html
@@ -1446,7 +1451,7 @@ Edit the crm/templates/scripts.html
     ```
     Test: Go to `http://127.0.0.1:8000/login/` and test with the superuser or a random user to see the success/error of login
 
-- Configure the navbar after login, in templates/navbar.html
+- Configure the navbar after login, in crm/templates/navbar.html
     ```html
 	<header class="text-gray-600 body-font">
 	  <div class="container mx-auto flex flex-wrap p-5 flex-col md:flex-row items-center">
@@ -1504,7 +1509,7 @@ Edit the crm/templates/scripts.html
         <button type='submit'>Signup</button>
     </form>
 
-    {% endblok content %}
+    {% endblock content %}
     ```
 - Edit the crm/urls.py
     ```python
@@ -1562,11 +1567,13 @@ Edit the crm/templates/scripts.html
     from django.contrib.auth.forms import UserCreationForm, UsernameField
     from .models import Lead
     
+    User = get_user_model()
+
     class CustomUserCreationForm(UserCreationForm):
         class Meta:
             model = User
             fields = ("username",)
-            field_classes = {'username: UsernameField'}
+            field_classes = {'username': UsernameField}
     ```
 - Edit the leads/views.py
     ```python
@@ -1575,11 +1582,13 @@ Edit the crm/templates/scripts.html
     
     class SignupView(CreateView):
         template_name = "registration/signup.html"
-        form_calss = CustomUserCreationForm
+        form_class = CustomUserCreationForm
 
         def get_success_url(self):
             return reverse("login")
     ```
+    Test: Go to `http://127.0.0.1:8000/signup/` and create a new user, verify the user in `http://127.0.0.1:8000/login/`
+
 ### 32 Test django
 - The test python files always start with the string "test_name.py"
 - Test the landing page, edit leads/templatees/leads/tests.py
@@ -1620,7 +1629,7 @@ Edit the crm/templates/scripts.html
 Restrict users to be only the leads they created
 - Edit leads/views.py, pass the LoginRequiredMixin to the models that require it
     ```python
-    from django.contrib.ath.mixins import LoginRequiredMixin
+    from django.contrib.auth.mixins import LoginRequiredMixin
     
     class LeadListView(LoginRequiredMixin, ListView):
     :
@@ -1633,7 +1642,7 @@ Restrict users to be only the leads they created
     class LeadDeleteView(LoginRequiredMixin, DeleteView):
     :
     ```
-    Go to `http://127.0.0.1/leads` and verify the restriction with the error
+    Go to `http://127.0.0.1/leads` and verify the restriction with the error (you must be logged out or in incognito mode)
 
 - Modify the redirection so it ca redirect to the login site, go to crm/settings.py
     ```python
@@ -1641,7 +1650,7 @@ Restrict users to be only the leads they created
     LOGIN_REDIRECT_URL = "/leads"
     LOGIN_URL = "/login"
     ```
-- Create a model for the user so that the agent will inherit the userprofile properties
+- Create a model for the user so that the agent will inherit the userprofile properties in crm/leads/models.py
     ```python
     class UserProfile(models.Model):
         user = models.OneToOneField(User, on_delete=models.CASCADE)
@@ -1649,7 +1658,7 @@ Restrict users to be only the leads they created
             return self.user.username
 
     class Agent(models.Model):
-        user = models.OneToOnefield(User, on_delete=models.CASCADE)
+        user = models.OneToOneField(User, on_delete=models.CASCADE)
         organization = models.ForeignKey(UserProfile, on_delete=models.CASCADE)
         def __str__(self):
             return self.user.email
@@ -1674,27 +1683,6 @@ Restrict users to be only the leads they created
     python manage.py runserver
     ```
 > Note: We wouldn't want to create a user profile for the new users because that process ought be automatic, so the triggering of events is handled by **signals** in Django
-
-### 34 Using signals
-- Edit leads/models.py
-    ```python
-    from django.db.models.signals import post_save
-
-    def post_user_created_signal(sender, instance, created, **kwargs):
-        print(instance, created) #created boolena T/F if the user was or not created
-    
-    post_save.connect(post_user_created_signal, sender=User)
-    ```
-    Test in `http://127.0.0.1:8000/admin/leads/user/`, select a user and then it his profile, click save
-    > For instance the above script depicts a process when a we push the save buttom of a user through the admin site, after clicking the save command, the **event post_user_created_signal** is triggered and shows the name of the user(isntance) in the terminal
-
-- Configure the creation of a userprofile after the user was created, in leads/models.py
-
-    ```python
-    def post_user_created_signal(sender, instance, created, **kwargs):
-        if created:
-            UserProfile.objects.create(user=instance)
-    ```
 
 ### 35 Create the Agents app
 - Create the new app in crm folder: <br>
