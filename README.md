@@ -10,7 +10,6 @@
 	python -m venv enviroment
 	env/Scripts/activate
 	```
-
 ### 2 Check packages
 ```bash
 pip freeze
