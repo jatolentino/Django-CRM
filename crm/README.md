@@ -389,7 +389,7 @@ Test in: `http://127.0.0.1:8000/leads/`
 	
 	app_name = "leads"
 	
-	urlspatterns = [
+	urlpatterns = [
 		path('', lead_list),
 		path('<int:pk>', lead_detail)  #this is going to add a path according to the ID (primary key) of the user (pk)
 	```
@@ -1323,7 +1323,7 @@ Edit the crm/templates/scripts.html
     ]
     ```
 ### 29 Set the static files
-- Create the folder crm/static and add the files main.js (console.log("hi") & style.css
+- Create the folder ./static and add the files main.js (console.log("hi") & style.css
 - Configure the crm/settings.py
     ```python
     :
@@ -1335,6 +1335,7 @@ Edit the crm/templates/scripts.html
     ```
 - Edit crm/urls.py and import the settings and static
     ```python
+    :
     from django.conf import settings
     from django.conf.urls.static import static
     :
@@ -1371,20 +1372,23 @@ Edit the crm/templates/scripts.html
 ### 30 Send emails
 - Edit the leads/views.py (more info check env/lib/python3.7/site-packages/django/core/__init__.py send_mail section)
     ```python
-    from django.core.mail import send_email
+    from django.core.mail import send_mail
     :
     class LeadCreateView(CreateView):
-        :
-        def form_valid(sef, form):
-            send_mail(
-                subject="A lead has been created"
-                message="Go to the website to see the new lead"
-                from_email="test@test.com",
-                recipient_list=["test2@test.com"]
-            )
-        return super(LeadCreateView, self).form_valid(form)
+    template_name = "leads/lead_create.html"
+    form_class = LeadModelForm
+    def get_success_url(self):
+        return "/leads"
+    def form_valid(self, form):
+        send_mail(
+            subject="A lead has been created",
+            message="Go to the website to see the new lead",
+            from_email="test@test.com",
+            recipient_list=["test2@test.com"]
+        )
+        return super(LeadCreateView, self).form_valid(form)  
     ```
-- Edit the email backnd in crm/settings.py
+- Edit the email backend in crm/settings.py
     ```python
     :
     STATIC ROOT = "static_root'
@@ -1392,9 +1396,9 @@ Edit the crm/templates/scripts.html
     AUTH_USER_MODEL = 'leads.User'
     EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
     ```
-
+    Test: Create a lead in `http:127.0.0.1:8000/leads/create` and check on the VS console the email that has been sent alering that a new lead has been created.
 ### 31 Authentication
-- Create the folder crm/templates/registration and the file login.html & logout.html inside
+- Create the folder `registration` in crm/templates/ and the file login.html & logout.html inside
 - Edit the crm/templates/registration/login.html file
     ```html
     {% extends 'base.html' %}
@@ -1406,7 +1410,7 @@ Edit the crm/templates/scripts.html
         <button type='submit'>Login</button>
     </form>
 
-    {% endblok content %}
+    {% endblock content %}
     ```
 - Edit the crm/templates/registration/logout.html file
     ```html
@@ -1415,7 +1419,7 @@ Edit the crm/templates/scripts.html
 
     <h2> Thanks for visiting, you have been logged out </h2>
 
-    {% endblok content %}
+    {% endblock content %}
     ```
 
 - Import LoginView & LogoutView in crm/urls.py, more info in `env/lib/python3.7/site-packages/django/contrib/auth/views.py`
@@ -1439,7 +1443,7 @@ Edit the crm/templates/scripts.html
     ```
     Test: Go to `http://127.0.0.1:8000/login/` and test with the superuser or a random user to see the success/error of login
 
-- Configure the navbar after login, in templates/navbar.html
+- Configure the navbar after login, in crm/templates/navbar.html
     ```html
 	<header class="text-gray-600 body-font">
 	  <div class="container mx-auto flex flex-wrap p-5 flex-col md:flex-row items-center">
@@ -1455,7 +1459,7 @@ Edit the crm/templates/scripts.html
 	        <a class="mr-5 hover:text-gray-900">Sign up</a>
           {% endif %}
 	    </nav>
-        {% if request.user.is_aunthenticated %}
+        {% if request.user.is_authenticated %}
             Logged in as: {{ request.user.username }}
             <a href="#" class="ml-3 inline-flex items-center bg-gray-100 border-0 py-1 px-3 focus:outline-none hover:bg-gray-200 rounded text-base mt-4 md:mt-0">Logout
             <svg fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="w-4 h-4 ml-1" viewBox="0 0 24 24">
@@ -1497,7 +1501,7 @@ Edit the crm/templates/scripts.html
         <button type='submit'>Signup</button>
     </form>
 
-    {% endblok content %}
+    {% endblock content %}
     ```
 - Edit the crm/urls.py
     ```python
@@ -1530,7 +1534,7 @@ Edit the crm/templates/scripts.html
 	        <a href="{% url 'signup' %}" class="mr-5 hover:text-gray-900">Sign up</a>
           {% endif %}
 	    </nav>
-        {% if request.user.is_aunthenticated %}
+        {% if request.user.is_authenticated %}
             Logged in as: {{ request.user.username }}
             <a href="{% url 'logout' %}" class="ml-3 inline-flex items-center bg-gray-100 border-0 py-1 px-3 focus:outline-none hover:bg-gray-200 rounded text-base mt-4 md:mt-0">Logout
             <svg fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="w-4 h-4 ml-1" viewBox="0 0 24 24">
@@ -1551,15 +1555,17 @@ Edit the crm/templates/scripts.html
 - Create the own userform: CustomUserCreationForm in leads/forms.py
     ```python
     from django import forms
-    from django.contrib.auth import get_use_model
+    from django.contrib.auth import get_user_model
     from django.contrib.auth.forms import UserCreationForm, UsernameField
     from .models import Lead
     
+    User = get_user_model()
+
     class CustomUserCreationForm(UserCreationForm):
         class Meta:
             model = User
             fields = ("username",)
-            field_classes = {'username: UsernameField'}
+            field_classes = {'username': UsernameField}
     ```
 - Edit the leads/views.py
     ```python
@@ -1568,11 +1574,13 @@ Edit the crm/templates/scripts.html
     
     class SignupView(CreateView):
         template_name = "registration/signup.html"
-        form_calss = CustomUserCreationForm
+        form_class = CustomUserCreationForm
 
         def get_success_url(self):
             return reverse("login")
     ```
+    Test: Go to `http://127.0.0.1:8000/signup/` and create a new user, verify the user in `http://127.0.0.1:8000/login/`
+
 ### 32 Test django
 - The test python files always start with the string "test_name.py"
 - Test the landing page, edit leads/templatees/leads/tests.py
@@ -1613,7 +1621,7 @@ Edit the crm/templates/scripts.html
 Restrict users to be only the leads they created
 - Edit leads/views.py, pass the LoginRequiredMixin to the models that require it
     ```python
-    from django.contrib.ath.mixins import LoginRequiredMixin
+    from django.contrib.auth.mixins import LoginRequiredMixin
     
     class LeadListView(LoginRequiredMixin, ListView):
     :
@@ -1626,7 +1634,7 @@ Restrict users to be only the leads they created
     class LeadDeleteView(LoginRequiredMixin, DeleteView):
     :
     ```
-    Go to `http://127.0.0.1/leads` and verify the restriction with the error
+    Go to `http://127.0.0.1/leads` and verify the restriction with the error (you must be logged out or in incognito mode)
 
 - Modify the redirection so it ca redirect to the login site, go to crm/settings.py
     ```python
@@ -1634,7 +1642,7 @@ Restrict users to be only the leads they created
     LOGIN_REDIRECT_URL = "/leads"
     LOGIN_URL = "/login"
     ```
-- Create a model for the user so that the agent will inherit the userprofile properties
+- Create a model for the user so that the agent will inherit the userprofile properties in crm/leads/models.py
     ```python
     class UserProfile(models.Model):
         user = models.OneToOneField(User, on_delete=models.CASCADE)
@@ -1642,7 +1650,7 @@ Restrict users to be only the leads they created
             return self.user.username
 
     class Agent(models.Model):
-        user = models.OneToOnefield(User, on_delete=models.CASCADE)
+        user = models.OneToOneField(User, on_delete=models.CASCADE)
         organization = models.ForeignKey(UserProfile, on_delete=models.CASCADE)
         def __str__(self):
             return self.user.email
@@ -1664,6 +1672,10 @@ Restrict users to be only the leads they created
     python manage.py createsuperuser
         user: jose
         password: 1
+    python manage.py makemigrations
+    1
+    2
+    python manage.py migrate
     python manage.py runserver
     ```
 > Note: We wouldn't want to create a user profile for the new users because that process ought be automatic, so the triggering of events is handled by **signals** in Django
@@ -1678,8 +1690,8 @@ Restrict users to be only the leads they created
     
     post_save.connect(post_user_created_signal, sender=User)
     ```
-    Test in `http://127.0.0.1:8000/admin/leads/user/`, select a user and then it his profile, click save
-    > For instance the above script depicts a process when a we push the save buttom of a user through the admin site, after clicking the save command, the **event post_user_created_signal** is triggered and shows the name of the user(isntance) in the terminal
+    Test in `http://127.0.0.1:8000/admin/leads/user/`, select a user and then in his profile, click save
+    > For instance the above script depicts a process when we push the save buttom of a user through the admin site, after clicking the save command, the **event post_user_created_signal** is triggered and shows the name of the user(instance) in the VS terminal
 
 - Configure the creation of a userprofile after the user was created, in leads/models.py
 
@@ -1687,11 +1699,12 @@ Restrict users to be only the leads they created
     def post_user_created_signal(sender, instance, created, **kwargs):
         if created:
             UserProfile.objects.create(user=instance)
+        :
     ```
 
 ### 35 Create the Agents app
 - Create the new app in crm folder: <br>
-    `python manage.py starapp agents`
+    `python manage.py startapp agents`
 - Add the agent app in crm/settings.py
     ```python
     INSTALLED_APPS = [
@@ -1707,7 +1720,7 @@ Restrict users to be only the leads they created
 
     app_name = 'agents'
     urlpatterns = [
-        path('', AgenListView.as_view(), name='agent-list'),
+        path('', AgentListView.as_view(), name='agent-list'),
         path('create/', AgentCreateView.as_view(), name='agent-create')
     ]
     ```
@@ -1744,7 +1757,7 @@ Restrict users to be only the leads they created
             agent = form.save(commit=False)
             agent.organization = self.request.user.userprofile  #agents have a organiz property, Check leads/models.py
             agent.save() #agent is save in the organization
-            return super(AgentcreateView, self).form_valid(form)
+            return super(AgentCreateView, self).form_valid(form)
     ```
 
 - Create the templates folder inside the agents app (crm/agents/templates) and then the folder crm/agents/templates/agents.<br>
@@ -1791,7 +1804,7 @@ Inside agents/templates/agents/ create the agent_list.html file and edit it <br>
     {% endblock content %}
     ```
 
-- Create crm/agents/form.py
+- Create crm/agents/forms.py
     ```python
     from django import forms
     from leads.models import Agent
@@ -1833,7 +1846,7 @@ Inside agents/templates/agents/ create the agent_list.html file and edit it <br>
     from .views import AgentListView, AgentCreateView, AgentDetailView
     app_name = 'agents'
 
-    urlspatterns=[
+    urlpatterns=[
         path('', AgentListView.as_view(), name='agent-list'),
         path('<int:pk>/', AgentDetailView.as_view(), name='agent-detail'),
         path('create/', AgentCreateView.as_view(), name='agent-create'),
@@ -1912,7 +1925,7 @@ Inside agents/templates/agents/ create the agent_list.html file and edit it <br>
 	        <a href="{% url 'leads:lead-list' %}" class="mr-5 hover:text-gray-900">Leads</a>
             {% endif %}
 	    </nav>
-        {% if request.user.is_aunthenticated %}
+        {% if request.user.is_authenticated %}
             Logged in as: {{ request.user.username }}
             <a href="{% url 'logout' %}" class="ml-3 inline-flex items-center bg-gray-100 border-0 py-1 px-3 focus:outline-none hover:bg-gray-200 rounded text-base mt-4 md:mt-0">Logout
             <svg fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="w-4 h-4 ml-1" viewBox="0 0 24 24">
@@ -1939,7 +1952,7 @@ Inside agents/templates/agents/ create the agent_list.html file and edit it <br>
         def get_success_url(self):
             return reverse("agents:agent-list")
 
-        def get_querset(self):
+        def get_queryset(self):
             return Agent.objects.all()
     
     class AgentDeleteView(LoginRequiredMixin, generic.DeleteView):
@@ -1962,9 +1975,9 @@ Inside agents/templates/agents/ create the agent_list.html file and edit it <br>
 
     urlpatterns = [
         path('', AgentListView.as_view(), name='agent-list'),
-        path('<int:pk>/', AgentDetailView.as_view(), name:'agent-detail'),
-        path('<int:pk>/update/', AgentUpdateView.as_view(), name:'agent-update'),
-        path('<int:pk>/delete/', AgentDeleteView.as_view(), name:'agent-delete'),
+        path('<int:pk>/', AgentDetailView.as_view(), name='agent-detail'),
+        path('<int:pk>/update/', AgentUpdateView.as_view(), name='agent-update'),
+        path('<int:pk>/delete/', AgentDeleteView.as_view(), name='agent-delete'),
         path('create/', AgentCreateView.as_view(), name='agent-create').
     ]
     ```
@@ -2011,7 +2024,7 @@ Inside agents/templates/agents/ create the agent_list.html file and edit it <br>
         </form>
     {% endblock content %}
     ```
-    Test: Go to `http://127.0.0.1:8000/agents` and create/delete/update an agent
+    Test: Go to `http://127.0.0.1:8000/agents` and create/delete/update an agent, check [`ver-1.5`](https://github.com/jatolentino/Django-notes/tree/jatolentino-ver-1.5)
 
 ### 37 Filter the agents display only to their users counterparts
 - Edit the agents/views.py file
