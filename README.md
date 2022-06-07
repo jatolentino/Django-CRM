@@ -1428,7 +1428,7 @@ Edit the crm/templates/scripts.html
 
     <h2> Thanks for visiting, you have been logged out </h2>
 
-    {% endblok content %}
+    {% endblock content %}
     ```
 
 - Import LoginView & LogoutView in crm/urls.py, more info in `env/lib/python3.7/site-packages/django/contrib/auth/views.py`
@@ -1468,7 +1468,7 @@ Edit the crm/templates/scripts.html
 	        <a class="mr-5 hover:text-gray-900">Sign up</a>
           {% endif %}
 	    </nav>
-        {% if request.user.is_aunthenticated %}
+        {% if request.user.is_authenticated %}
             Logged in as: {{ request.user.username }}
             <a href="#" class="ml-3 inline-flex items-center bg-gray-100 border-0 py-1 px-3 focus:outline-none hover:bg-gray-200 rounded text-base mt-4 md:mt-0">Logout
             <svg fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="w-4 h-4 ml-1" viewBox="0 0 24 24">
@@ -1543,7 +1543,7 @@ Edit the crm/templates/scripts.html
 	        <a href="{% url 'signup' %}" class="mr-5 hover:text-gray-900">Sign up</a>
           {% endif %}
 	    </nav>
-        {% if request.user.is_aunthenticated %}
+        {% if request.user.is_authenticated %}
             Logged in as: {{ request.user.username }}
             <a href="{% url 'logout' %}" class="ml-3 inline-flex items-center bg-gray-100 border-0 py-1 px-3 focus:outline-none hover:bg-gray-200 rounded text-base mt-4 md:mt-0">Logout
             <svg fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="w-4 h-4 ml-1" viewBox="0 0 24 24">
@@ -1564,7 +1564,7 @@ Edit the crm/templates/scripts.html
 - Create the own userform: CustomUserCreationForm in leads/forms.py
     ```python
     from django import forms
-    from django.contrib.auth import get_use_model
+    from django.contrib.auth import get_user_model
     from django.contrib.auth.forms import UserCreationForm, UsernameField
     from .models import Lead
     
@@ -1688,8 +1688,7 @@ Restrict users to be only the leads they created
     python manage.py runserver
     ```
 > Note: We wouldn't want to create a user profile for the new users because that process ought be automatic, so the triggering of events is handled by **signals** in Django
-## CHECKED UP UNTIL HERE
-## CHECKED UP UNTIL HERE
+
 ### 34 Using signals
 - Edit leads/models.py
     ```python
@@ -1700,8 +1699,8 @@ Restrict users to be only the leads they created
     
     post_save.connect(post_user_created_signal, sender=User)
     ```
-    Test in `http://127.0.0.1:8000/admin/leads/user/`, select a user and then it his profile, click save
-    > For instance the above script depicts a process when a we push the save buttom of a user through the admin site, after clicking the save command, the **event post_user_created_signal** is triggered and shows the name of the user(isntance) in the terminal
+    Test in `http://127.0.0.1:8000/admin/leads/user/`, select a user and then in his profile, click save
+    > For instance the above script depicts a process when we push the save buttom of a user through the admin site, after clicking the save command, the **event post_user_created_signal** is triggered and shows the name of the user(instance) in the VS terminal
 
 - Configure the creation of a userprofile after the user was created, in leads/models.py
 
@@ -1709,10 +1708,12 @@ Restrict users to be only the leads they created
     def post_user_created_signal(sender, instance, created, **kwargs):
         if created:
             UserProfile.objects.create(user=instance)
+        :
     ```
+
 ### 35 Create the Agents app
 - Create the new app in crm folder: <br>
-    `python manage.py starapp agents`
+    `python manage.py startapp agents`
 - Add the agent app in crm/settings.py
     ```python
     INSTALLED_APPS = [
@@ -1728,7 +1729,7 @@ Restrict users to be only the leads they created
 
     app_name = 'agents'
     urlpatterns = [
-        path('', AgenListView.as_view(), name='agent-list'),
+        path('', AgentListView.as_view(), name='agent-list'),
         path('create/', AgentCreateView.as_view(), name='agent-create')
     ]
     ```
@@ -1765,7 +1766,7 @@ Restrict users to be only the leads they created
             agent = form.save(commit=False)
             agent.organization = self.request.user.userprofile  #agents have a organiz property, Check leads/models.py
             agent.save() #agent is save in the organization
-            return super(AgentcreateView, self).form_valid(form)
+            return super(AgentCreateView, self).form_valid(form)
     ```
 
 - Create the templates folder inside the agents app (crm/agents/templates) and then the folder crm/agents/templates/agents.<br>
@@ -1812,7 +1813,7 @@ Inside agents/templates/agents/ create the agent_list.html file and edit it <br>
     {% endblock content %}
     ```
 
-- Create crm/agents/form.py
+- Create crm/agents/forms.py
     ```python
     from django import forms
     from leads.models import Agent
@@ -1838,6 +1839,7 @@ Inside agents/templates/agents/ create the agent_list.html file and edit it <br>
     {% endblock content %}
     ```
     Test: Go to `http://127.0.0.1:8000/agents/` and click on Create a new agent
+
 ### 36 Create the other agents view
 - Create the AgentDetailView in agents/views.py
     ```python
@@ -1853,7 +1855,7 @@ Inside agents/templates/agents/ create the agent_list.html file and edit it <br>
     from .views import AgentListView, AgentCreateView, AgentDetailView
     app_name = 'agents'
 
-    urlspatterns=[
+    urlpatterns=[
         path('', AgentListView.as_view(), name='agent-list'),
         path('<int:pk>/', AgentDetailView.as_view(), name='agent-detail'),
         path('create/', AgentCreateView.as_view(), name='agent-create'),
@@ -1932,7 +1934,7 @@ Inside agents/templates/agents/ create the agent_list.html file and edit it <br>
 	        <a href="{% url 'leads:lead-list' %}" class="mr-5 hover:text-gray-900">Leads</a>
             {% endif %}
 	    </nav>
-        {% if request.user.is_aunthenticated %}
+        {% if request.user.is_authenticated %}
             Logged in as: {{ request.user.username }}
             <a href="{% url 'logout' %}" class="ml-3 inline-flex items-center bg-gray-100 border-0 py-1 px-3 focus:outline-none hover:bg-gray-200 rounded text-base mt-4 md:mt-0">Logout
             <svg fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="w-4 h-4 ml-1" viewBox="0 0 24 24">
@@ -1959,7 +1961,7 @@ Inside agents/templates/agents/ create the agent_list.html file and edit it <br>
         def get_success_url(self):
             return reverse("agents:agent-list")
 
-        def get_querset(self):
+        def get_queryset(self):
             return Agent.objects.all()
     
     class AgentDeleteView(LoginRequiredMixin, generic.DeleteView):
@@ -1982,9 +1984,9 @@ Inside agents/templates/agents/ create the agent_list.html file and edit it <br>
 
     urlpatterns = [
         path('', AgentListView.as_view(), name='agent-list'),
-        path('<int:pk>/', AgentDetailView.as_view(), name:'agent-detail'),
-        path('<int:pk>/update/', AgentUpdateView.as_view(), name:'agent-update'),
-        path('<int:pk>/delete/', AgentDeleteView.as_view(), name:'agent-delete'),
+        path('<int:pk>/', AgentDetailView.as_view(), name='agent-detail'),
+        path('<int:pk>/update/', AgentUpdateView.as_view(), name='agent-update'),
+        path('<int:pk>/delete/', AgentDeleteView.as_view(), name='agent-delete'),
         path('create/', AgentCreateView.as_view(), name='agent-create').
     ]
     ```
