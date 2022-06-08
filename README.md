@@ -2033,7 +2033,10 @@ Inside agents/templates/agents/ create the agent_list.html file and edit it <br>
         </form>
     {% endblock content %}
     ```
-    Test: Go to `http://127.0.0.1:8000/agents` and create/delete/update an agent, check [`ver-1.5`](https://github.com/jatolentino/Django-notes/tree/jatolentino-ver-1.5)
+    Test 1: Go to `http://127.0.0.1:8000/agents` and create/delete/update an agent, check [`ver-1.5`](https://github.com/jatolentino/Django-notes/tree/jatolentino-ver-1.5)
+    <p align="center">
+    <img src="https://raw.githubusercontent.com/jatolentino/Django-notes/main/sources/img/Step36-test-1.png">
+    </p>
 ### 37 Filter the agents display only to their users counterparts
 - Edit the agents/views.py file
     ```python
