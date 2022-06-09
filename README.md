@@ -2033,10 +2033,8 @@ Inside agents/templates/agents/ create the agent_list.html file and edit it <br>
         </form>
     {% endblock content %}
     ```
-    Test 1: Go to `http://127.0.0.1:8000/agents` and create/delete/update an agent, check [`ver-1.5`](https://github.com/jatolentino/Django-notes/tree/jatolentino-ver-1.5)
-    <p align="center">
-    <img src="https://raw.githubusercontent.com/jatolentino/Django-notes/main/sources/img/Step36-test-1.png">
-    </p>
+    Test: Go to `http://127.0.0.1:8000/agents` and create/delete/update an agent, check [`ver-1.5`](https://github.com/jatolentino/Django-notes/tree/jatolentino-ver-1.5)
+
 ### 37 Filter the agents display only to their users counterparts
 - Edit the agents/views.py file
     ```python
@@ -2045,10 +2043,10 @@ Inside agents/templates/agents/ create the agent_list.html file and edit it <br>
         template_name = "agents/agent_list.html"
 
         def get_queryset(self):
-            organisation = self.request.user.userprofile
-            return Agent.objects.filter(organisation=organisation) #Changed this return Agent.objects.all()
+            organization = self.request.user.userprofile
+            return Agent.objects.filter(organization=organization) #Changed this return Agent.objects.all()
     ```
-    Test - Correctly filtering agents for the users: Go to `http://127.0.0.1:8000/admin/leads/agent` and add an AGENT (there must be two users already created under different categories: organization and withou org/or simply users)<br>
+    Test - Correctly filtering agents for the users: Go to `http://127.0.0.1:8000/admin/leads/agent` and add an AGENT (there must be two users already created under different categories: organization and without orgnization or simply users)<br>
     Assign to the Agent:<br>
     User: Test1<br>
     Organization: Test2<br>
@@ -2065,8 +2063,8 @@ Inside agents/templates/agents/ create the agent_list.html file and edit it <br>
     class AgentListView(LoginRequiredMixin, generic.ListView):
         template_name = "agents/agent_list.html"
         def get_queryset(self):
-            organisation = self.request.user.userprofile
-            return Agent.objects.filter(organisation=organisation)
+            organization = self.request.user.userprofile
+            return Agent.objects.filter(organization=organization)
     
     class AgentCreateView(LoginRequiredMixin, generic.CreateView):
         template_name = "agents/agent_create.html"
@@ -2085,8 +2083,8 @@ Inside agents/templates/agents/ create the agent_list.html file and edit it <br>
         template_name = "agents/agent_detail.html"
         context_object_name = "agent"
         def get_queryset(self):
-            organisation = self.request.user.userprofile
-            return Agent.objects.filter(organisation=organisation)
+            organization = self.request.user.userprofile
+            return Agent.objects.filter(organization=organization)
 
     class AgentUpdateView(LoginRequiredMixin, generic.UpdateView):
         template_name = "agents/agent_update.html"
@@ -2096,8 +2094,8 @@ Inside agents/templates/agents/ create the agent_list.html file and edit it <br>
             return reverse("agents:agent-list")
 
         def get_queryset(self):
-            organisation = self.request.user.userprofile
-            return Agent.objects.filter(organisation=organisation)
+            organization = self.request.user.userprofile
+            return Agent.objects.filter(organization=organization)
     
     class AgentDeleteView(LoginRequiredMixin, generic.DeleteView):
         template_name = "agents/agent_delete.html"
@@ -2108,10 +2106,10 @@ Inside agents/templates/agents/ create the agent_list.html file and edit it <br>
 
         #here is even more important because we don't users to delete agents that belong to other users
         def get_queryset(self):
-            organisation = self.request.user.userprofile
-            return Agent.objects.filter(organisation=organisation)
+            organization = self.request.user.userprofile
+            return Agent.objects.filter(organization=organization)
     ```
->IMPLETED TILL HERE, ONWARDS CODE IS MISSING TO BE IMPLEMENTED
+
 ### 38 Create 2 type of users: agents & organizers 
 - Create the type of users in crm/leads/models.py
     ```python
@@ -2128,12 +2126,12 @@ Inside agents/templates/agents/ create the agent_list.html file and edit it <br>
     python manage.py migrate
     python manage.py runserver
     ```
-    Verify: Go to `http://127.0.0.1:8000/leads/user/` choose a user and check the options down below for organizer(set to True as default) and agent. <br>
+    Verify: Go to `http://127.0.0.1:8000/admin/leads/user/` choose a user and check the options down below for organizer(set to True as default) and agent.
     >Only users set to be organizers can create and see all agents available <br>
-    >User which are agents can only see the agent which is assigned to them
+    >Users which are agents can only see the agent which is assigned to them
 
 ### 39 Render the tabs that agents/organizer should only see
-    >In this case, organizers can see the right left tabs: Agents & Leads and agents can see only Leads<br>
+    >In this case, organizers can see the correct left tabs: Agents & Leads, and agents can see only Leads<br>
 
 - Edit the registration/navbar.html file
     ```html
@@ -2141,10 +2139,10 @@ Inside agents/templates/agents/ create the agent_list.html file and edit it <br>
     {% if not request.user.is_authenticated %}
         <a href="{% url 'signup' %}" class="mr-5 hover:text-gra-900">Signup</a>
     {% else %}
-        {% if request.user.is_organisor %}
+        {% if request.user.is_organizer %}
             <a href="{% url 'agents:agent-list' %}" class="mr-5 hover:text-gra-900">Agents</a>
         {% endif %}
-        <a href="{% url 'leads:lead-list' %}" class="mr-5 hover:text-gra-900">Leadss</a>
+        <a href="{% url 'leads:lead-list' %}" class="mr-5 hover:text-gra-900">Leads</a>
     {% endif %}
     <!--
     {% if not request.user.is_authenticated %}
@@ -2156,16 +2154,16 @@ Inside agents/templates/agents/ create the agent_list.html file and edit it <br>
     -->
     :
     ```
-    Test: create two users and configure one to is_organizer, the other to is_agent (name this user as agent to be distringuishable).<br>
-    Now login with the agent user and verify that there is no agent tab in the right side
+    Test: create two users and configure one to is_organizer, the other to be `is_agent` (name this user as agent to be distringuishable).<br>
+    Now procees to login with the agent user and verify that there is no agent tab in the right side of navbar.
 
-- Restrict agents to hardcorde the url `http://127.0.0.1:8000/agents`, create the crm/templates/mixins.py to restrict to login and restrict see other agents if is not a organizer
+- Restrict agents to hardcorde the url `http://127.0.0.1:8000/agents`, create the agents/templates/mixins.py to restrict to login and restrict see other agents if is not a organizer
 
     ```python
     from django.contrib.auth.mixins import AccessMixin
     from django.shortcuts import redirect
 
-    class OrganizerAndLoginRequiredMixin(AccessMixin);
+    class OrganizerAndLoginRequiredMixin(AccessMixin):
         """Verifiy that the current user is authenticated and is an organizer"""
         def dispatch(self, request, *args, **kwargs):
             if not request.user.is_authenticated or not request.user.is_organizer:
@@ -2185,8 +2183,8 @@ Inside agents/templates/agents/ create the agent_list.html file and edit it <br>
     class AgentListView(OrganizerAndLoginRequiredMixin, generic.ListView):
         template_name = "agents/agent_list.html"
         def get_queryset(self):
-            organisation = self.request.user.userprofile
-            return Agent.objects.filter(organisation=organisation)
+            organization = self.request.user.userprofile
+            return Agent.objects.filter(organization=organization)
 
     class AgentCreateView(OrganizerAndLoginRequiredMixin, generic.CreateView):
         template_name = "agents/agent_create.html"
@@ -2205,8 +2203,8 @@ Inside agents/templates/agents/ create the agent_list.html file and edit it <br>
         template_name = "agents/agent_detail.html"
         context_object_name = "agent"
         def get_queryset(self):
-            organisation = self.request.user.userprofile
-            return Agent.objects.filter(organisation=organisation)
+            organization = self.request.user.userprofile
+            return Agent.objects.filter(organization=organization)
 
     class AgentUpdateView(OrganizerAndLoginRequiredMixin, generic.UpdateView):
         template_name = "agents/agent_update.html"
@@ -2216,8 +2214,8 @@ Inside agents/templates/agents/ create the agent_list.html file and edit it <br>
             return reverse("agents:agent-list")
 
         def get_queryset(self):
-            organisation = self.request.user.userprofile
-            return Agent.objects.filter(organisation=organisation)
+            organization = self.request.user.userprofile
+            return Agent.objects.filter(organization=organization)
     
     class AgentDeleteView(OrganizerAndLoginRequiredMixin, generic.DeleteView):
         template_name = "agents/agent_delete.html"
@@ -2228,8 +2226,8 @@ Inside agents/templates/agents/ create the agent_list.html file and edit it <br>
 
         #here is even more important because we don't users to delete agents that belong to other users
         def get_queryset(self):
-            organisation = self.request.user.userprofile
-            return Agent.objects.filter(organisation=organisation)
+            organization = self.request.user.userprofile
+            return Agent.objects.filter(organization=organization)
     ```
 - Restrict also in leads/views.py regarding leadcreateview, 
     ```python
@@ -2257,11 +2255,12 @@ Inside agents/templates/agents/ create the agent_list.html file and edit it <br>
     -->
     :
     ```
-    Test: Login as an agent user, go to `http://127.0.0.1:8000/leads`, chack the tab if available, and hop over to ``http://127.0.0.1:8000/leads/create`, the sites should redirect to `http://127.0.0.1:8000/leads/`
+    Test: Login as an agent user, go to `http://127.0.0.1:8000/leads`, check the tab if available, and hop over to ``http://127.0.0.1:8000/leads/create`, the sites should redirect to `http://127.0.0.1:8000/leads/`
+
 ### 40 Leads queryset 
 - Showing the leads to be seen by the agents that they belong to<br>
     Initially when leads are created, they shouldnt have set up an agent, so their agent will be null.<br>
-    Go to crm/leads/models.py and edit
+    Go to ./leads/models.py and edit
     ```python
     class Lead(models.Model):
         first_name = models.CharField(max_length=20)
@@ -2276,6 +2275,8 @@ Inside agents/templates/agents/ create the agent_list.html file and edit it <br>
     ```bash
     python manage.py makemigrations
     python manage.py migrate
+    1
+    exit
     python manage.py runserver
     ```
     Leads filtered by the user of the agent (matchs the user of the lead: self.reques.user)
@@ -2290,63 +2291,80 @@ Inside agents/templates/agents/ create the agent_list.html file and edit it <br>
     class LandingPageView(TemplateView):
         template_name = "landing.html"
 
-    class LeadListView(ListView):
-        template_name = "leads/lead_list.html"
-        context_object_name = "leads"
+    class LeadListView(LoginRequiredMixin, generic.ListView):
+    template_name = "leads/lead_list.html"
+    context_object_name = "leads"
+
+    def get_queryset(self):
+        user = self.request.user
+
+        if user.is_organizer:
+            queryset = Lead.objects.filter(organization = user.userprofile)
+        else:
+            queryset = Lead.objects.filter(organization=user.agent.organization)
+        
+        queryset = queryset.filter(agent__user=user)
+        return queryset
+
+    class LeadDetailView(LoginRequiredMixin, generic.DetailView):
+        template_name = "leads/lead_detail.html"
+        context_object_name = "lead"
         def get_queryset(self):
-            user = self.reques.user
+            user = self.request.user
             # initial queryset of leads for the entrie organization
             if user.is_organizer:
                 queryset = Lead.objects.filter(organization=user.userprofile)
             else:
-                queryset = Lead.objects.filter(organization=usert.agent.organization)
+                queryset = Lead.objects.filter(organization=user.agent.organization)
                 #filter for the agent that is logged in
-                queryset = queryset.filet(agent__user=user)
-            return queryset
-
-    class LeadDetailView(DetailView):
-        template_name = "leads/lead_detail.html"
-        context_object_name = "lead"
-        def get_queryset(self):
-            user = self.reques.user
-            # initial queryset of leads for the entrie organization
-            if user.is_organizer:
-                queryset = Lead.objects.filter(organization=user.userprofile
-            else:
-                queryset = Lead.objects.filter(organization=usert.agent.organization)
-                #filter for the agent that is logged in
-                queryset = queryset.filet(agent__user=user)
+                queryset = queryset.filter(agent__user=user)
             return queryset
     
 
-    class LeadCreateView(OrganizerAndLoginRequiredMixin, CreateView):
+    class LeadCreateView(OrganizerAndLoginRequiredMixin, generic.CreateView):
         template_name = "leads/lead_create.html"
         form_class = LeadModelForm
         def get_success_url(self):
+            #return "/leads"
             return reverse("leads:lead-list")
+
+        def form_valid(self, form):
+            lead = form.save(commit=False)
+            lead.organization = self.request.user.userprofile
+            lead.save()
+            send_mail(
+                subject="A lead has been created",
+                message="Go to the website to see the new lead",
+                from_email="test@test.com",
+                recipient_list=["test2@test.com"]
+            )
+            return super(LeadCreateView, self).form_valid(form)   
 
     class LeadUpdateView(OrganizerAndLoginRequiredMixin, UpdateView):
         template_name = "leads/lead_update.html"
         form_class = LeadModelForm
+        
         def get_queryset(self):
-            user = self.reques.user
-            return Lead.objects.filter(organization=usert.userprofile)
+            user = self.request.user
+            # initial queryset of leads for the entrie organization
+            return Lead.objects.filter(organization=user.userprofile)
 
         def get_success_url(self):
-            return reverse("leads:lead-list")    
+            return reverse("leads:lead-list")
 
     class LeadDeleteView(OrganizerAndLoginRequiredMixin, DeleteView):
         template_name = "leads/lead_delete.html"
         
         def get_success_url(self):
             return reverse("leads:lead-list")
+
         def get_queryset(self):
-            user = self.reques.user
-            return Lead.objects.filter(organization=usert.userprofile)
+            user = self.request.user
+            return Lead.objects.filter(organization=user.userprofile)
     ```
 
 ### 41 Invite an agent
-- Modify agents, so that the agent when is created it does actually create a user
+- Modify agents/forms.py, so that when the agent is created, a user is immediately created as well.
     ```python
     from django import forms
     from django.contrib.auth import get_user_model
@@ -2365,6 +2383,9 @@ Inside agents/templates/agents/ create the agent_list.html file and edit it <br>
     ```
 - Edit agents/views.py, to create an agent user
     ```python
+    :
+    from django.core.mail import send_mail
+    :
 	class AgentCreateView(OrganizerAndLoginRequiredMixin, generic.CreateView):
 			template_name = "agents/agent_create.html"
 			form_class = AgentModelForm
@@ -2388,7 +2409,7 @@ Inside agents/templates/agents/ create the agent_list.html file and edit it <br>
 					message="You were added as an agent on CRM. Please come login to stat working.",
 					from_email="admin@test.com"
 					recipient_list=[user.email]
-				return super(AgentcreateView, self).form_valid(form)
+				return super(AgentCreateView, self).form_valid(form)
     ```
     Test: Sign in like Jose and go to `http://127.0.0.1:8000/agents/create`, enter the details and submit, check the agent just created and the email on the terminal. <br>
     Also go to the admin website and check the user, it actually doesn't have a password so set it up like below, edit agents/views.py
