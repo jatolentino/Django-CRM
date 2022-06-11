@@ -29,7 +29,7 @@ django-admin startproject crm .
 
 ### 6 Run the server
 ```bash
-python manage.py runserver (port if necessary)
+python manage.py runserver # port if necessary
 ```
 ### 7 Run migrate
 ```bash
