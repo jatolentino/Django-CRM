@@ -3185,3 +3185,673 @@ Inside agents/templates/agents/ create the agent_list.html file and edit it <br>
     <p align="center">
     	<img src="https://raw.githubusercontent.com/jatolentino/Django-notes/main/sources/img/Step48-test-1.png">
     </p>
+### 49 Installing crispy
+- In the terminal
+    ```bash
+    pip install django-crispy-forms
+    pip install crispy-tailwind
+    pip freeze > requirements.txt
+    ```
+- Add the app in crm/settings.py
+    ```python
+    INSTALLED_APPS = [
+        :
+        'agents',
+        'crispy_forms',
+        'crispy_tailwind',
+    ]
+    : #in the bottom
+    :
+    CRISPY_ALLOWED_TEMPLATE_PACKS = "tailwind"
+    CRISPY_TEMPLATE_PACK = "tailwind"
+    ```
+- In templates/registration/login.html, add `{% load tailwind_filters %}` after `{% extends 'base.html' %}` and replace {{ form.as_p }} with {{ form|crispy }} <br>
+Also make the same changes in password_reset_{complete,confirm,done,email,form}.html, signup.html files <br>
+For login.html:
+    ```html
+    {% extends 'base.html' %}
+    {% load tailwind_filters %}
+
+    {% block content %}
+    <div class="max-w-lg mx-auto">
+
+        <div class="py-5 border-t border-gray-200">
+            <a class = "hover:text-blue-500" href="{% url 'signup' %}">Don't have an account?</a>
+        </div>
+
+        <form method = "post" class="mt-5">
+            {% csrf_token %}
+            {{ form|crispy }}
+            <button type='submit' class="w-full text-white bg-blue-500 hover:bg-blue-600 px-3 py-2 rounded-md">Login</button>
+        </form>
+        <div class="py-5 border-t border-gray-200 mt-5">
+            <a class = "hover:text-blue-500" href="{% url 'reset-password' %}">Forgot password?</a>
+        </div>
+
+    </div>
+
+    {% endblock content %}
+    ```
+    Test: Go to `http://127.0.0.1:8000/login/` and see the changes <br>
+
+    In password_reset_confirm.html
+    ```html
+        {% extends 'base.html' %}
+        {% load tailwind_filters %}
+
+        {% block content %}
+        <div class = "max-w-lg mx-auto">
+            <h1 class="text-4xl text-gray-800">Enter your new password</h1>
+
+            <form method="post">
+                {% csrf_token %}
+                {{ form|crispy }}
+                <button type='submit' class="w-full text-white bg-blue-500 hover:bg-blue-600 px-3 py-2 rounded-md">Confirm new password</button>
+            </form>
+        </div>
+        {% endblock content %}
+    ```
+    In password_reset_form.html
+    ```html
+        {% extends 'base.html' %}
+        {% load tailwind_filters %}
+
+        {% block content %}
+        <div class = "max-w-lg mx-auto">
+            <h1 class="text-4xl text-gray-800">Enter your new password</h1>
+
+            <form method="post" class="mt-5">
+                {% csrf_token %}
+                {{ form|crispy }}
+                <button type='submit' class="w-full text-white bg-blue-500 hover:bg-blue-600 px-3 py-2 rounded-md">Reset password</button>
+            </form>
+            <div class = "py-5 border-t border-gray-200 mt-5">
+                <a class="hover:text-blue-500" href="{% url 'login' %}">Already have an account?</a>
+            </div>
+        </div>
+        {% endblock content %}
+    ```
+    In the ./templates/registration/signup.html
+    ```html
+    {% extends 'base.html' %}
+    {% load tailwind_filters %}
+    {% block content %}
+    <div class="max-w-lg mx-auto">
+        <form method = "post" class="mt-5">
+            {% csrf_token %}
+            {{ form|crispy }}
+            <button tpe='submit' class="w-full text-white bg-blue-500 hover:bg-blue-600 px-3 py-2 rounded-md">Signup</button>
+        </form>
+        <div class="py-5 border-t border-gray-200 mt-5">
+            <a class = "hover:text-blue-500" href="{% url 'login' %}">Already have an account?</a>
+        </div>
+    </div>
+
+    {% endblock content %}
+    ```
+    Also edit in leads/templates/leads/lead_create.html
+    ```html
+    {% extends "base.html" %}
+    {% load tailwind_filters %}
+    {% block content %}
+    <div class="max-w-lg mx-auto">
+        <a class="hover:text-blue-500" href="{% url 'leads:lead-list' %}">Go back to leads</a>
+        <div class="py-5 border-t border-gray-200">
+            <h1>Create a new lead</h1>
+        </div>
+        <form method="post" class="mt-5">
+            {% csrf_token %}
+            {{ form|crispy }}
+            <button type='submit' class="w-full text-white bg-blue-500 hover:bg-blue-600 px-3 py-2 rounded-md">Submit</button>
+        </form>
+    </div>
+    {% endblock content %}
+    ```
+    In crm/templates/leads/lead_update.html
+    ```html
+    {% extends "base.html" %}
+    {% load tailwind_filters %}
+    {% block content %}
+        <section class="text-gray-600 body-font overflow-hidden">
+            <div class="container px-5 py-24 mx-auto">
+                <div class="lg:w-4/5 mx-auto flex flex-wrap">
+                    <div class="lg:w-1/2 w-full lg:pr-10 lg:py-6 mb-6 lg:mb-0">
+                        <h2 class="text-sm title-font text-gray-500 tracking-widest">Lead</h2>
+                        <h1 class="text-gray-900 text-3xl title-font font-medium mb-4">{{ lead.first_name }} {{ lead.last_name }}</h1>
+                        <div class="flex mb-4">
+                        <a href="{% url 'leads:lead-detail' lead.pk %}" class="flex-grow border-b-2 border-gray-300 py-2 text-lg px-1">Overview</a>  <!-- interchaged -->
+                        <!--<a class="flex-grow border-b-2 border-gray-300 py-2 text-lg px-1">Reviews</a>		interchaged -->
+                        <a href="{% url 'leads:lead-category-update' lead.pk %}" class = "flex-grow border-b-2 border-gray-300 py-2 text-lg px-1">Category</a>
+                        <a href="{% url 'leads:lead-update' lead.pk %}" class="flex-grow text-indigo-500 border-b-2 border-indigo-500 py-2 text-lg px-1">Update Details</a> <!-- interchaged -->
+                        </div>
+                        <form method="post">
+                            {% csrf_token %}
+                            {{ form|crispy }}
+                            <button class="w-full text-white bg-blue-500 hover:bg-blue-600 px-3 py-2 rounded-md type="submit">Submit</button>
+                        </form>
+
+                        <div class="mt-5 py-5 border-t border-gray-200">
+                            <a href="{% url 'leads:lead-delete' lead.pk %}" class="w-1/2 mt-3 text-white bg-indigo-500 border-0 py-2 px-6 focus:outline-none hover:bg-indigo-600 rounded">Delete</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>	
+    {% endblock content %}`
+    ```
+- Update the leads/templates/leads/lead_category_update.html
+	```html
+    {% extends "base.html" %}
+    {% load tailwind_filters %}
+    {% block content %}
+        <section class="text-gray-600 body-font overflow-hidden">
+        <div class="container px-5 py-24 mx-auto">
+            <div class="lg:w-4/5 mx-auto flex flex-wrap">
+            <div class="lg:w-1/2 w-full lg:pr-10 lg:py-6 mb-6 lg:mb-0">
+            <h2 class="text-sm title-font text-gray-500 tracking-widest">LEAD</h2>
+            <h1 class="text-gray-900 text-3xl title-font font-medium mb-4">{{ lead.first_name }} {{ lead.last_name }}</h1>
+            <div class="flex mb-4">
+            <a href="{% url 'leads:lead-detail' lead.pk %}" class="flex-grow border-b-2 border-gray-300 py-2 text-lg px-1">Overview</a>  
+            <a href="{% url 'leads:lead-category-update' lead.pk %}" class="flex-grow text-indigo-500 border-b-2 border-indigo-500 py-2 text-lg px-1">Category</a>
+            <a href="{% url 'leads:lead-update' lead.pk %}" class="flex-grow border-b-2 border-gray-300 py-2 text-lg px-1">Update Details</a>
+            </div>
+            <form method="post">
+            {% csrf_token %}
+            {{ form|crispy }}
+            <button type="submit">Submit</button>
+            </form>
+            <a href="{% url 'leads:lead-delete' lead.pk %}" class="w-1/2 mt-3 flex ml-auto text-white bg-indigo-500 border-0 py-2 px-6 focus:outline-none hover:bg-indigo-600 rounded">Delete</a>
+            </div>
+            <img alt="ecommerce" class="lg:w-1/2 w-full lg:h-auto h-64 object-cover object-center rounded" src="https://dummyimage.com/400x400">
+            </div>
+        </div>
+        </section>	
+    {% endblock content %}
+	```
+- Update agent/templates/agents/agent_create.html
+    ```html
+    {% extends "base.html" %}
+    {% load tailwind_filters %}
+    {% block content %}
+        <div class="max-w-lg mx-auto">
+
+            <div class="py-5 border-b border-gray-200">
+                <a class="hover:text-blue-500" href="{% url 'agents:agent-list' %}">Go back to agents</a>
+            </div>
+
+            <h1 class="text-4xl text-gray-800"> Create a new agent</h1>
+            <form method="post">
+                {% csrf_token %}
+                {{ form|crispy }}
+                <button type="submit" class="w-full text-white bg-blue-500 hover:bg:blue-600 px-3 py-2 rounded-md">Submit</button>
+            </form>
+        </div>
+    {% endblock content %}
+    ```
+    Update agents/templates/agents/agent_update.html
+    ```html
+    {% extends "base.html" %}
+    {% load tailwind_filters %}
+    {% block content %}
+        <section class="text-gray-600 body-font overflow-hidden">
+        <div class="container px-5 py-24 mx-auto">
+            <div class="lg:w-4/5 mx-auto flex flex-wrap">
+            <div class="lg:w-1/2 w-full lg:pr-10 lg:py-6 mb-6 lg:mb-0">
+            <h2 class="text-sm title-font text-gray-500 tracking-widest">AGENT</h2>
+            <h1 class="text-gray-900 text-3xl title-font font-medium mb-4">{{ agent.user.username }}</h1>
+            <div class="flex mb-4">
+            <a href="{% url 'agents:agent-detail' agent.pk %}" class="flex-grow border-b-2 border-gray-300 py-2 text-lg px-1">Overview</a>  <!-- interchaged -->
+            <a class="flex-grow border-b-2 border-gray-300 py-2 text-lg px-1">Reviews</a>		<!-- interchaged -->
+            <a href="{% url 'agents:agent-update' agent.pk %}" class="flex-grow text-indigo-500 border-b-2 border-indigo-500 py-2 text-lg px-1">Update Details</a> <!-- interchaged -->
+            </div>
+            <form method="post">
+                {% csrf_token %}
+                {{ form|crispy }}
+                <button type="submit" class="w-full text-white bg-blue-500 hover:bg:blue-600 px-3 py-2 rounded-md">Submit</button>
+            </form>
+            <div class="mt-5 py-5 border-t border-gray-200">
+                <a href="{% url 'agents:agent-delete' agent.pk %}" class="w-1/2 mt-3 text-white bg-indigo-500 border-0 py-2 px-6 focus:outline-none hover:bg-indigo-600 rounded">Delete</a>
+            </div>
+            <img alt="ecommerce" class="lg:w-1/2 w-full lg:h-auto h-64 object-cover object-center rounded" src="https://dummyimage.com/400x400">
+            </div>
+        </div>
+        </section>	
+    {% endblock content %}
+    ```
+- Update the agent_delete.html
+    ```html
+    {% extends "base.html" %}
+    {% load tailwind_filters %}
+
+    {% block content %}
+    <div class="max-w-lg mx-auto">
+        <div class="py-5 border-b border-gray-200">
+            <a class="hover:text-blue-500" href="{% url 'agents:agent-list' %}">Go back to agents</a>
+        </div>
+
+        <h1 class="text-3xl text-gray-800">Are you sure you want to delete this agent?</h1>
+        <form method="post" class="mt-5">
+            {% csrf_token %}
+            {{ form|crispy }}
+            <button type="submit" class="w-full text-white bg-blue-500 hover:bg:blue-600 px-3 py-2 rounded-md">Submit</button>
+        </form>
+    </div>
+    {% endblock content %}
+    ``
+
+- Update the lead_delete.html
+    ```html
+    {% extends "base.html" %}
+    {% load tailwind_filters %}
+
+    {% block content %}
+    <div class="max-w-lg mx-auto">
+        <div class="py-5 border-b border-gray-200">
+            <a class="hover:text-blue-500" href="{% url 'leads:lead-list' %}">Go back to leads</a>
+        </div>
+
+        <h1 class="text-3xl text-gray-800">Are you sure you want to delete this lead?</h1>
+        <form method="post" class="mt-5">
+            {% csrf_token %}
+            {{ form|crispy }}
+            <button type="submit" class="w-full text-white bg-blue-500 hover:bg:blue-600 px-3 py-2 rounded-md">Submit</button>
+        </form>
+    </div>
+    {% endblock content %}
+    ```
+- Update leads/templates/leads/assign_agent.html
+    ```html
+    {% extends "base.html" %}
+    {% load tailwind_filters %}
+    {% block content %}
+    <div class="max-w-lg mx-auto">
+        <div class="py-5 border-b border-gray-200">
+            <a class="hover:text-blue-500" href="{% url 'leads:lead-list' %}">Go back to leads</a>
+        </div>
+        <hr />
+
+        <h1 class="text-3xl text-gray-800">Assign an agent to this lead</h1>
+        <form method="post" class="mt-5">
+            {% csrf_token %}
+            {{ form|crispy }}
+            <button type="submit" class="w-full text-white bg-blue-500 hover:bg:blue-600 px-3 py-2 rounded-md">Submit</button>
+        </form>
+    </div>
+    {% endblock content %}
+    ```
+
+### 50 Styling a little bit more
+
+- Go to leads/models.py and add {descrip, date, phone, email} to the model
+    ```python
+    class Lead(models.Model):
+        first_name = models.CharField(max_length=20)
+        last_name = models.CharField(max_length=20)
+        age = models.IntegerFiled(default=0)
+        organization = models.ForeignKey(UserProfile, on_delete=models.CASCADE)
+        agent = models.ForeignKey("Agent", null=True, blank=True, on_delete=models.SET_NULL)
+        category = models.ForeignKey("Category", related_name = "leads", null=True, blank=True, on_delete=models.SET_NULL)
+        description = models.TextField()
+        date_added = models.DateTimmeField(auto_now_add=True)
+        phone_number = models.CharField(max_length=20)
+        email = models.EmailField()
+        :
+    ```
+- In the terminal:
+    ```bash
+    python manage.py makemigrations
+    Selection an otion: 1
+    >> timezone.now
+    ```
+    Do for all the leads that were created and end with
+    ```bash
+    python manage.py migrate
+    python manage.py runserver
+    ```
+- Edit the leads/forms.py
+    ```python
+    class LeadModelForm(forms.ModelForm):
+        class Meta:
+            model = Lead
+            fields = (
+                'first_name',
+                'last_name',
+                'age',
+                'agent',
+                'description',
+                'phone_number',
+                'email',
+            )
+    ```
+    Then run again `python manage.py runserver`
+- Fix in ./leads/view.py/ 50 - 4:40 Error at creating a lead in `http://127.0.0.1:8000/leads/create`, after clicking on submit
+    ```python
+    class LeadCreateView(OrganizerAndLoginRequiredMixin, generic.CreateView):
+    template_name = "leads/lead_create.html"
+    form_class = LeadModelForm
+    def get_success_url(self):
+        return reverse("leads:lead-list")
+
+    def form_valid(self, form):
+        lead = form.save(commit=False)
+        lead.organization = self.request.user.userprofile
+        lead.save()
+        send_mail(
+            subject="A lead has been created",
+            message="Go to the website to see the new lead",
+            from_email="test@test.com",
+            recipient_list=["test2@test.com"]
+        )
+        return super(LeadCreateView, self).form_valid(form)   
+    ```
+- Edit the leads/templates/leads/lead_list.html file
+    ```html
+    {% extends "base.html" %}
+
+    {% block content %}
+
+    <section class="text-gray-700 body-font">
+        <div class="container px-5 py-24 mx-auto flex flex-wrap">
+            <div class="w-full mb-6 py-6 flex justify-between items-center border-b border-gray-200">
+                <div>
+                    <h1 class="text-4xl text-gray-800">Leads</h1>
+                    <a class="text-gray-500 hover:text-blue-500" href="{% url 'leads:category-list' %}">
+                        View categories
+                    </a>
+                </div>
+                {% if request.user.is_organizer %}
+                <div>
+                    <a class="text-gray-500 hover:text-blue-500" href="{% url 'leads:lead-create' %}">
+                        Create a new lead
+                    </a>
+                </div>
+                {% endif %}
+            </div>
+
+            <div class="flex flex-col w-full">
+                <div class="-my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
+                <div class="py-2 align-middle inline-block min-w-full sm:px-6 lg:px-8">
+                    <div class="shadow overflow-hidden border-b border-gray-200 sm:rounded-lg">
+                    <table class="min-w-full divide-y divide-gray-200">
+                        <thead class="bg-gray-50">
+                            <tr>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                First Name
+                                </th>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Last Name
+                                </th>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Age
+                                </th>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Email
+                                </th>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Cell Phone Number
+                                </th>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Category
+                                </th>
+                                <!--
+                                <th scope="col" class="relative px-6 py-3">
+                                <span class="sr-only">Edit</span>
+                                </th>
+                                -->
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    Modify
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for lead in leads %}
+                                <tr class="bg-white">
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                                        <a class="text-blue-500 hover:text-blue-800" href="{% url 'leads:lead-detail' lead.pk %}">{{ lead.first_name }}</a>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                        {{ lead.last_name }}
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                        {{ lead.age }}
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                        {{ lead.email }}
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                        {{ lead.phone_number }}
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        {% if lead.category %}
+                                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
+                                                {{ lead.category.name }}
+                                            </span>
+                                        {% else %}
+                                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-gray-100 text-gray-800">
+                                                Unassigned
+                                            </span>
+                                        {% endif %}
+                                    </td>
+                                    <td class="px-8 py-4 whitespace-nowrap  text-sm font-medium">
+                                        <a href="{% url 'leads:lead-update' lead.pk %}" class="text-indigo-600 hover:text-indigo-900">
+                                            Edit
+                                        </a>
+                                    </td>
+                                </tr>
+
+                            {% empty %}
+
+                            <p>There are currently no leads</p>
+
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                    </div>
+                </div>
+                </div>
+            </div>
+    
+            {% if unassigned_leads.exists %}
+                <div class="mt-5 flex flex-wrap -m-4">
+                    <div class="p-4 w-full">
+                        <h1 class="text-4xl text-gray-800">Unassigned leads</h1>
+                    </div>
+                    {% for lead in unassigned_leads %}
+                    <div class="p-4 lg:w-1/2 md:w-full">
+                        <div class="flex border-2 rounded-lg border-gray-200 p-8 sm:flex-row flex-col">
+                            <div class="w-16 h-16 sm:mr-8 sm:mb-0 mb-4 inline-flex items-center justify-center rounded-full bg-indigo-100 text-indigo-500 flex-shrink-0">
+                                <svg fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="w-8 h-8" viewBox="0 0 24 24">
+                                    <path d="M22 12h-4l-3 9L9 3l-3 9H2"></path>
+                                </svg>
+                            </div>
+                            <div class="flex-grow">
+                                <h2 class="text-gray-900 text-lg title-font font-medium mb-3">
+                                    {{ lead.first_name }} {{ lead.last_name }}
+                                </h2>
+                                <p class="leading-relaxed text-base">
+                                    {{ lead.description }}
+                                </p>
+                                <a href="{% url 'leads:assign-agent' lead.pk %}" class="mt-3 text-indigo-500 inline-flex items-center">
+                                    Assign an agent
+                                    <svg fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="w-4 h-4 ml-2" viewBox="0 0 24 24">
+                                        <path d="M5 12h14M12 5l7 7-7 7"></path>
+                                    </svg>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        </div>
+    </section>
+    {% endblock content %}
+
+    <!-- 
+    extends "base.html" 
+    block content
+    <section class="text-gray-600 body-font">
+        <div class="container px-5 py-24 mx-auto flex flex-wrap">
+            <div class="w-full mb-6 py-6 flex justify-between items-center border-b border-gray-200">
+                <div>
+                    <h1 class="text-4xl text-gray-800">Lead</h1>
+                    <a class="text-gray-500 hover:text-blue-500" href="{% url 'leads:category-list' %}">
+                        Vuew categories
+                    </a>
+                </div>
+                {% if request.user.is_organizer %}
+                <div>
+                    <a class="text-gray-500 hover:text-blue-500" href="{% url 'leads:lead-create' %}">Create a new lead</a>
+                </div>
+                {% endif %}
+            </div>
+            <div class="flex flex-wrap -m-4">
+                {% for lead in leads %}
+                <div class="p-4 lg:w-1/2 md:w-full">
+                    <div class="flex border-2 rounded-lg border-gray-200 border-opacity-50 p-8 sm:flex-row flex-col">
+                        <div class="w-16 h-16 sm:mr-8 sm:mb-0 mb-4 inline-flex items-center justify-center rounded-full bg-indigo-100 text-indigo-500 flex-shrink-0">
+                            <svg fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="w-8 h-8" viewBox="0 0 24 24">
+                                <path d="M22 12h-4l-3 9L9 3l-3 9H2"></path>
+                            </svg>
+                        </div>
+                        <div class="flex-grow">
+                            <h2 class="text-gray-900 text-lg title-font font-medium mb-3">{{ lead.first_name }} {{ lead.last_name }}</h2>
+                            <p class="leading-relaxed text-base">Blue bottle crucifix vinyl post-ironic four dollar toast vegan taxidermy. Gastropub indxgo juice poutine.</p>
+                            <a href="{% url 'leads:lead-detail' lead.pk %}" class="mt-3 text-indigo-500 inline-flex items-center">
+                                View this lead
+                                <svg fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="w-4 h-4 ml-2" viewBox="0 0 24 24">
+                                    <path d="M5 12h14M12 5l7 7-7 7"></path>
+                                </svg>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            {% if unassigned_leads.exists %}
+                <div class="mt-5 flex flex-wrap -m-4">
+                    <div class="p-4 w-full">
+                        <h1 class="text-4xl text-gray-800">Unassigned leads</h1>
+                    </div>
+                    {% for lead in unassigned_leads %}
+                    <div class="p-4 w-full lg:w-1/2 md:w-full">
+                        <div class="flex border-2 rounded-lg border-gray-200 border-opacity-50 p-8 sm:flex-row flex-col">
+                            <div class="w-16 h-16 sm:mr-8 sm:mb-0 mb-4 inline-flex items-center justify-center rounded-full bg-indigo-100 text-indigo-500 flex-shrink-0">
+                                <svg fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="w-8 h-8" viewBox="0 0 24 24">
+                                    <path d="M22 12h-4l-3 9L9 3l-3 9H2"></path>
+                                </svg>
+                            </div>
+                            <div class="flex-grow">
+                                <h2 class="text-gray-900 text-lg title-font font-medium mb-3">{{ lead.first_name }} {{ lead.last_name }}</h2>
+                                <p class="leading-relaxed text-base">
+                                    {{ lead.description }}
+                                </p>
+                                <a href="{% url 'leads:assign-agent' lead.pk %}" class="mt-3 text-indigo-500 inline-flex items-center">
+                                    Assign an agent
+                                    <svg fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="w-4 h-4 ml-2" viewBox="0 0 24 24">
+                                        <path d="M5 12h14M12 5l7 7-7 7"></path>
+                                    </svg>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        </div>
+    </section>
+    endblock content
+    -->
+    ```
+- Change the default redirect after loggin out, go to `crm/settings.py`
+    ```python
+    :
+    AUTH_USER_MODEL = 'leads.User'
+    EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
+    LOGIN_REDIRECT_URL = "/leads"
+    LOGIN_URL = "/login"
+    LOGOUT_REDIRECT_URL = "/"
+
+    CRISPY_ALLOWED_TEMPLATE_PACKS = "tailwind"
+    CRISPY_TEMPLATE_PACK = 'tailwind'
+    ```
+- Update the leads/templates/leads/lead_detail.html
+	```html
+	{% extends "base.html" %}
+	{% block content %}
+		<section class="text-gray-600 body-font overflow-hidden">
+		  <div class="container px-5 py-24 mx-auto">
+		    <div class="lg:w-4/5 mx-auto flex flex-wrap">
+		      <div class="lg:w-1/2 w-full lg:pr-10 lg:py-6 mb-6 lg:mb-0">
+			<h2 class="text-sm title-font text-gray-500 tracking-widest">Lead</h2>
+			<h1 class="text-gray-900 text-3xl title-font font-medium mb-4">{{ lead.first_name }} {{ lead.last_name }}</h1>
+
+            <div class="flex mb-4">
+			  <a href="{% url 'leads:lead-detail' lead.pk %}" class="flex-grow border-b-2 border-gray-300 py-2 text-lg px-1">Overview</a>  
+			  <a href="{% url 'leads:lead-category-update' lead.pk %}" class="flex-grow text-indigo-500 border-b-2 border-indigo-500 py-2 text-lg px-1">Category</a>
+			  <a href="{% url 'leads:lead-update' lead.pk %}" class="flex-grow border-b-2 border-gray-300 py-2 text-lg px-1">Update Details</a>
+			</div>
+
+            <p class="leading-relaxed mb-4">{{ lead.description }}</p>
+			<div class="flex border-t border-gray-200 py-2">
+			  <span class="text-gray-500">Age</span>
+			  <span class="ml-auto text-gray-900">{{ lead.age }}</span>
+			</div>
+			<div class="flex border-t border-gray-200 py-2">
+			  <span class="text-gray-500">Email</span>
+			  <span class="ml-auto text-gray-900">{{ lead.email }}</span>
+			</div>
+			<div class="flex border-t border-b mb-6 border-gray-200 py-2">
+			  <span class="text-gray-500">Phone Number</span>
+			  <span class="ml-auto text-gray-900">{{ lead.phone_number }}</span>
+			</div>
+			<div class="flex">
+			  <!-- <span class="title-font font-medium text-2xl text-gray-900">$58.00</span> -->
+			  <button class="flex ml-auto text-white bg-indigo-500 border-0 py-2 px-6 focus:outline-none hover:bg-indigo-600 rounded">Button</button>
+			  <button class="rounded-full w-10 h-10 bg-gray-200 p-0 border-0 inline-flex items-center justify-center text-gray-500 ml-4">
+			    <svg fill="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="w-5 h-5" viewBox="0 0 24 24">
+			      <path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 
+			      1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"></path>
+			    </svg>
+			  </button>
+			</div>
+		      </div>
+		      <img alt="ecommerce" class="lg:w-1/2 w-full lg:h-auto h-64 object-cover object-center rounded" src="https://dummyimage.com/400x400">
+		    </div>
+		  </div>
+		</section>	
+	{% endblock content %}
+	```
+ - Update ./leads/templates/leads/lead_update.html
+    ```html
+    {% extends "base.html" %}
+    {% load tailwind_filters %}
+    {% block content %}
+        <section class="text-gray-600 body-font overflow-hidden">
+            <div class="container px-5 py-24 mx-auto">
+                <div class="lg:w-4/5 mx-auto flex flex-wrap">
+                    <div class="w-full lg:pr-10 lg:py-6 mb-6 lg:mb-0">
+                    <!-- <div class="lg:w-1/2 w-full lg:pr-10 lg:py-6 mb-6 lg:mb-0"> -->
+                        <h2 class="text-sm title-font text-gray-500 tracking-widest">Lead</h2>
+                        <h1 class="text-gray-900 text-3xl title-font font-medium mb-4">{{ lead.first_name }} {{ lead.last_name }}</h1>
+                        <div class="flex mb-4">
+                        <a href="{% url 'leads:lead-detail' lead.pk %}" class="flex-grow border-b-2 border-gray-300 py-2 text-lg px-1">Overview</a>  <!-- interchaged -->
+                        <!--<a class="flex-grow border-b-2 border-gray-300 py-2 text-lg px-1">Reviews</a>		interchaged -->
+                        <a href="{% url 'leads:lead-category-update' lead.pk %}" class = "flex-grow border-b-2 border-gray-300 py-2 text-lg px-1">Category</a>
+                        <a href="{% url 'leads:lead-update' lead.pk %}" class="flex-grow text-indigo-500 border-b-2 border-indigo-500 py-2 text-lg px-1">Update Details</a> <!-- interchaged -->
+                        </div>
+                        <form method="post">
+                            {% csrf_token %}
+                            {{ form|crispy }}
+                            <button class="w-full text-white bg-blue-500 hover:bg-blue-600 px-3 py-2 rounded-md type="submit">Submit</button>
+                        </form>
+
+                        <div class="mt-5 py-5 border-t border-gray-200">
+                            <a href="{% url 'leads:lead-delete' lead.pk %}" class="w-1/2 mt-3 text-white bg-indigo-500 border-0 py-2 px-6 focus:outline-none hover:bg-indigo-600 rounded">Delete</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>	
+    {% endblock content %}
+    ```
