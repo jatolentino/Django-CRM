@@ -17,8 +17,10 @@ class LeadModelForm(forms.ModelForm):
 			'last_name',
 			'age',
 			'agent',
-		)
-
+            'description',
+            'phone_number',
+            'email',
+        )
 class CustomUserCreationForm(UserCreationForm):
     class Meta:
         model = User

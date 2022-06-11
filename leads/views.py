@@ -56,7 +56,6 @@ class LeadCreateView(OrganizerAndLoginRequiredMixin, generic.CreateView):
     template_name = "leads/lead_create.html"
     form_class = LeadModelForm
     def get_success_url(self):
-        #return "/leads"
         return reverse("leads:lead-list")
 
     def form_valid(self, form):
