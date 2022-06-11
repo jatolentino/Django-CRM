@@ -2037,6 +2037,7 @@ Inside agents/templates/agents/ create the agent_list.html file and edit it <br>
 	<p align="center">
 	    <img src="https://raw.githubusercontent.com/jatolentino/Django-notes/main/sources/img/Step36-test-1.png">
 	</p>
+
 ### 37 Filter the agents display only to their users counterparts
 - Edit the agents/views.py file
     ```python
@@ -2130,7 +2131,8 @@ Inside agents/templates/agents/ create the agent_list.html file and edit it <br>
     ```
     Verify: Go to `http://127.0.0.1:8000/admin/leads/user/` choose a user and check the options down below for organizer(set to True as default) and agent.
     >Only users set to be organizers can create and see all agents available <br>
-    >Users which are agents can only see the agent which is assigned to them
+    >Users which are agents can only see the agent which is assigned to them. <br>
+    >Sometimes there might be an error in makemigrations, so either delete the database: dbsqlite3, or delete the init files: 0001_initial.py, etc.
 
 ### 39 Render the tabs that agents/organizer should only see
     >In this case, organizers can see the correct left tabs: Agents & Leads, and agents can see only Leads<br>
@@ -2434,8 +2436,9 @@ Inside agents/templates/agents/ create the agent_list.html file and edit it <br>
     ```
 ### 42 Password Reset
 - Edit the templates/registration/login.html/
-    ``html
-    {% exntends 'base.html' %}
+
+    ```html
+    {% extends 'base.html' %}
     {% block content %}
     <form method = "post">
         {% csrf_token %}
@@ -2446,7 +2449,7 @@ Inside agents/templates/agents/ create the agent_list.html file and edit it <br>
     </form>
     {% endblock content %}
     ```
-- Create in templates/registration/ the html files: password_reset_done.html, password_reset_email.html, password_reset_forms.html, password_reset_confirm.html
+- Create in templates/registration/ the html files: password_reset_done.html, password_reset_email.html, password_reset_form.html, password_reset_confirm.html
 - Edit and add the class in crm/urls.py
     ```python
     from django.contrib.auth.views import (
@@ -2457,14 +2460,23 @@ Inside agents/templates/agents/ create the agent_list.html file and edit it <br>
     PasswordResetConfirmView,
     PasswordResetCompleteView,
     :
+    urlpatterns = [
+        path('admin/', admin.site.urls),
+        path('', LandingPageView.as_view(), name='landing-page'),
+        path('leads/', include('leads.urls', namespace="leads")),
+        path('agents/', include('agents.urls', namespace='agents')),
+        path('signup/', SignupView.as_view(), name='signup'),
+        path('login/', LoginView.as_view(), name='login'),
+        path('logout/', LogoutView.as_view(), name='logout'),
         path('reset-password/', PasswordResetView.as_view(), name='reset-password'),
-        path('reset-reset-done/', PasswordResetDoneView.as_view(), name='password_reset_done'),
-        path('reset-reset-confirm/<uid64>/<token>/', PasswordResetConfirmView.as_view(), name='password_reset_confirm'),
-        path('reset-reset-complete/', PasswordResetDoneView.as_view(), name='password_reset_complete'),
+        path('password-reset-done/', PasswordResetDoneView.as_view(), name='password_reset_done'),
+        path('password-reset-confirm/<uidb64>/<token>/', PasswordResetConfirmView.as_view(), name='password_reset_confirm'),
+        path('password-reset-complete/', PasswordResetCompleteView.as_view(), name='password_reset_complete'),
+    ]
     ```
 - Edit the password_reset_form.html in crm/templates/registration/
-    ``html
-    {% exntends 'base.html' %}
+    ```html
+    {% extends 'base.html' %}
     {% block content %}
     <form method="post">
         {% csrf_token %}
@@ -2477,7 +2489,7 @@ Inside agents/templates/agents/ create the agent_list.html file and edit it <br>
     ```
 - Edit the password_reset_confirm.html in crm/templates/registration/
     ```html
-    {% exntends 'base.html' %}
+    {% extends 'base.html' %}
     {% block content %}
     <h1> Enter your new password</h1>
     <form method="post">
@@ -2490,10 +2502,12 @@ Inside agents/templates/agents/ create the agent_list.html file and edit it <br>
 - Edit the password_reset_done.html in crm/templates/registration/
     ```html
     {% extends "base.html" %}
+    {% block content %}
         <h1>We have sent you an email to confirm your password reset</h1>
     {% endblock content %}
     ```
 - Edit the password_reset_email.html in crm/templates/registration/
+
     ```html
     You've requested to reset your password
     Please go to the following URL to enter your new password:
@@ -2501,7 +2515,7 @@ Inside agents/templates/agents/ create the agent_list.html file and edit it <br>
     ```
 - Edit the password_reset_complete.html in crm/templates/registration/
     ```html
-    {% exntends 'base.html' %}
+    {% extends 'base.html' %}
     {% block content %}
     
         <h1>Password reset complete</h1>
@@ -2509,13 +2523,13 @@ Inside agents/templates/agents/ create the agent_list.html file and edit it <br>
             Click <a href="{% url 'login' %}"> here to login</a>
         </p>
 
-    {% endblock contente %}
+    {% endblock content %}
     ```
     Test: Grab a user and its email already created, go to `http://127.0.0.1:8000/login`, choose Forgot password, and then fill the email.<br>
     Check the link of the email sent in the terminal, copy the link into the browser and reset the email. Login with the new user's password.
 
 ### 43 List leads that have not been assigned yet (only for the organizers)
-- Edit the crm/leads/views.py
+- Edit the ./leads/views.py
     ```python
     class LeadListView(ListView):
         template_name = "leads/lead_list.html"
@@ -2524,9 +2538,9 @@ Inside agents/templates/agents/ create the agent_list.html file and edit it <br>
             user = self.reques.user
             # initial queryset of leads for the entrie organization
             if user.is_organizer:
-                queryset = Lead.objects.filter(organization=user.userprofile, age__isnull=False)
+                queryset = Lead.objects.filter(organization=user.userprofile, agent__isnull=False)
             else:
-                queryset = Lead.objects.filter(organization=usert.agent.organization, age__isnull=False)
+                queryset = Lead.objects.filter(organization=user.agent.organization, agent__isnull=False)
                 #filter for the agent that is logged in
                 queryset = queryset.filet(agent__user=user)
             return queryset
@@ -2537,8 +2551,8 @@ Inside agents/templates/agents/ create the agent_list.html file and edit it <br>
             if user.is_organizer:
                 queryset = Lead.objects.filter(organization=user.userprofile, agent__isnull=True)
                 context.update({
-                    "unassigned_lead": queryset
-                )}
+                    "unassigned_leads": queryset
+                })
             return context
     ```
 - Update the lead_list.html of leads/templates/leads/
@@ -2612,20 +2626,21 @@ Inside agents/templates/agents/ create the agent_list.html file and edit it <br>
 	</section>
 	{% endblock content %}
 	```
+
 ### 44 Assigns agents to unassigned leads
 - In templates/leads/views.py
     ```python
     from .forms import LeadForm, LeadModelForm, CustomUserCreationForm, AssignAgentForm
     :
-    class AssignAgentView(OrganizerAndLoginRequiredMixin, FormView): 
+    class AssignAgentView(OrganizerAndLoginRequiredMixin, genereic.FormView): 
         template_name = "leads/assign_agent.html"
         form_class = AssignAgentForm
 
-        def get_form_kwargs(self, *kwargs):
+        def get_form_kwargs(self, **kwargs):
             kwargs = super(AssignAgentView, self).get_form_kwargs(**kwargs)
             kwargs.update({
                 "request": self.request
-            }
+            })
             return kwargs
 
         def get_success_url(self):
@@ -2658,19 +2673,19 @@ Inside agents/templates/agents/ create the agent_list.html file and edit it <br>
     ```python
     from .models import Lead Agent
     class AssignAgentForm(forms.Form):
-        agent = form.ModelChoiceField(queryset=Agent.objects.none())
+        agent = forms.ModelChoiceField(queryset=Agent.objects.none())
         
-        def __init__(self, *arfs, **kwarfs):
+        def __init__(self, *args, **kwargs):
             request = kwargs.pop("request")
-            agents = Agent.objects.filter(organisation=request.user.userprofile)
+            agents = Agent.objects.filter(organization=request.user.userprofile)
             super(AssignAgentForm, self).__init__(*args, **kwargs)
             self.fields["agent"].queryset = agents
-- Edit the crm/leads/urls.py
+- Edit the ./leads/urls.py
     ```pthon
     from .views import ( ... AssignAgentView)
 
     urlpatterns = [
-        path('<int:pk>/assign-agent/', AssignAgentView.as_view(), name='lead-assign'),
+        path('<int:pk>/assign-agent/', AssignAgentView.as_view(), name='assign-agent'),
     ]
     ```
 - Update the leads/templates/lead_list.html
@@ -2686,10 +2701,10 @@ Inside agents/templates/agents/ create the agent_list.html file and edit it <br>
 		</a>
 	</div>
     ```
-    Test: Assign a lead to an agent
+    Test 1: Assign a lead to an agent
 
 ### 45 Adding a feature to categorize via a model
-- In crm/leads/models.py
+- In ./leads/models.py
     ```python
     class Lead(models.Model):
         first_name = models.CharField(max_length=20)
@@ -2708,12 +2723,12 @@ Inside agents/templates/agents/ create the agent_list.html file and edit it <br>
         def __str__(self):
             return self.name
     ```
-- Modify the crm/leads/admin.py
+- Modify the ./leads/admin.py
     ```python
     from django.contrib import admin
     from .models import User, Lead, Agent. UserProfile, Category
 
-    admin.stie.register(Category)
+    admin.site.register(Category)
     admin.site.register(User)
     admin.site.register(UserProfile)
     admin.site.register(Lead)
@@ -2721,25 +2736,25 @@ Inside agents/templates/agents/ create the agent_list.html file and edit it <br>
     ```
     In the terminal: 
     ```bash
-    python manage.py makemigration
+    python manage.py makemigrations
     python manage.py migrate
     python manage.py runserver
     ```
-    Test: Create the categories {Contacted, Converted, Unconverted} from the admin site in `http://127.0.0.1:8000/admin/leads/category/add`
+    Test 1: Create the categories {Contacted, Converted, Unconverted} from the admin site in `http://127.0.0.1:8000/admin/leads/category/add`
 
 ### 46 View the list of categories
-- Edit crm/leads/views.py
+- Edit ./leads/views.py
     ```python
     :
-    class AssignAgentView(LoginRequiredMixin, ListView):
+    class CategoryListView(LoginRequiredMixin, generic.ListView):
         template_name = "leads/category_list.html"
     ```
-- Edit crm/leads/models.py and migrate with null the default properties
+- Edit ./leads/models.py and migrate with null the default properties
     ```python
     :
     class Category(models.Model):
         name = models.CharField(max_length=30) #New, Contacted, Converted, Unconverted
-        organization = models.ForeignKey(Userprofile, null=True, blank=True, on_delete=models.CASCADE) #adding null and blank so that when the migration is made, the parameters don't require default values
+        organization = models.ForeignKey(UserProfile, null=True, blank=True, on_delete=models.CASCADE) #adding null and blank so that when the migration is made, the parameters don't require default values
         def __str__(self):
             return self.name
     ```
@@ -2749,17 +2764,17 @@ Inside agents/templates/agents/ create the agent_list.html file and edit it <br>
     :
     class Category(models.Model):
         name = models.CharField(max_length=30) #New, Contacted, Converted, Unconverted
-        organization = models.ForeignKey(Userprofile, on_delete=models.CASCADE) #adding null and blank so that when the migration is made, the parameters don't require default values
+        organization = models.ForeignKey(UserProfile, on_delete=models.CASCADE) #adding null and blank so that when the migration is made, the parameters don't require default values
         def __str__(self):
             return self.name
     ```
-    In the terminal run: `python manage.py makemigrations` and choose the option `2) Ignore for now...`, then apply `python manage.py migrate` and despite the error run the server `python manage.py runserver` which yields an uapplied migration error. Go to `http://127.0.0.1:8000/admin/leads/category/` and configure the organization of the categories. Finally stop the server and migrate without problems `python manage.py migrate` and run the server
+    In the terminal run: `python manage.py makemigrations` and choose the option `2) Ignore for now...`, then apply `python manage.py migrate` and despite the error run the server `python manage.py runserver` which yields an uapplied migration error. Go to `http://127.0.0.1:8000/admin/leads/category/` and configure the organization of the categories, check Tes45.1 {Name: Contacted, Organization: jose, Name: Converted, Organization: jose, Name: Unconverted, Name: Jose}. Finally stop the server and migrate without problems `python manage.py migrate` and run the server
 
 - In crm/leads/views.py
     ```python
     from .models import Lead, Agent, Category
     :
-    class CategoryListView(LoginRequiredMixin, ListView):
+    class CategoryListView(LoginRequiredMixin, genereic.ListView):
         template_name = "leads/category_list.html"
         def get_queryset(self):
             user = self.request.user
@@ -2769,7 +2784,7 @@ Inside agents/templates/agents/ create the agent_list.html file and edit it <br>
                 queryset = Category.objects.filter(organization=user.organization)
             return queryset
     ```
-- Create crm/leads/templates/leads/category_list.html and paste the grabbed code from Tailblock (PRICING last option) at `https://mertjf.github.io/tailblocks/` inside the block content
+- Create ./leads/templates/leads/category_list.html and paste the grabbed code from Tailblock (PRICING last option) at `https://mertjf.github.io/tailblocks/` inside the block content
 
     ```html
     {% extends "base.html" %}
@@ -2815,9 +2830,9 @@ Inside agents/templates/agents/ create the agent_list.html file and edit it <br>
     </section>
     {% endblock content %}
     ```
-- Edit crm/leads/views.py
+- Edit ./leads/views.py
     ```python
-    class CategoryListView(LoginRequiredMixin, ListView):
+    class CategoryListView(LoginRequiredMixin, generic.ListView):
         template_name = "leads/category_list.html"
         context_object_name = "category_list"
         def get_context_data(self, **kwargs):
@@ -2841,19 +2856,19 @@ Inside agents/templates/agents/ create the agent_list.html file and edit it <br>
                 queryset = Category.objects.filter(organization=user.organization)
             return queryset
     ```
-- Edit crm/leads/urls.py
+- Edit ./leads/urls.py
     ```python
     from views.py import( LeadsListViews, ..., AssignAgentView, CategoryListView)
 
     urlpattern = [
         :
-        path('categories/', CateogryListView.as_view(), name='category-list'),
+        path('categories/', CategoryListView.as_view(), name='category-list'),
     ]
     ```
-    Test: Go to `http://127.0.0.1:8000/leads/categories`
+    Test 46.1: Go to `http://127.0.0.1:8000/leads/categories`
 
 ### 47 Configure the Category Detail View
-- Edit crm/leads/views.py
+- Edit ./leads/views.py
     ```python
     :
     class CategoryDetailView(LoginRequiredMixin, DetailView):
@@ -2862,7 +2877,7 @@ Inside agents/templates/agents/ create the agent_list.html file and edit it <br>
 
         def get_context_data(self, **kwargs):
             context = super(CategoryDetailView, self).get_context_data(**kwargs)
-            leads self.get_object().leads.all()
+            leads = self.get_object().leads.all()
 
             context.update({
                 "leads": leads
@@ -2874,10 +2889,10 @@ Inside agents/templates/agents/ create the agent_list.html file and edit it <br>
             if user.is_organizer:
                 queryset = Category.objects.filter(organization=user.userprofile)
             else:
-                queryset = Category.objects.filter(organization=user.organization)
+                queryset = Category.objects.filter(organization=user.agent.organization)
             return queryset
     ```
-- Before the previous step, add a tag name (`related_name`) to the Category in the Lead model of crm/leads/models.py
+- Before the previous step, add a tag name (`related_name`) to the Category in the Lead model of ./leads/models.py
 
     ```python
     :
@@ -2890,7 +2905,7 @@ Inside agents/templates/agents/ create the agent_list.html file and edit it <br>
         category = models.ForeignKey("Category", related_name = "leads", null=True, blank=True, on_delete=models.SET_NULL)
         :
     ```
-- Create crm/leads/templates/leads/category_detail.html
+- Create ./leads/templates/leads/category_detail.html
     ```html
     {% extends "base.html" %}
 
@@ -2937,18 +2952,18 @@ Inside agents/templates/agents/ create the agent_list.html file and edit it <br>
     python manage.py migrate
     python manage.py runserverv
     ```
-- Update the category_list
+- Update the ./leads/urls.py to add the path of category-detail
     ```python
     from django.urls import path
     from .views import (LeadListView, ..., CategoryListView, CategoryDetailView)
 
     urlpatterns = [
         :
-        path('categories/<int:pk>/', CategoryDetailViews.as_view(), name='category-detail'),
+        path('categories/<int:pk>/', CategoryDetailView.as_view(), name='category-detail'),
     ]
     path
     ```
-- Update the crm/leads/templates/leads/category_list.html
+- Update the ./leads/templates/leads/category_list.html (See line 3438)
     ```html
     {% for category in category_list %}
     <tr>
@@ -2959,17 +2974,29 @@ Inside agents/templates/agents/ create the agent_list.html file and edit it <br>
     </tr>
     {% endfor %}
     ```
-- Configure crm/leads/lead_list.html (line 8)
+- Configure ./leads/templates/leads/lead_list.html (line 8)
     ```html
-    <div>
-        <h1 class="text-4xl text-gray-800">Leads</h1>
-        <a class="text-gray-500 hover:text-blue-500" href="{% url 'leads:category-list' %}">
-            Vuew categories
-        </a>
-    </div>
+    {% extends "base.html" %}
+    {% block content %}
+    <section class="text-gray-600 body-font">
+        <div class="container px-5 py-24 mx-auto flex flex-wrap">
+            <div class="w-full mb-6 py-6 flex justify-between items-center border-b border-gray-200">
+                <div>
+                    <h1 class="text-4xl text-gray-800">Lead</h1>
+                    <a class="text-gray-500 hover:text-blue-500" href="{% url 'leads:category-list' %}">
+                        Vuew categories
+                    </a>
+                </div>
+                {% if request.user.is_organizer %}
+                <div>
+                    <a class="text-gray-500 hover:text-blue-500" href="{% url 'leads:lead-create' %}">Create a new lead</a>
+                </div>
+                {% endif %}
+            </div>
     ```
     Test: Go to `http://`127.0.0.1:8000/admin/leads/lead`, choose a lead a configure his category (i.e. contacted)<br>
     Then go to `http://`127.0.0.1:8000/leads/`, click on `View categories` and view the `contacted` in the Name column and verify that the user is listed there
+
 
 - Simplify the selection of leads in the category, in crm/leads/templates/leads/category_detail.html (line 28)
     ```html
@@ -2998,54 +3025,71 @@ Inside agents/templates/agents/ create the agent_list.html file and edit it <br>
         #    })
         #    return context
     ```
-- Update the category of a lead, in crm/leads/category_datail.html
+### 48 cateogy Update view
+- Update the category of a lead, in ./leads/category_datail.html (line 3468)
     ```html
     :
     <tbody>
-        {% for lead in category.leads.all %} <!-- {% for lead in leads %} -->
+        {% for lead in category.leads.all %}
             <tr>
                 <td class="px-4 py-3">
-                    <a class="hover:text-blue-500" href="{% url 'leads:lead-detail' lead.p %}"> {{ lead.first_name }}</td>
+                    <a class="hover:text-blue-500" href="{% url 'leads:lead-detail' lead.pk %}"> {{ lead.first_name }} </a>
+                </td>
                 <td class="px-4 py-3">{{ lead.last_name }}</td>
             </tr>
         {% endfor %}
     </tbody>
     ```
-- Update crm/leads/lead_detail.html line 15
+- Update leads/templates/leads/lead_detail.html line 15
     ```html
-    <a href="#" class="flex-grow border-b-2 border-gray-300 py-2 text-lg px-1">
-        Category
-    </a>
+    {% extends "base.html" %}
+    {% block content %}
+
+        <section class="text-gray-600 body-font overflow-hidden">
+        <div class="container px-5 py-24 mx-auto">
+            <div class="lg:w-4/5 mx-auto flex flex-wrap">
+            <div class="lg:w-1/2 w-full lg:pr-10 lg:py-6 mb-6 lg:mb-0">
+            <h2 class="text-sm title-font text-gray-500 tracking-widest">Lead</h2>
+            <h1 class="text-gray-900 text-3xl title-font font-medium mb-4">{{ lead.first_name }} {{ lead.last_name }}</h1>
+            <div class="flex mb-4">
+                <a href="{% url 'leads:lead-detail' lead.pk %}" class="flex-grow text-indigo-500 border-b-2 border-indigo-500 py-2 text-lg px-1">Overview</a>  <!-- interchaged -->
+                <a class="flex-grow border-b-2 border-gray-300 py-2 text-lg px-1">Reviews</a>		<!-- interchaged -->
+                <a href="{% url 'leads:lead-update' lead.pk %}" class="flex-grow border-b-2 border-gray-300 py-2 text-lg px-1">Update Details</a> <!-- interchaged -->
+                <a href="#" class="flex-grow border-b-2 border-gray-300 py-2 text-lg px-1">
+                    Category
+                </a>
+            </div>
+        :
     ```
-- Add the model leadcategoryupdateview in vrm/leads/views.py
+- Add the class in ./leads/forms.py
+    ```python
+    class LeadCategoryUpdateForm(forms.ModelForm):
+    class Meta:
+        model = Lead
+        fields = (
+            'category',
+        )
+    ```
+- Add the model leadcategoryupdateview in ./leads/views.py
     ```python
     from .forms import LeadForm, ..., AssignAgentForm, LeadCategoryUpdateForm
-    class LeadCategoryUpdateView(LoginRequiredMixin, UpdateView):
+    class LeadCategoryUpdateView(LoginRequiredMixin, generic.UpdateView):
             template_name = "leads/lead_category_update.html"
             form_class = LeadCategoryUpdateForm
 
             def get_queryset(self):
                 user = self.request.user
                 if user.is_organizer:
-                    queryset - Lead.objects.filter(organization=user.userprofile)
+                    queryset = Lead.objects.filter(organization=user.userprofile)
                 else:
                     queryset = Lead.objects.filter(organization=user.agent.organization)
-                    queryset = queryset.fileter(agent__user=user)
+                    queryset = queryset.filter(agent__user=user)
                 return queryset
 
             def get_success_url(self):
-                return reverse("leads:lead-list", kwargs={"pk": self.get_object().id})
+                return reverse("leads:lead-detail", kwargs={"pk": self.get_object().id})
     ```
-- Add the class in crm/leads/forms.py
-    ```python
-    class LeadCategoryUpdateForm(forms.MdelForm):
-        class Meta:
-            model = Lead
-            fields = (
-                'category,
-            )
-    ```
-- Update in crm/leads/urls.py
+- Update in ./leads/urls.py
     ```python
     from .views import (LeadListView, ...,CategoryDetailView, LeadCategoryUpdateView)
     ;
@@ -3055,9 +3099,25 @@ Inside agents/templates/agents/ create the agent_list.html file and edit it <br>
     ]
 - Update leads/templates/leads/lead_detail.html, line 15
    ```html
-    <a href="{% url 'leads:lead-category-update' ead.pk %}" class="flex-grow border-b-2 border-gray-300 py-2 text-lg px-1">
-        Category
-    </a>
+    {% extends "base.html" %}
+    {% block content %}
+
+        <section class="text-gray-600 body-font overflow-hidden">
+        <div class="container px-5 py-24 mx-auto">
+            <div class="lg:w-4/5 mx-auto flex flex-wrap">
+            <div class="lg:w-1/2 w-full lg:pr-10 lg:py-6 mb-6 lg:mb-0">
+            <h2 class="text-sm title-font text-gray-500 tracking-widest">Lead</h2>
+            <h1 class="text-gray-900 text-3xl title-font font-medium mb-4">{{ lead.first_name }} {{ lead.last_name }}</h1>
+            <div class="flex mb-4">
+                <a href="{% url 'leads:lead-detail' lead.pk %}" class="flex-grow text-indigo-500 border-b-2 border-indigo-500 py-2 text-lg px-1">Overview</a>  <!-- interchaged -->
+                <!--<a class="flex-grow border-b-2 border-gray-300 py-2 text-lg px-1">Reviews</a>	 interchaged -->
+                <a href="{% url 'leads:lead-category-update' lead.pk %}" class="flex-grow border-b-2 border-gray-300 py-2 text-lg px-1">
+                    Category
+                </a>
+                <a href="{% url 'leads:lead-update' lead.pk %}" class="flex-grow border-b-2 border-gray-300 py-2 text-lg px-1">Update Details</a> <!-- interchaged -->
+            </div>
+        </a>
+        :
     ```
 - Create the template: leads/templates/leads/lead_category_update.html
 	```html
@@ -3115,267 +3175,4 @@ Inside agents/templates/agents/ create the agent_list.html file and edit it <br>
 		</section>	
 	{% endblock content %}
     ```
-    Test by going to: `http://127.0.0.1:8000/leads/1/category` and changing the category of the lead
-### 49 Installing crispy
-- In the terminal
-    ```bash
-    pip install django-crispy-forms
-    pip install crispy-tailwind
-    pip freeze > requirements.txt
-    ```
-- Add the app in crm/settings.py
-    ```python
-    INSTALLED_APPS = [
-        :
-        'agents',
-        'crispy_forms',
-        'crispy_tailwind',
-    ]
-    : #in the bottom
-    :
-    CRISPY_ALLOWED_TEMPLATE_PACKS = "tailwind"
-    CRISPY_TEMPLATE_PACK = "tailwind"
-    ```
-- In templates/registration/login.html, add `{% load tailwind_filters %}` and replace {{ form.as_p }} with {{ form|crispy }} <br>
-Also make the same changes in password_reset_{complete,confirm,done,email,form}.html, signup.html files
-    ```html
-    {% extends 'base.html' %}
-    {% load tailwind_filters %}
-    {% block content %}
-    <div class="max-w-lg mx-auto">
-        <div class="py-5 border-t border-gray-200">
-            <a class = "hover:text-blue-500" href="{% url 'signup' %}">Don't have an account?</a>
-        </div>
-        <form method = "post" class="mt-5">
-            {% csrf_form %}
-            {{ form|crispy }}
-            <button tpe='submit' class="w-full text-white bg-blue-500 hover:bg-blue-600 px-3 py-2 rounded-md">Login</button>
-        </form>
-        <div class="py-5 border-t border-gray-200 mt-5"
-            <a class = "hover:text-blue-500" href="{% url 'reset-password' %}">Forgot password?</a>
-        </div>
-    {% enblock content %}
-    </div>
-    ```
-    Test: Go to `http://127.0.0.1:8000/admin/` and see the changes <br>
-
-    In password_reset_confirm.html
-    ```html
-        {% extends 'base.html' %}
-        {% load tailwind_filters %}
-
-        {% block content %}
-        <div class = "max-w-lg mx-auto">
-            <h1 class="text-4xl text-gray-800">Enter your new password</h1>
-
-            <form method="post">
-                {% csrf_token %}
-                {{ form|crispy }}
-                <button type='submit' class="w-full text-white bg-blue-500 hover:bg-blue-600 px-3 py-2 rounded-md">Confirm new password</button>
-            </form>
-        </div>
-        {% endblock content %}
-    ```
-    In password_reset_form.html
-    ```html
-        {% extends 'base.html' %}
-        {% load tailwind_filters %}
-
-        {% block content %}
-        <div class = "max-w-lg mx-auto">
-            <h1 class="text-4xl text-gray-800">Enter your new password</h1>
-
-            <form method="post" class="mt-5">
-                {% csrf_token %}
-                {{ form|crispy }}
-                <button type='submit' class="w-full text-white bg-blue-500 hover:bg-blue-600 px-3 py-2 rounded-md">Reset password</button>
-            </form>
-            <div class = "py-5 border-t border-gray-200 mt-5">
-                <a class="hover:text-blue-500" href="{% url 'login' %}">Already have an account?</a>
-            </div>
-        </div>
-        {% endblock content %}
-    ```
-    In the drm/templates/registration/signup.html
-    ```html
-    {% extends 'base.html' %}
-    {% load tailwind_filters %}
-    {% block content %}
-    <div class="max-w-lg mx-auto">
-        <form method = "post" class="mt-5">
-            {% csrf_form %}
-            {{ form|crispy }}
-            <button tpe='submit' class="w-full text-white bg-blue-500 hover:bg-blue-600 px-3 py-2 rounded-md">Signup</button>
-        </form>
-        <div class="py-5 border-t border-gray-200 mt-5"
-            <a class = "hover:text-blue-500" href="{% url 'login' %}">Forgot password?</a>
-        </div>
-    {% enblock content %}
-    </div>
-    ```
-    Also edit in leads/templates/leads/lead_create.html
-    ```html
-    {% extends "base.html" %}
-    {% load tailwind_filters %}
-    {% block content %}
-    <div class="max-w-lg mx-auto">
-        <a class="hover:text-blue-500" href="{% url 'leads:lead-list' %}">Go back to leads</a>
-        <div class="py-5 border-t border-gray-200">
-            <h1>Create a new lead</h1
-        </div>
-        <form method="post" class="mt-5">
-            {% csrf_token %}
-            {{ form|crispy }}
-            <button type='submit' class="w-full text-white bg-blue-500 hover:bg-blue-600 px-3 py-2 rounded-md">Submit</button>
-        </form>
-    </div>
-    {% endblock content %}
-    ```
-    In crm/templates/leads/lead_update.html
-    ```html
-	{% extends "base.html" %}
-    {% load tailwind_filters %}
-	{% block content %}
-		<section class="text-gray-600 body-font overflow-hidden">
-		  <div class="container px-5 py-24 mx-auto">
-		    <div class="lg:w-4/5 mx-auto flex flex-wrap">
-		      <div class="lg:w-1/2 w-full lg:pr-10 lg:py-6 mb-6 lg:mb-0">
-			<h2 class="text-sm title-font text-gray-500 tracking-widest">LEAD</h2>
-			<h1 class="text-gray-900 text-3xl title-font font-medium mb-4">{{ lead.first_name }} {{ lead.last_name }}</h1>
-			<div class="flex mb-4">
-			    <a href="{% url 'leads:lead-detail' lead.pk %}" class="flex-grow border-b-2 border-gray-300 py-2 text-lg px-1">Overview</a>
-			    <a href="{% url 'leads:lead-category-update' lead.pk %}" class = "flex-grow border-b-2 border-gray-300 py-2 text-lg px-2">Category</a>
-                <a href="{% url 'leads:lead-update' lead.pk %}" class="flex-grow text-indigo-500 border-b-2 border-indigo-500 py-2 text-lg px-1">Update Details</a>
-			</div>
-			<form method="post">
-                {% csrf_token %}
-                {{ form|crispy }}
-                <button class="w-full text-white bg-blue-500 hover:bg-blue-600 px-3 py-2 rounded-md type="submit">Submit</button>
-			</form>
-            <div class="mt-5 py-5 border-t border-gray-200">
-			<a href="{% url 'leads:lead-delete' lead.pk %}" class="w-1/2 mt-3 text-white bg-indigo-500 border-0 py-2 px-6 focus:outline-none hover:bg-indigo-600 rounded">Delete</a>
-            </div>
-		      </div>
-		      <img alt="ecommerce" class="lg:w-1/2 w-full lg:h-auto h-64 object-cover object-center rounded" src="https://dummyimage.com/400x400">
-		    </div>
-		  </div>
-		</section>	
-	{% endblock content %}
-    ```
-- Update the leads/templates/leads/lead_category_update.html
-	```html
-	{% extends "base.html" %}
-	{% block content %}
-		<section class="text-gray-600 body-font overflow-hidden">
-		  <div class="container px-5 py-24 mx-auto">
-		    <div class="lg:w-4/5 mx-auto flex flex-wrap">
-		      <div class="lg:w-1/2 w-full lg:pr-10 lg:py-6 mb-6 lg:mb-0">
-			<h2 class="text-sm title-font text-gray-500 tracking-widest">LEAD</h2>
-			<h1 class="text-gray-900 text-3xl title-font font-medium mb-4">{{ lead.first_name }} {{ lead.last_name }}</h1>
-			<div class="flex mb-4">
-			  <a href="{% url 'leads:lead-detail' lead.pk %}" class="flex-grow border-b-2 border-gray-300 py-2 text-lg px-1">Overview</a>  
-			  <a href="{% url 'leads:lead-category-update' lead.pk %}" class="flex-grow text-indigo-500 border-b-2 border-indigo-500 py-2 text-lg px-1">Category</a>
-			  <a href="{% url 'leads:lead-update' lead.pk %}" class="flex-grow border-b-2 border-gray-300 py-2 text-lg px-1">Update Details</a>
-			</div>
-			<form method="post">
-			{% csrf_token %}
-			{{ form.as_p }}
-			<button type="submit">Submit</button>
-			</form>
-		    </div>
-		    <img alt="ecommerce" class="lg:w-1/2 w-full lg:h-auto h-64 object-cover object-center rounded" src="https://dummyimage.com/400x400">
-		    </div>
-		  </div>
-		</section>	
-	{% endblock content %}
-	```
-- Update agent/templates/agents/agent_create.html
-    ```html
-    {% extends "base.html" %}
-    {% load tailwind_filter %}
-
-    {% block content %}
-    <div class="max-w-lg mx-auto">
-        <div class="py-5 border border-gray-200">
-            <a class="hover:text-blue-500" href="{% url 'agents:agent-list' %}">Go back to agents</a>
-        </div>
-        <h1 class="text-4xl text-gray-800"> Create a new agent</h1>
-        <form method="post">
-            {% csrf_token %}
-            {{ form|crispy }}
-            <button type="submit" class="w-full text-white bg-blue-500 hover:bg:blue-600 px-3 py-2 rounded-md">Submit</button>
-        </form>
-    {% endblock content %}
-    ```
-    Update agents/templates/agents/agent_update.html
-    ```html
-        {% extends "base.html" %}
-        {% load tailwind_filters %}
-        {% block content %}
-
-            <section class="text-gray-600 body-font overflow-hidden">
-            <div class="container px-5 py-24 mx-auto">
-                <div class="lg:w-4/5 mx-auto flex flex-wrap">
-                <div class="lg:w-1/2 w-full lg:pr-10 lg:py-6 mb-6 lg:mb-0">
-                <h2 class="text-sm title-font text-gray-500 tracking-widest">AGENT</h2>
-                <h1 class="text-gray-900 text-3xl title-font font-medium mb-4">{{ agent.user.username }}</h1>
-                <div class="flex mb-4">
-                <a href="{% url 'agents:agent-detail' agent.pk %}" class="flex-grow border-b-2 border-gray-300 py-2 text-lg px-1">Overview</a>  <!-- interchaged -->
-                <a class="flex-grow border-b-2 border-gray-300 py-2 text-lg px-1">Reviews</a>		<!-- interchaged -->
-                <a href="{% url 'agents:agent-update' agent.pk %}" class="flex-grow text-indigo-500 border-b-2 border-indigo-500 py-2 text-lg px-1">Update Details</a> <!-- interchaged -->
-                </div>
-                <form method="post">
-                {% csrf_token %}
-                {{ form|crispy }}
-                <button type="submit" class="w-full text-white bg-blue-500 hover:bg:blue-600 px-3 py-2 rounded-md">Submit</button>
-                </form>
-                <div class="mt-5 py-5 border-t border-gray-200">
-			        <a href="{% url 'agents:agent-delete' agent.pk %}" class="w-1/2 mt-3 text-white bg-indigo-500 border-0 py-2 px-6 focus:outline-none hover:bg-indigo-600 rounded">Delete</a>
-                </div>
-                <img alt="ecommerce" class="lg:w-1/2 w-full lg:h-auto h-64 object-cover object-center rounded" src="https://dummyimage.com/400x400">
-                </div>
-            </div>
-            </section>	
-        {% endblock content %}
-    ```
-- Update the agent_delete.html
-    ```html
-    {% extends "base.html" %}
-    {% load tailwind_filters %}
-
-    {% block content %}
-    <div class="max-w-lg mx-auto">
-        <div class="py-5 border-b border-gray-200">
-            <a class="hover:text-blue-500" href="{% url 'agents:agent-list' %}">Go back to agents</a>
-        </div>
-
-        <h1 class="text-3xl text-gray-800">Are you sure you want to delete this agent?</h1>
-        <form method="post" class="mt-5">
-            {% csrf_token %}
-            {{ form|cripsy }}
-            <button type="submit" class="w-full text-white bg-blue-500 hover:bg:blue-600 px-3 py-2 rounded-md">Submit</button>
-        </form>
-    </div>
-    {% endblock content %}
-    ``
-
-- Update the lead_delete.html
-    ```html
-    {% extends "base.html" %}
-    {% load tailwind_filters %}
-
-    {% block content %}
-    <div class="max-w-lg mx-auto">
-        <div class="py-5 border-b border-gray-200">
-            <a class="hover:text-blue-500" href="{% url 'leads:lead-list' %}">Go back to leads</a>
-        </div>
-
-        <h1 class="text-3xl text-gray-800">Are you sure you want to delete this lead?</h1>
-        <form method="post" class="mt-5">
-            {% csrf_token %}
-            {{ form|cripsy }}
-            <button type="submit" class="w-full text-white bg-blue-500 hover:bg:blue-600 px-3 py-2 rounded-md">Submit</button>
-        </form>
-    </div>
-    {% endblock content %}
-    ```
+    Test 48.1 by going to: `http://127.0.0.1:8000/leads/1/category` and changing the category of the lead
