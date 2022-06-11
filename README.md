@@ -3025,7 +3025,7 @@ Inside agents/templates/agents/ create the agent_list.html file and edit it <br>
         #    })
         #    return context
     ```
-### 48 cateogy Update view
+### 48 Category Update view
 - Update the category of a lead, in ./leads/category_datail.html (line 3468)
     ```html
     :
