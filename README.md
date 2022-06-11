@@ -3183,5 +3183,5 @@ Inside agents/templates/agents/ create the agent_list.html file and edit it <br>
     ```
     Test 48.1 by going to: `http://127.0.0.1:8000/leads/1/category` and changing the category of the lead, check [`ver-1.6`](https://github.com/jatolentino/Django-notes/tree/jatolentino-ver-1.6)
     <p align="center">
-    	<img src="https://raw.githubusercontent.com/jatolentino/Django-notes/main/sources/img/Step49-test-1.png">
+    	<img src="https://raw.githubusercontent.com/jatolentino/Django-notes/main/sources/img/Step48-test-1.png">
     </p>
