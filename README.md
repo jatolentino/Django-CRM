@@ -3855,3 +3855,8 @@ For login.html:
         </section>	
     {% endblock content %}
     ```
+	Test 50-1 Compiled in the branch of [`ver-1.7`](https://github.com/jatolentino/Django-notes/tree/jatolentino-ver-1.7)
+        <p align="center">
+            <img src="https://raw.githubusercontent.com/jatolentino/Django-notes/main/sources/img/Step50-test-1.png">
+        </p>
+        
