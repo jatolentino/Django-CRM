@@ -3460,6 +3460,7 @@ For login.html:
     {% endblock content %}
     ```
 
+
 ### 50 Styling a little bit more
 
 - Go to leads/models.py and add {descrip, date, phone, email} to the model
@@ -3839,12 +3840,17 @@ For login.html:
 - In the terminal
     ```bash
     pip install django-environ
-    pip freeze>requirements.txt
+    pip freeze > requirements.txt
     ```
 - Edit the crm/settings.py, add the environ package
     ```python
     from pathlib import Path
-    from environ
+    import environ
+
+    env = environ.Env(
+        DEBUG = (bool, False)
+    )
+    environ.Env.read_env()
     :
     ```
 - Create the new file crm/.env and copy the the secret_key of crm/settings.py
@@ -3852,11 +3858,11 @@ For login.html:
     DEBUG=True
     SECRET_KEY='9l=jjp#pg0-mbdfsntqww91&s9b^^a!kj44ljl4f5h!_uoft$h6u'
     ```
-    Stop and Run the server `python manage.py runserver`
+    
 - Create another .env that will be shown uploaded with the projects and where the secret variables don't show up: .template.env
     ```bash
     DEBUG=True
-    SECRET_KEY='
+    SECRET_KEY=
     ```
 - Edit crm/settings.py to test the mechanism of variables, line 8
     ```python
@@ -3866,11 +3872,61 @@ For login.html:
     SECRET_KEY = env('SECRET_KEY')
     print(DEBUG, SECRET_KEY)
     ```
-    Test: Verify on the terminal the printed key
+    Test: Stop and Run the server `python manage.py runserver`, verify on the terminal the printed key
 
 ### 52 Configure the server using Postgrespl
 - Download and install it from `https://postgresql.org/download/`
-- In the VS code terminal run `createdb dbcrm`
+- Change PosgreSQL password, but before Reset Master Password in the program pgAdmin4.
+    ```bash
+    - Edit the file Files/PostgreSQL/14/data/pg_hba.conf, replace scram-sha-256 with trust
+        # TYPE  DATABASE        USER            ADDRESS                 METHOD
+
+        # "local" is for Unix domain socket connections only
+        local   all             all                                     trust
+        # IPv4 local connections:
+        host    all             all             127.0.0.1/32            trust
+        # IPv6 local connections:
+        host    all             all             ::1/128                 trust
+        # Allow replication connections from localhost, by a user with the
+        # replication privilege.
+        local   replication     all                                     trust
+        host    replication     all             127.0.0.1/32            trust
+        host    replication     all             ::1/128                 trust
+
+
+    - Go to CMD and type, wont ask you a password
+        psql -U postgres
+        
+    - In postgres=#, change the password
+        \password postgres
+
+    - Restore Program Files/PostgreSQL/14/data/pg_hba.conf
+        # TYPE  DATABASE        USER            ADDRESS                 METHOD
+
+        # "local" is for Unix domain socket connections only
+        local   all             all                                     scram-sha-256
+        # IPv4 local connections:
+        host    all             all             127.0.0.1/32            scram-sha-256
+        # IPv6 local connections:
+        host    all             all             ::1/128                 scram-sha-256
+        # Allow replication connections from localhost, by a user with the
+        # replication privilege.
+        local   replication     all                                     scram-sha-256
+        host    replication     all             127.0.0.1/32            scram-sha-256
+        host    replication     all             ::1/128                 scram-sha-256
+
+
+    - Try to login again in CMD
+        psql -U postgres
+    ```
+- Create the data base `dbcrm`, in the VS code terminal and being in the environment, run: <br>
+Previously install postgreSQL extension for VS
+
+    ```bash
+    createdb -h localhost -p 5432 -U postgres dbcrm
+    #(Input password of pgAdmin4 or the the admin's pass of the program in the installation process)
+    ```
+
 - Configure the database in crm/settings.py
     ```python
     :
@@ -3880,10 +3936,10 @@ For login.html:
             'NAME': env("DB_NAME"),
             'USER': env("DB_USER"),
             'PASSWORD': env("DB_PASSWORD"),
-            'HOST': env("DB_HOST")
+            'HOST': env("DB_HOST"),
             'PORT': env("DB_PORT"),
         }
-    )
+    }
     ```
 - Configure the environment variables in crm/.env
     ```bash
@@ -3895,13 +3951,15 @@ For login.html:
     DB_HOST = localhost
     DB_PORT = 
     ```
-- Access to the database from the terminal: `psql`
+- Access to the database from the terminal and create the user `dbcrmuser` that will take control over the database `dbcrm`
     ```bash
+    psql -U postgres
+        #password of the pgadmin4 (postgres)
     CREATE USER dbcrmuser WITH PASSWORD 'dbcrm1234';
-    GRANT ALL PRIVILEGES ON DATABASE dbcrm TO dbcrmuser;
+    GRANT ALL PRIVILEGES ON DATABASE dbcrm TO dbcrmuser
     \q
     ```
-    Copy the data to crm/.templates.env
+- Copy the data to crm/.templates.env
     ```bash
     DEBUG=True
     SECRET_KEY=1234
@@ -3911,7 +3969,7 @@ For login.html:
     DB_HOST = 
     DB_PORT = 
     ```
-- In the terminal
+- In the terminal, migrate the new database that's using PostgreSQL, be sure to delete all previous migrations files of the lead and agent apps, except `__init__.py`
     ```bash
     pip install psycopg2-binary
     python manage.py migrate
@@ -3936,7 +3994,7 @@ For login.html:
     ]
 
     STATIC_ROOT = "static_root"
-    STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage'
+    STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
     :
     ```
     Run in the terminal: 
@@ -3959,20 +4017,23 @@ For login.html:
         SECURE_HSTS_PRELOAD = True
         X_FRAME_OPTIONS = "DENY"        
 
-        ALLOWED_HOSTS = [*] #YOUR DOMAIN.CO
+        ALLOWED_HOSTS = ["*"] #YOUR DOMAIN.CO
     ```
 - Install gunicorn: `pip install gunicorn`
     ```bash
     pip install gunicorn
     pip freeze > requirements.txt
     ```
+
+>Ommit this part for production
 - Collect the static files, create ./runserver.sh(give executable permissions to this file)
     ```bash
-    python manage.py collecstatic --no-input
+    python manage.py collectstatic --no-input
     python manage.py migrate
     gunicorn --worker-tmp-dir /dev/shm crm.sdgi
     ```
-    In the terminal give the permission `chmor +x runserver.h`. This won't run in the local server because the line of gunicorn --worker ... is meant to be run in a production server.
+    In the terminal give the permission `chmod +x runserver.h`. This won't run in the local server because the line of gunicorn --worker ... is meant to be run in a production server.
+
 ### 55 Configue the email SMTP for the productionn deployment
 - Sign up in mailgun, then go to Sendinds>Domains>New Domain<br>
     SMTP credentials > Reset password: If there is no user, Create is on the tab Add new SMTP user: jose (jose@mg.yoursite.com)
@@ -4001,6 +4062,8 @@ For login.html:
 ### 56 Add your domain
 - Go to digital ocean and add enter your custom domain
 
+>Ommitted till here
+
 ### 57 Final fixes
 - Go to leads/templates/leads/lead_list.html & agents/templates/agents/agent_list.html add before the {% endfor %}
     ```html
@@ -4027,9 +4090,20 @@ For login.html:
     </div>
     {% endblock content %}
     ```
-- Create a category view in crm/leads/views.py
+- Creat the category form in ./leads/forms.py
     ```python
-    import .form import (
+    from .models import Lead, Agent, Category
+    :
+    class CategoryModelForm(forms.ModelForm):
+        class Meta:
+            model = Category
+            fields = (
+                'name',
+            )
+    ```
+- Create a category view in ./leads/views.py
+    ```python
+    from .forms import (
         LeadForm,
         LeadModelForm,
         CustomUserCreationForm,
@@ -4038,24 +4112,24 @@ For login.html:
         CategoryModelForm
     )
     :
-    class CategoryCreateView(OrganizerAndLoginRequiredMixin, CreateView):
+    class CategoryCreateView(OrganizerAndLoginRequiredMixin, generic.CreateView):
         template_name = "leads/category_create.html"
         form_class = CategoryModelForm
 
-        def get_successurl(self):
-            return reverse("leads:agent-list")
+        def get_success_url(self):
+            return reverse("leads:category-list")
         def form_valid(self, form):
             category=form.save(commit=False)
             category.organization = self.request.user.userprofile
             category.save()
             return super(CategoryCreateView, self).form_valid(form)
 
-    class CategoryUpdateView(OrganizerAndLoginRequiredMixin, UpdateView):
+    class CategoryUpdateView(OrganizerAndLoginRequiredMixin, generic.UpdateView):
         template_name = "leads/category_update.html"
         form_class = CategoryModelForm
 
-        def get_successurl(self):
-            return reverse("leads:agent-list")
+        def get_success_url(self):
+            return reverse("leads:category-list")
         
         def get_queryset(self):
             user = self.request.user
@@ -4065,7 +4139,7 @@ For login.html:
                 queryset = Category.objects.filter(organization=user.agent.organization)
             return queryset
 
-    class CategoryDeleteView(OrganizerAndLogin/requiredMixin, DeleteView):
+    class CategoryDeleteView(OrganizerAndLoginRequiredMixin, generic.DeleteView):
         template_name = "leads/category_delete.html"
 
         def get_success_url(self):
@@ -4077,18 +4151,6 @@ For login.html:
             else:
                 queryset = Category.objects.filter(organization=user.agent.organization)
             return queryset
-    ```
-
-- Creat the category form in crm/leads/forms.py
-    ```python
-    from .models import Lead, Agent, Category
-    :
-    class CategoryModelForm(forms.ModelForm):
-        class Meta:
-            model = Category
-            fields = (
-                'name',
-            )
     ```
 - Create a category_create.html file in leads/templates/leads
     ```html
@@ -4144,7 +4206,7 @@ For login.html:
     </div>
     {% endblock content %}
     ```
-- Edit crm/leads/templates/leads/category_list.html
+- Edit ./leads/templates/leads/category_list.html
     ```html
     {% extends "base.html" %}
 
@@ -4192,7 +4254,7 @@ For login.html:
     </section>
     {% endblock content %}
     ```
-- Edit the crm/leads/urls.py
+- Edit the ./leads/urls.py
     ```python
     :
     from .views import (LeadListView, ... LeadCategoryUpdateView, CategoryCreateView, CategoryUpdateView, CategoryDeleteView)
