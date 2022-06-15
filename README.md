@@ -1,4 +1,20 @@
 # Deploy in Django
+## Result of the CUSTOM-MANAGER-RELATIONSHIP website [`ver-1.8`](https://github.com/jatolentino/Django-notes/tree/jatolentino-ver-1.8)
+Feature:
+<details>
+	<ul>
+		<li>user login</li>
+		<li>user registration</li>
+		<li>user password reset by email<li>
+		<li>leads & agents creation</li>
+		<li>leads & agents management</li>
+		<li>agents classification</li>
+		<li>category creation & assignement</li>
+	</ul>
+</details>
+<p align="center">
+    	<img src="https://raw.githubusercontent.com/jatolentino/Django-notes/main/sources/img/Step50-test-1.png">
+</p>
 ### 1 Create & activate the virtual enviroment
 - In MINGW
 	```bash
@@ -4336,6 +4352,3 @@ Previously install postgreSQL extension for VS
     {% endblock content %}
     ```
     Test 57-1 Compiled in the branch of [`ver-1.8`](https://github.com/jatolentino/Django-notes/tree/jatolentino-ver-1.8)
-    <p align="center">
-    	<img src="https://raw.githubusercontent.com/jatolentino/Django-notes/main/sources/img/Step50-test-1.png">
-    </p>
