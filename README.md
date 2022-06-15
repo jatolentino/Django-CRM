@@ -3860,3 +3860,478 @@ For login.html:
             <img src="https://raw.githubusercontent.com/jatolentino/Django-notes/main/sources/img/Step50-test-1.png">
         </p>
         
+### 51 Install the environment packages
+- In the terminal
+    ```bash
+    pip install django-environ
+    pip freeze > requirements.txt
+    ```
+- Edit the crm/settings.py, add the environ package
+    ```python
+    from pathlib import Path
+    import environ
+
+    env = environ.Env(
+        DEBUG = (bool, False)
+    )
+    environ.Env.read_env()
+    :
+    ```
+- Create the new file crm/.env and copy the the secret_key of crm/settings.py
+    ```bash
+    DEBUG=True
+    SECRET_KEY='9l=jjp#pg0-mbdfsntqww91&s9b^^a!kj44ljl4f5h!_uoft$h6u'
+    ```
+    
+- Create another .env that will be shown uploaded with the projects and where the secret variables don't show up: .template.env
+    ```bash
+    DEBUG=True
+    SECRET_KEY=
+    ```
+- Edit crm/settings.py to test the mechanism of variables, line 8
+    ```python
+    environ.ENV.read_env()
+
+    DEBUG = env('DEBUG')
+    SECRET_KEY = env('SECRET_KEY')
+    print(DEBUG, SECRET_KEY)
+    ```
+    Test: Stop and Run the server `python manage.py runserver`, verify on the terminal the printed key
+
+### 52 Configure the server using Postgrespl
+- Download and install it from `https://postgresql.org/download/`
+- Change PosgreSQL password, but before Reset Master Password in the program pgAdmin4.
+    ```bash
+    - Edit the file Files/PostgreSQL/14/data/pg_hba.conf, replace scram-sha-256 with trust
+        # TYPE  DATABASE        USER            ADDRESS                 METHOD
+
+        # "local" is for Unix domain socket connections only
+        local   all             all                                     trust
+        # IPv4 local connections:
+        host    all             all             127.0.0.1/32            trust
+        # IPv6 local connections:
+        host    all             all             ::1/128                 trust
+        # Allow replication connections from localhost, by a user with the
+        # replication privilege.
+        local   replication     all                                     trust
+        host    replication     all             127.0.0.1/32            trust
+        host    replication     all             ::1/128                 trust
+
+
+    - Go to CMD and type, wont ask you a password
+        psql -U postgres
+        
+    - In postgres=#, change the password
+        \password postgres
+
+    - Restore Program Files/PostgreSQL/14/data/pg_hba.conf
+        # TYPE  DATABASE        USER            ADDRESS                 METHOD
+
+        # "local" is for Unix domain socket connections only
+        local   all             all                                     scram-sha-256
+        # IPv4 local connections:
+        host    all             all             127.0.0.1/32            scram-sha-256
+        # IPv6 local connections:
+        host    all             all             ::1/128                 scram-sha-256
+        # Allow replication connections from localhost, by a user with the
+        # replication privilege.
+        local   replication     all                                     scram-sha-256
+        host    replication     all             127.0.0.1/32            scram-sha-256
+        host    replication     all             ::1/128                 scram-sha-256
+
+
+    - Try to login again in CMD
+        psql -U postgres
+    ```
+- Create the data base `dbcrm`, in the VS code terminal and being in the environment, run: <br>
+Previously install postgreSQL extension for VS
+
+    ```bash
+    createdb -h localhost -p 5432 -U postgres dbcrm
+    #(Input password of pgAdmin4 or the the admin's pass of the program in the installation process)
+    ```
+
+- Configure the database in crm/settings.py
+    ```python
+    :
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.postgresql_psycopg2',
+            'NAME': env("DB_NAME"),
+            'USER': env("DB_USER"),
+            'PASSWORD': env("DB_PASSWORD"),
+            'HOST': env("DB_HOST"),
+            'PORT': env("DB_PORT"),
+        }
+    }
+    ```
+- Configure the environment variables in crm/.env
+    ```bash
+    DEBUG=True
+    SECRET_KEY='9l=jjp#pg0-mbdfsntqww91&s9b^^a!kj44ljl4f5h!_uoft$h6u'
+    DB_NAME = dbcrm
+    DB_USER = dbcrmuser
+    DB_PASSWORD = dbcrm1234
+    DB_HOST = localhost
+    DB_PORT = 
+    ```
+- Access to the database from the terminal and create the user `dbcrmuser` that will take control over the database `dbcrm`
+    ```bash
+    psql -U postgres
+        #password of the pgadmin4 (postgres)
+    CREATE USER dbcrmuser WITH PASSWORD 'dbcrm1234';
+    GRANT ALL PRIVILEGES ON DATABASE dbcrm TO dbcrmuser
+    \q
+    ```
+- Copy the data to crm/.templates.env
+    ```bash
+    DEBUG=True
+    SECRET_KEY=1234
+    DB_NAME = 
+    DB_USER = 
+    DB_PASSWORD = 
+    DB_HOST = 
+    DB_PORT = 
+    ```
+- In the terminal, migrate the new database that's using PostgreSQL, be sure to delete all previous migrations files of the lead and agent apps, except `__init__.py`
+    ```bash
+    pip install psycopg2-binary
+    python manage.py migrate
+    python manage.py runserver
+    ```
+### 53 Installing whitenoise
+- In the terminal
+    ```bash
+    pip install whitenoise
+    pip freeze > requirements.txt
+    ```
+- Add the whitenoise in crm/settings.py
+    ```bash
+    :
+    INSTALLED_APPS = [
+        'whitenoise.runserver_nostatic',
+    ]
+    :
+    MIDDLEWARE = [
+        'whitenoise.middleware.WhiteNoiseMiddleware',
+        :
+    ]
+
+    STATIC_ROOT = "static_root"
+    STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+    :
+    ```
+    Run in the terminal: 
+    ```bash
+    python manage.py collectstatic
+    ```
+### 54 Configurations for deployment
+- Edit the crm/settings.py
+    ```python
+    :
+    if not DEBUG:
+        SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+        SECURE_SSL_REDIRECT = True
+        SESSION_COOKIE_SECURE = True
+        SECURE_CSRF_COOKIE_SECURE = True
+        SECURE_BROWSER_XSS_FILTER = True
+        SECURE_CONTENT_TYPE_NOSNIFF = True
+        SECURE_HSTS_SECONDS = 31536000 #1YEAR
+        SECURE_HSTS_INCLUDE_SUBDOMAINS = True 
+        SECURE_HSTS_PRELOAD = True
+        X_FRAME_OPTIONS = "DENY"        
+
+        ALLOWED_HOSTS = ["*"] #YOUR DOMAIN.CO
+    ```
+- Install gunicorn: `pip install gunicorn`
+    ```bash
+    pip install gunicorn
+    pip freeze > requirements.txt
+    ```
+
+>Ommit this part for production
+- Collect the static files, create ./runserver.sh(give executable permissions to this file)
+    ```bash
+    python manage.py collectstatic --no-input
+    python manage.py migrate
+    gunicorn --worker-tmp-dir /dev/shm crm.sdgi
+    ```
+    In the terminal give the permission `chmod +x runserver.h`. This won't run in the local server because the line of gunicorn --worker ... is meant to be run in a production server.
+
+### 55 Configue the email SMTP for the productionn deployment
+- Sign up in mailgun, then go to Sendinds>Domains>New Domain<br>
+    SMTP credentials > Reset password: If there is no user, Create is on the tab Add new SMTP user: jose (jose@mg.yoursite.com)
+- Edit the crm/settings.py
+    ```python
+    :
+    EMAIL_HOST = env("EMAIL_HOST")
+    EMAIL_HOST_USER = env("EMAIL_HOST_USER")
+    EMAIL_HOST_PASSWORD = env("EMAIL_HOST_PASSWORD")
+    EMAIL_USE_TLS = True
+    EMAIL_PORT = env("EMAIL_PORT")
+    DEFAULT_FROM_EMAIL = env("DEFAULT_FROM_EMAIL")
+    ```
+- Add it to the crm/.env
+    ```bash
+    :
+    EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+    EMAIL_HOST = "smtp.mailgun.org"
+    EMAIL_HOST_USER = "postmaster@mg.domain.com"
+    EMAIL_HOST_PASSWORD = "" 
+    EMAIL_USE_TLS = True
+    EMAIL_PORT = 587
+    DEFAULT_FROM_EMAIL = 
+    ```
+    In digital ocean add the environmet variables
+### 56 Add your domain
+- Go to digital ocean and add enter your custom domain
+
+>Ommitted till here
+
+### 57 Final fixes
+- Go to leads/templates/leads/lead_list.html & agents/templates/agents/agent_list.html add before the {% endfor %}
+    ```html
+    :
+    {% empty %}
+    <p> There are currently no leads (agents) </p>
+    {% endfor %}
+    ```
+- Edit the leads/templates/leads/assign_agent.html
+    ```html
+    {% extends "base.html" %}
+    {% load tailwind_filters %}
+    {% block content %}
+    <div class="max-w-lg mx-auto">
+        <a class="hover:text-blue-500" href="{% url 'leads:lead-list' %}">Go back to leads</a>
+        <div class="py-5 border-t border-gray-200">
+            <h1>Assign an agent to this lead</h1
+        </div>
+        <form method="post" class="mt-5">
+            {% csrf_token %}
+            {{ form|crispy }}
+            <button type='submit' class="w-full text-white bg-blue-500 hover:bg-blue-600 px-3 py-2 rounded-md">Submit</button>
+        </form>
+    </div>
+    {% endblock content %}
+    ```
+- Creat the category form in ./leads/forms.py
+    ```python
+    from .models import Lead, Agent, Category
+    :
+    class CategoryModelForm(forms.ModelForm):
+        class Meta:
+            model = Category
+            fields = (
+                'name',
+            )
+    ```
+- Create a category view in ./leads/views.py
+    ```python
+    from .forms import (
+        LeadForm,
+        LeadModelForm,
+        CustomUserCreationForm,
+        AssignAgentForm,
+        LeadCategoryUpdateForm,
+        CategoryModelForm
+    )
+    :
+    class CategoryCreateView(OrganizerAndLoginRequiredMixin, generic.CreateView):
+        template_name = "leads/category_create.html"
+        form_class = CategoryModelForm
+
+        def get_success_url(self):
+            return reverse("leads:category-list")
+        def form_valid(self, form):
+            category=form.save(commit=False)
+            category.organization = self.request.user.userprofile
+            category.save()
+            return super(CategoryCreateView, self).form_valid(form)
+
+    class CategoryUpdateView(OrganizerAndLoginRequiredMixin, generic.UpdateView):
+        template_name = "leads/category_update.html"
+        form_class = CategoryModelForm
+
+        def get_success_url(self):
+            return reverse("leads:category-list")
+        
+        def get_queryset(self):
+            user = self.request.user
+            if user.is_organizer:
+                queryset = Category.objects.filter(organization=user.userprofile)
+            else:
+                queryset = Category.objects.filter(organization=user.agent.organization)
+            return queryset
+
+    class CategoryDeleteView(OrganizerAndLoginRequiredMixin, generic.DeleteView):
+        template_name = "leads/category_delete.html"
+
+        def get_success_url(self):
+            return reverse("leads:category-list")
+        def get_queryset(self):
+            user = self.request.user
+            if user.is_organizer:
+                queryset = Category.objects.filter(organization=user.userprofile)
+            else:
+                queryset = Category.objects.filter(organization=user.agent.organization)
+            return queryset
+    ```
+- Create a category_create.html file in leads/templates/leads
+    ```html
+    {% extends "base.html" %}
+    {% load tailwind_filters %}
+    {% block content %}
+    <div class="max-w-lg mx-auto">
+        <a class="hover:text-blue-500" href="{% url 'leads:category-list' %}">Go back to categories</a>
+        <div class="py-5 border-t border-gray-200">
+            <h1 class="text-4xl text-gray-800">Create a new category</h1
+        </div>
+        <form method="post" class="mt-5">
+            {% csrf_token %}
+            {{ form|crispy }}
+            <button type='submit' class="w-full text-white bg-blue-500 hover:bg-blue-600 px-3 py-2 rounded-md">Submit</button>
+        </form>
+    </div>
+    {% endblock content %}
+    ```
+- Create a category_update.html file in leads/templates/leads
+    ```html
+    {% extends "base.html" %}
+    {% load tailwind_filters %}
+    {% block content %}
+    <div class="max-w-lg mx-auto">
+        <a class="hover:text-blue-500" href="{% url 'leads:category-list' %}">Go back to categories</a>
+        <div class="py-5 border-t border-gray-200">
+            <h1 class="text-4xl text-gray-800">Update {{ object.name }}</h1
+        </div>
+        <form method="post" class="mt-5">
+            {% csrf_token %}
+            {{ form|crispy }}
+            <button type='submit' class="w-full text-white bg-blue-500 hover:bg-blue-600 px-3 py-2 rounded-md">Submit</button>
+        </form>
+    </div>
+    {% endblock content %}
+    ```
+- Create a category_delete.html file in leads/templates/leads
+    ```html
+    {% extends "base.html" %}
+    {% load tailwind_filters %}
+    {% block content %}
+    <div class="max-w-lg mx-auto">
+        <a class="hover:text-blue-500" href="{% url 'leads:category-list' %}">Go back to categories</a>
+        <div class="py-5 border-t border-gray-200">
+            <h1 class="text-4xl text-gray-800">Are sure you want to delete {{ object.name }}?</h1
+        </div>
+        <form method="post" class="mt-5">
+            {% csrf_token %}
+            {{ form|crispy }}
+            <button type='submit' class="w-full text-white bg-blue-500 hover:bg-blue-600 px-3 py-2 rounded-md">Submit</button>
+        </form>
+    </div>
+    {% endblock content %}
+    ```
+- Edit ./leads/templates/leads/category_list.html
+    ```html
+    {% extends "base.html" %}
+
+    {% block content %}
+    <section class="text-gray-600 body-font">
+    <div class="container px-5 py-24 mx-auto">
+        <div class="flex flex-col text-center w-full mb-20">
+        <h1 class="sm:text-4xl text-3xl font-medium title-font mb-2 text-gray-900">Categories</h1>
+        <p class="lg:w-2/3 mx-auto leading-relaxed text-base">These categories segment the leads</p>
+        <a href="{% url 'leads:category-create' %}" class="hover:text-blue-500">Create a category</a>
+        </div>
+        <div class="lg:w-2/3 w-full mx-auto overflow-auto">
+        <table class="table-auto w-full text-left whitespace-no-wrap">
+            <thead>
+            <tr>
+                <th class="px-4 py-3 title-font tracking-wider font-medium text-gray-900 text-sm bg-gray-100 rounded-tl rounded-bl">Name</th>
+                <th class="px-4 py-3 title-font tracking-wider font-medium text-gray-900 text-sm bg-gray-100">Lead Count</th>
+            </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td class="px-4 py-3">Unassigned</td>
+                    <td class="px-4 py-3">{{ unassigned_lead_count }}</td>
+                </tr>
+                {% for category in category_list %}
+                    <tr>
+                        <td class="px-4 py-3">
+                            <a href="{% url 'leads:category-detail' category.pk %}"> {{ category.name }}</a>
+                        </td>
+                        <td class="px-4 py-3">TODO count</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        </div>
+        <div class="flex pl-4 mt-4 lg:w-2/3 w-full mx-auto">
+        <a class="text-indigo-500 inline-flex items-center md:mb-2 lg:mb-0">Learn More
+            <svg fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="w-4 h-4 ml-2" viewBox="0 0 24 24">
+            <path d="M5 12h14M12 5l7 7-7 7"></path>
+            </svg>
+        </a>
+        <button class="flex ml-auto text-white bg-indigo-500 border-0 py-2 px-6 focus:outline-none hover:bg-indigo-600 rounded">Button</button>
+        </div>
+    </div>
+    </section>
+    {% endblock content %}
+    ```
+- Edit the ./leads/urls.py
+    ```python
+    :
+    from .views import (LeadListView, ... LeadCategoryUpdateView, CategoryCreateView, CategoryUpdateView, CategoryDeleteView)
+    :
+    urlpatterns = [
+        :
+        path('categories/', CategoryListView.as_view(), name='category-list'),
+        path('categories/<int:pk>/', CategoryDetailView.as_view(), name='category-detail'),
+        path('categories/<int:pk>/update/', CategoryUpdateView.as_view(), name='category-update'),
+        path('categories/<int:pk>/delete/', CategoryDeleteView.as_view(), name='category-delete'),
+        path('create-category/', CategoryCreateView.as_view(), name='category-create'),
+
+    ]
+- Edit crm/leads/templates/leads/category_detail.html
+    ```html
+    {% extends "base.html" %}
+
+    {% block content %}
+    <section class="text-gray-600 body-font">
+    <div class="container px-5 py-24 mx-auto">
+        <div class="flex flex-col text-center w-full mb-20">
+        <h1 class="sm:text-4xl text-3xl font-medium title-font mb-2 text-gray-900">{{ category.name }}</h1>
+        <p class="lg:w-2/3 mx-auto leading-relaxed text-base">These are the leads under this category</p>
+            <a href="{% url 'leads:category-update' category.pk %}" class="hover:text-blue-500">Update</a> <!--added-->
+            <a href="{% url 'leads:category-delete' category.pk %}" class="hover:text-blue-500">Delete</a> <!--added-->
+        </div>
+        <div class="lg:w-2/3 w-full mx-auto overflow-auto">
+        <table class="table-auto w-full text-left whitespace-no-wrap">
+            <thead>
+            <tr>
+                <th class="px-4 py-3 title-font tracking-wider font-medium text-gray-900 text-sm bg-gray-100 rounded-tl rounded-bl">First Name</th>
+                <th class="px-4 py-3 title-font tracking-wider font-medium text-gray-900 text-sm bg-gray-100">Last Name</th>
+            </tr>
+            </thead>
+            <tbody>
+				{% for lead in category.leads.all %} <!-- {% for lead in leads %} -->
+					<tr>
+						<td class="px-4 py-3">{{ lead.first_name }}</td>
+						<td class="px-4 py-3">{{ lead.last_name }}</td>
+					</tr>
+				{% endfor %}
+            </tbody>
+        </table>
+        </div>
+        <div class="flex pl-4 mt-4 lg:w-2/3 w-full mx-auto">
+        <a class="text-indigo-500 inline-flex items-center md:mb-2 lg:mb-0">Learn More
+            <svg fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="w-4 h-4 ml-2" viewBox="0 0 24 24">
+            <path d="M5 12h14M12 5l7 7-7 7"></path>
+            </svg>
+        </a>
+        <button class="flex ml-auto text-white bg-indigo-500 border-0 py-2 px-6 focus:outline-none hover:bg-indigo-600 rounded">Button</button>
+        </div>
+    </div>
+    </section>
+    {% endblock content %}
+    ```
