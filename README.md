@@ -1,11 +1,16 @@
+![Github All Releases](https://img.shields.io/github/downloads/jatolentino/Django-CRM/total?logo=GitHub&style=plastic)
+![GitHub repo size](https://img.shields.io/github/repo-size/jatolentino/Django-CRM)
+![GitHub language count](https://img.shields.io/github/languages/count/jatolentino/Django-CRM?color=success&logo=CodersRank&logoColor=%23FFFFFF)
+[![version](https://img.shields.io/badge/version-1.1-red.svg)](//npmjs.com/package/Django-CRM)
+
 # Deploy in Django
-## Result of the CUSTOM-MANAGER-RELATIONSHIP website [`ver-1.8`](https://github.com/jatolentino/Django-notes/tree/jatolentino-ver-1.8)
-Feature:
+## Result of the CUSTOM-MANAGER-RELATIONSHIP website 
+Project features @ [`ver-1.8`](https://github.com/jatolentino/Django-notes/tree/jatolentino-ver-1.8)
 <details>
 	<ul>
 		<li>user login</li>
 		<li>user registration</li>
-		<li>user password reset by email<li>
+		<li>user password reset by email</li>
 		<li>leads & agents creation</li>
 		<li>leads & agents management</li>
 		<li>agents classification</li>
