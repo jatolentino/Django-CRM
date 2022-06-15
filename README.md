@@ -4335,3 +4335,7 @@ Previously install postgreSQL extension for VS
     </section>
     {% endblock content %}
     ```
+    Test 57-1 Compiled in the branch of [`ver-1.8`](https://github.com/jatolentino/Django-notes/tree/jatolentino-ver-1.8)
+    <p align="center">
+    	<img src="https://raw.githubusercontent.com/jatolentino/Django-notes/main/sources/img/Step50-test-1.png">
+    </p>
