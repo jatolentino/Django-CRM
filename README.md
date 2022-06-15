@@ -15,6 +15,7 @@ Feature:
 <p align="center">
     	<img src="https://raw.githubusercontent.com/jatolentino/Django-notes/main/sources/img/Step50-test-1.png">
 </p>
+
 ### 1 Create & activate the virtual enviroment
 - In MINGW
 	```bash
