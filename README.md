@@ -3,9 +3,9 @@
 ![GitHub language count](https://img.shields.io/github/languages/count/jatolentino/Django-CRM?color=success&logo=CodersRank&logoColor=%23FFFFFF)
 [![version](https://img.shields.io/badge/version-1.8-red.svg)](//npmjs.com/package/Django-CRM)
 
-<p align="center">
+<center>
 # Deploy in Django
-</p>
+</center>
 ## Result of the CUSTOM-MANAGER-RELATIONSHIP website 
 Project features @ [`ver-1.8`](https://github.com/jatolentino/Django-notes/tree/jatolentino-ver-1.8)
 <details>
