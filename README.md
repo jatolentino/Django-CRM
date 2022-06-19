@@ -20,7 +20,22 @@ Project features @ [`ver-1.8`](https://github.com/jatolentino/Django-notes/tree/
 <p align="center">
     	<img src="https://raw.githubusercontent.com/jatolentino/Django-notes/main/sources/img/Step50-test-1.png">
 </p>
-
+## Installation
+- Clone the repository to your local folder
+- Open the folder of the repo with VS code
+- In VS terminal, input the following (you must have installed python, pip and virtualenv before)
+	```bash
+	python -m venv enviroment
+	env/Scripts/activate
+	pip install -r requirements.txt
+	python manage.py collectstatic
+	python manage.py makemigrations
+	python manage.py migrate
+	python manage.py createsuperuser #create a user and assign a password as you like
+	python manage.py runserver #add a port if the django default port (8000) is in use by other apps on your machine
+	```
+## How to use
+- Navigate to `d`
 ### 1 Create & activate the virtual enviroment
 - In MINGW
 	```bash
