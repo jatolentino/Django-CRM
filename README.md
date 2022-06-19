@@ -40,7 +40,9 @@ Project features @ [`ver-1.8`](https://github.com/jatolentino/Django-notes/tree/
 ## How to use
 
 - Navigate to the home page `http://192.168.0.127:8000/` and login with the superuser your created, add leads and agents as you want in `http://192.168.0.127:8000/admin` or create your agent acc in the home page.
+
 <br>
+
 ## Comprehensive guide to progressively implement this project
 The pictures depict well the results reached in every step and the version keep track of the project's progress
 
