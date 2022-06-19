@@ -37,7 +37,7 @@ Project features @ [`ver-1.8`](https://github.com/jatolentino/Django-notes/tree/
 	```
 ## How to use
 
-- Navigate to `d`
+- Navigate to the home page `http://192.168.0.127:8000/` and login with the superuser your created, add leads and agents as you want in `http://192.168.0.127:8000/admin` or create your agent acc in the home page.
 
 ### 1 Create & activate the virtual enviroment
 - In MINGW
