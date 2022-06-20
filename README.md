@@ -5,7 +5,7 @@
 
 
 # Deploy in Django
-
+$$ \beta_1=\frac{s_yx}{s_xx} $$
 ## Result of the CUSTOM-MANAGER-RELATIONSHIP website 
 Project features @ [`ver-1.8`](https://github.com/jatolentino/Django-notes/tree/jatolentino-ver-1.8)
 <details>
