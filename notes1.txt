@@ -97,7 +97,7 @@ Lead.objects.all()
 python manage.py createsuperuser
 user: jose
 email: jose@email.com
-password: 1
+password: 
 
 python manage.py shell
 	
