@@ -1,0 +1,25 @@
+# Django Auth Mixins
+
+Backport of Django 1.9 [auth
+mixins](https://github.com/django/django/blob/1.9.4/django/contrib/auth/mixins.py)
+for Django 1.8.x LTS:
+
+* LoginRequiredMixin
+* PermissionRequiredMixin
+* UserPassesTestMixin
+
+## Usage
+
+    from auth_mixins import LoginRequiredMixin, PermissionRequiredMixin, UserPassesTestMixin
+
+## Docs
+
+- https://docs.djangoproject.com/en/1.9/topics/auth/default/#the-loginrequired-mixin
+- https://docs.djangoproject.com/en/1.9/topics/auth/default/#the-permissionrequiredmixin-mixin
+- https://docs.djangoproject.com/en/1.9/topics/auth/default/#django.contrib.auth.mixins.UserPassesTestMixin
+
+## License
+
+Like Django, see `LICENSE` file.
+
+
