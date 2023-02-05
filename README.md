@@ -19,7 +19,7 @@ Project features @ [`ver-1.9`](https://github.com/jatolentino/Django-notes/tree/
 	</ul>
 </details>
 <p align="center">
-    	<img src="https://raw.githubusercontent.com/jatolentino/Django-notes/main/sources/img/crm1.jpg">
+    	<img src="https://raw.githubusercontent.com/jatolentino/Django-notes/main/sources/img/crm2.jpg">
 </p>
 <p align="center">
     	<img src="https://raw.githubusercontent.com/jatolentino/Django-notes/main/sources/img/Step50-test-1.png">
