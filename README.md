@@ -1,4 +1,53 @@
+![Github All Releases](https://img.shields.io/github/downloads/jatolentino/Django-CRM/total?logo=GitHub&style=plastic)
+![GitHub repo size](https://img.shields.io/github/repo-size/jatolentino/Django-CRM)
+![GitHub language count](https://img.shields.io/github/languages/count/jatolentino/Django-CRM?color=success&logo=CodersRank&logoColor=%23FFFFFF)
+[![version](https://img.shields.io/badge/version-1.8-red.svg)](//npmjs.com/package/Django-CRM)
+
 # Deploy in Django
+
+## Result of the CUSTOM-MANAGER-RELATIONSHIP website 
+Project features @ [`ver-1.9`](https://github.com/jatolentino/Django-notes/tree/jatolentino-ver-1.9)
+<details>
+	<ul>
+		<li>user login</li>
+		<li>user registration</li>
+		<li>user password reset by email</li>
+		<li>leads & agents creation</li>
+		<li>leads & agents management</li>
+		<li>agents classification</li>
+		<li>category creation & assignement</li>
+	</ul>
+</details>
+<p align="center">
+    	<img src="https://raw.githubusercontent.com/jatolentino/Django-notes/main/sources/img/crm.jpg">
+</p>
+<p align="center">
+    	<img src="https://raw.githubusercontent.com/jatolentino/Django-notes/main/sources/img/Step50-test-1.png">
+</p>
+
+## Installation
+- Clone the repository to your local folder
+- Open the folder of the repo with VS code
+- In VS terminal, input the following (you must have installed python, pip and virtualenv before)
+	```bash
+	python -m venv env
+	env/Scripts/activate #if you're using MINGW consider utilizing: source env/Scripts/activate
+	pip install -r requirements.txt
+	python manage.py collectstatic
+	python manage.py makemigrations
+	python manage.py migrate
+	python manage.py createsuperuser #create a user and assign a password as you like
+	python manage.py runserver #add a port if the django default port (8000) is in use by other apps on your machine
+	```
+## How to use
+
+- Navigate to the home page `http://192.168.0.127:8000/` and login with the superuser your created, add leads and agents as you want in `http://192.168.0.127:8000/admin` or create your agent acc in the home page.
+
+<br>
+
+## Comprehensive guide to progressively implement this project
+The pictures portray the results reached on every step and the versions keep track of the project's progress
+
 ### 1 Create & activate the virtual enviroment
 - In MINGW
 	```bash
@@ -10,34 +59,36 @@
 	python -m venv enviroment
 	env/Scripts/activate
 	```
+	
 ### 2 Check packages
-    ```bash
-    pip freeze
-    ```
+```bash
+pip freeze
+```
 ### 3 Install django
-    ```bash
-    pip install django==3.1.4
-    pip freeze > requirements.txt
-    ```
+```bash
+pip install django==3.1.4
+pip freeze > requirements.txt
+```
 ### 4 Create the project
-    ```bash
-    django-admin startproject crm .
-    ```
+```bash
+django-admin startproject crm .
+```
 ### 5 Add the gitignore
 - Create the gitignire file and fill with: `https://github.com/github/gitignore/blob/main/Pythongitignore`
 
 ### 6 Run the server
-    ```bash
-    python manage.py runserver (port if necessary)
-    ```
+```bash
+python manage.py runserver # port if necessary
+```
 ### 7 Run migrate
-    ```bash
-    python manage.py migrate
-    ```
+```bash
+python manage.py migrate
+```
 ### 8 Create the app  (for users/leads/payments)
-    ```bash
-    python manage.py startapp leads
-    ```
+```bash
+python manage.py startapp leads
+```
+
 ### 9 Add the new app 'leads' into the settings of the project
 - In crm/setting.py, edit
 	```python
@@ -51,6 +102,7 @@
 	    'leads'
 	]
 	```
+	
 ### 10 Open models, edit & run
 - In leads/models.py, create the model Lead as a class
 	```python
@@ -59,6 +111,7 @@
 	    last_name = models.CharField(max_length=20)
 	    age = models.IntegerField(default=0)
 	```
+	
 - In the terminal
 	```bash
 	python manage.py makemigrations  # create the 001_initial.py, auth_user is created, db.sqlite3 needs to be deleted in custom user
@@ -80,6 +133,7 @@
 	class User(AbstractUser)L
 		pass
 	```
+	
 - In crm/settings.py
 	```python
 	AUTH_USER_MODEL = "leads.User"
@@ -129,6 +183,7 @@
 		def __str__(self):
 			return self.user.email
 	```
+	
 - In ther terminal `python manage.py shell`
 	```bash
 	from leads.models import Agent
@@ -243,6 +298,7 @@
 		}
 	]
 	```
+	
 - Create the html in crm/templates/second_page.html
 	```html
 	<!DOCTYPE html>
@@ -263,6 +319,7 @@
 	def home_page(request):
 		return render(request, "second_page.html" )
 	```
+	
 ### 18 Context
 - Create the context variable in leads/views.py
 	```python
@@ -389,7 +446,7 @@ Test in: `http://127.0.0.1:8000/leads/`
 	
 	app_name = "leads"
 	
-	urlpatterns = [
+	urlspatterns = [
 		path('', lead_list),
 		path('<int:pk>', lead_detail)  #this is going to add a path according to the ID (primary key) of the user (pk)
 	```
@@ -405,15 +462,10 @@ Test in: `http://127.0.0.1:8000/leads/`
 		{% endfor %}
 	</body>
 	```
-Test: `http://127.0.0.1:8000/leads/1/` <br>
-<!--
-<p align="center">
-<img src="https://github.com/jatolentino/Django-notes/blob/main/sources/img/Step19-test-2.png">
--->
-<p align="center">
-<img src="https://raw.githubusercontent.com/jatolentino/Django-notes/main/sources/img/Step19-test-2.png">
-</p>
-
+	Test: `http://127.0.0.1:8000/leads/1/` <br>
+	<p align="center">
+	<img src="https://raw.githubusercontent.com/jatolentino/Django-notes/main/sources/img/Step19-test-2.png">
+	</p>
 - Modify the lead_detail, in leads/views.py
 	```python
 	def lead_detail(request, pk):
@@ -462,7 +514,7 @@ Test: `http://127.0.0.1:8000/leads/1/` <br>
 	]
 	```
     Test 20-3: `http://127.0.0.1:8000/leads/1/` <br>
-    <p>
+    <p align="center">
     <img src="https://raw.githubusercontent.com/jatolentino/Django-notes/main/sources/img/Step20-test-3.png">
     </p>
 ### 21  Create leads with Forms
@@ -499,7 +551,7 @@ Test: `http://127.0.0.1:8000/leads/1/` <br>
 	]
 	```
     Test 21-1: `http://127.0.0.1/leads/create` <br>
-    <p>
+    <p align="center">
     <img src="https://raw.githubusercontent.com/jatolentino/Django-notes/main/sources/img/Step21-test-1.png">
     </p>
     
@@ -567,12 +619,12 @@ Test: `http://127.0.0.1:8000/leads/1/` <br>
         Verify in `http://127.0.0.1:8000/leads/` <br>
         Verify the prompt in the VS code or check in `http://127.0.0.1:8000/admin/leads/lead/`
         <br>
-        <p>
+        <p align="center">
             <img src="https://raw.githubusercontent.com/jatolentino/Django-notes/main/sources/img/Step21-test-2.png">
         </p>
         Compiled in the branch of [`ver-1.1`](https://github.com/jatolentino/Django-notes/tree/jatolentino-ver-1.1)
 - Redirect to `http://127.0.0.1:8000/leads/` after creating a user
-	In leads/views.py
+	In leads/view.py
 	```python
 	from django.shortcuts import render, redirect
 	:
@@ -631,7 +683,7 @@ Test: `http://127.0.0.1:8000/leads/1/` <br>
 	</body>
 	```
     Test 21-3: Go to `http://127.0.0.1:8000/leads/` <br>
-    <p>
+    <p align="center">
     <img src="https://raw.githubusercontent.com/jatolentino/Django-notes/main/sources/img/Step21-test-3.png">
     </p>
 ### 23 Create the lead_update model
@@ -707,7 +759,7 @@ Test: `http://127.0.0.1:8000/leads/1/` <br>
 		return render(request, "leads/lead_update.html", context)
 	```
     Test 23.1 Go to `http://127.0.0.1:8000/leads/1/update/` and update/edit <br>
-    <p>
+    <p align="center">
     <img src="https://raw.githubusercontent.com/jatolentino/Django-notes/main/sources/img/Step23-test-1.png">
     </p>
 
@@ -746,7 +798,7 @@ Test: `http://127.0.0.1:8000/leads/1/` <br>
 	</body>
 	```
     Test 24.1 Go to `http://127.0.0.1:8000/leads/`, choose a lead to be deleted <br>
-    <p>
+    <p align="center">
     <img src="https://raw.githubusercontent.com/jatolentino/Django-notes/main/sources/img/Step24-test-1.png">
     </p>
 ### 25 Change URLs' names
@@ -991,7 +1043,7 @@ Edit the crm/templates/scripts.html
 		</html>
 	```
     Test 27.1 Go to `http://127.0.0.1:8000/leads/`
-    <p>
+    <p align="center">
     <img src="https://raw.githubusercontent.com/jatolentino/Django-notes/main/sources/img/Step27-test-1.png">
     </p>
 - Create the file templates/landing.html and add the code from HERO 2nd option at https://tailblocks.cc/
@@ -1032,20 +1084,21 @@ Edit the crm/templates/scripts.html
 	```
     Test 27.2 Go to `http://127.0.0.1:8000`
     <br>
-    <p>
+    <p align="center">
     <img src="https://raw.githubusercontent.com/jatolentino/Django-notes/main/sources/img/Step27-test-2.png">
     </p>
 - Format the leads/lead_list.html from tailwindcss (FEATURE, 4th option) inside the {% block content %}
 	```html
 	{% extends "base.html" %}
 	{% block content %}
-	<section class="text-gray-600 body-font">
-		<div class="container px-5 py-24 mx-auto flex flex-wrap">
+		<section class="text-gray-600 body-font">
+		  <div class="container px-5 py-24 mx-auto flex flex-wrap">
+		  
 		    <!-- 1st script Added -->
 		    <div class="w-full mb-6 py-6 flex justify-between items-center border-b border-gray-200">
-            	<div>
-				    <h1 class="text-4xl text-gray-800">Lead</h1>
-			    </div>
+		    	<div>
+				<h1 clas="text-4xl text-gray-800">Lead</h1>
+			</div>
 			<div>
 				<a class="text-gray-500 hover:text-blue-500" href="{% url 'leads:lead-create' %}">Create a new lead</a>
 			</div>
@@ -1075,15 +1128,15 @@ Edit the crm/templates/scripts.html
 			  </div>
 			</div>
 		      </div>
-		    {% endfor %}
+		     {% endfor %}
 		     
 		    </div>
 		  </div>
-	</section>
+		</section>
 	{% endblock content %}
 	```
     Test 27.3 Go to `http://127.0.0.1:8000/leads/`
-    <p>
+    <p align="center">
     <img src="https://raw.githubusercontent.com/jatolentino/Django-notes/main/sources/img/Step27-test-3.png">
     </p>
     
@@ -1091,6 +1144,7 @@ Edit the crm/templates/scripts.html
 	```html
 	{% extends "base.html" %}
 	{% block content %}
+
 		<section class="text-gray-600 body-font overflow-hidden">
 		  <div class="container px-5 py-24 mx-auto">
 		    <div class="lg:w-4/5 mx-auto flex flex-wrap">
@@ -1132,15 +1186,16 @@ Edit the crm/templates/scripts.html
 		    </div>
 		  </div>
 		</section>	
+		
 		<!--
-            <a href="{% url 'leads:lead-list' %">Go back to leads</a>
-            <hr />
-            <h1>This is the details of {{ lead.first_name }}</h1>
-            <p>This persons age: {{ lead.age }} </p>
-            <p>The agent responsible for this lead is : {{ lead.agent }}</p>
-            <hr />
-            <a href="{% url 'leads:lead-update' lead.pk %}">Update</a>
-            <a href="{% url 'leads:lead-delete' lead.pk %}">Delete</a>
+		<a href="{% url 'leads:lead-list' %">Go back to leads</a>
+		<hr />
+		<h1>This is the details of {{ lead.first_name }}</h1>
+		<p>This persons age: {{ lead.age }} </p>
+		<p>The agent responsible for this lead is : {{ lead.agent }}</p>
+		<hr />
+		<a href="{% url 'leads:lead-update' lead.pk %}">Update</a>
+		<a href="{% url 'leads:lead-delete' lead.pk %}">Delete</a>
 		-->
 	{% endblock content %}
 	```
@@ -1153,7 +1208,7 @@ Edit the crm/templates/scripts.html
 		  <div class="container px-5 py-24 mx-auto">
 		    <div class="lg:w-4/5 mx-auto flex flex-wrap">
 		      <div class="lg:w-1/2 w-full lg:pr-10 lg:py-6 mb-6 lg:mb-0">
-			<h2 class="text-sm title-font text-gray-500 tracking-widest">LEAD</h2>
+			<h2 class="text-sm title-font text-gray-500 tracking-widest">Lead</h2>
 			<h1 class="text-gray-900 text-3xl title-font font-medium mb-4">{{ lead.first_name }} {{ lead.last_name }}</h1>
 			<div class="flex mb-4">
 			  <a href="{% url 'leads:lead-detail' lead.pk %}" class="flex-grow border-b-2 border-gray-300 py-2 text-lg px-1">Overview</a>  <!-- interchaged -->
@@ -1190,9 +1245,10 @@ Edit the crm/templates/scripts.html
 	{% endblock content %}
 	```
     Test 27.4 Go to `http://127.0.0.1:8000/leads/update`
-    <p>
+    <p align="center">
     <img src="https://raw.githubusercontent.com/jatolentino/Django-notes/main/sources/img/Step27-test-4.png">
     </p>
+
 ### 28 Using classes & replacing the functions
 - Create a templates/leads/lead_delete.html
     ```html
@@ -1322,6 +1378,8 @@ Edit the crm/templates/scripts.html
         #path('create/', lead_create, name='lead-create')
     ]
     ```
+	Compiled in the branch of [`ver-1.4`](https://github.com/jatolentino/Django-notes/tree/jatolentino-ver-1.4)
+
 ### 29 Set the static files
 - Create the folder ./static and add the files main.js (console.log("hi") & style.css
 - Configure the crm/settings.py
@@ -1670,7 +1728,7 @@ Restrict users to be only the leads they created
     ```bash
     python manage.py migrate
     python manage.py createsuperuser
-        user: jose 
+        user: jose
         password: 1
     python manage.py makemigrations
     1
@@ -2025,6 +2083,9 @@ Inside agents/templates/agents/ create the agent_list.html file and edit it <br>
     {% endblock content %}
     ```
     Test: Go to `http://127.0.0.1:8000/agents` and create/delete/update an agent, check [`ver-1.5`](https://github.com/jatolentino/Django-notes/tree/jatolentino-ver-1.5)
+	<p align="center">
+	    <img src="https://raw.githubusercontent.com/jatolentino/Django-notes/main/sources/img/Step36-test-1.png">
+	</p>
 
 ### 37 Filter the agents display only to their users counterparts
 - Edit the agents/views.py file
@@ -2689,7 +2750,10 @@ Inside agents/templates/agents/ create the agent_list.html file and edit it <br>
 		</a>
 	</div>
     ```
-    Test 1: Assign a lead to an agent
+    Test 44.1: Assign a lead to an agent
+    <p align="center">
+    	<img src="https://raw.githubusercontent.com/jatolentino/Django-notes/main/sources/img/Step44-test-1.png">
+    </p>
 
 ### 45 Adding a feature to categorize via a model
 - In ./leads/models.py
@@ -2854,6 +2918,9 @@ Inside agents/templates/agents/ create the agent_list.html file and edit it <br>
     ]
     ```
     Test 46.1: Go to `http://127.0.0.1:8000/leads/categories`
+        <p align="center">
+    <img src="https://raw.githubusercontent.com/jatolentino/Django-notes/main/sources/img/Step46-test-1.png">
+    </p>
 
 ### 47 Configure the Category Detail View
 - Edit ./leads/views.py
@@ -3163,8 +3230,10 @@ Inside agents/templates/agents/ create the agent_list.html file and edit it <br>
 		</section>	
 	{% endblock content %}
     ```
-    Test 48.1 by going to: `http://127.0.0.1:8000/leads/1/category` and changing the category of the lead
-
+    Test 48.1 by going to: `http://127.0.0.1:8000/leads/1/category` and changing the category of the lead, check [`ver-1.6`](https://github.com/jatolentino/Django-notes/tree/jatolentino-ver-1.6)
+    <p align="center">
+    	<img src="https://raw.githubusercontent.com/jatolentino/Django-notes/main/sources/img/Step48-test-1.png">
+    </p>
 ### 49 Installing crispy
 - In the terminal
     ```bash
@@ -3459,7 +3528,6 @@ For login.html:
     </div>
     {% endblock content %}
     ```
-
 
 ### 50 Styling a little bit more
 
@@ -3836,6 +3904,11 @@ For login.html:
         </section>	
     {% endblock content %}
     ```
+	Test 50-1 Compiled in the branch of [`ver-1.7`](https://github.com/jatolentino/Django-notes/tree/jatolentino-ver-1.7)
+        <p align="center">
+            <img src="https://raw.githubusercontent.com/jatolentino/Django-notes/main/sources/img/Step50-test-1.png">
+        </p>
+        
 ### 51 Install the environment packages
 - In the terminal
     ```bash
@@ -4311,3 +4384,4 @@ Previously install postgreSQL extension for VS
     </section>
     {% endblock content %}
     ```
+    Test 57-1 Compiled in the branch of [`ver-1.8`](https://github.com/jatolentino/Django-notes/tree/jatolentino-ver-1.8)
