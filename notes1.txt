@@ -1,5 +1,6 @@
 1 Create & activate the virstual enviroment (VSCODE)
 --------------------------------------------
+
 python -m venv enviroment
 env/Scripts/activate  OR 
 source env/Scripts/activate (linux or MING)
