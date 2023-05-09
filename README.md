@@ -26,7 +26,6 @@ Project features @ [`ver-1.9`](https://github.com/jatolentino/Django-notes/tree/
     	<img src="https://raw.githubusercontent.com/jatolentino/Django-notes/main/sources/img/Step50-test-1.png">
 </p>
 
-
 ## Installation
 - Clone the repository to your local folder
 - Open the folder of the repo with VS code
