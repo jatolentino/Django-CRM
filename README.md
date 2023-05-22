@@ -5,7 +5,6 @@
 
 # Deploy in Django
 
-
 ## Results of the CUSTOM-MANAGER-RELATIONSHIP website 
 Project features @ [`ver-1.9`](https://github.com/jatolentino/Django-notes/tree/jatolentino-ver-1.9)
 <details>
