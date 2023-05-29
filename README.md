@@ -31,8 +31,8 @@ Previous considerations:
  - Python 3.9 installed
  - Pip installed (comes with Python 3, no worries)
  - Virtualenv installed (comes with Python 3, no worries)
- - Python added to your local variables
-	If you have python 3.11 or other versions, it's necessary to configure a new environment because the default environment with which this project runs works under Python 3.9.
+ - Python added to your local variables <br>
+	If you have python 3.11 or other versions, it's necessary to configure a new environment because the default environment with which this project runs works under Python 3.9. <br>
 	To configure a new environment with your Python version, do this:
 	- Delete the `env` folder on the root of this project
 	- Create a new env: `python -m venv env`
