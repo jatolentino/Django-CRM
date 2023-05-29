@@ -26,23 +26,62 @@ Project features @ [`ver-1.9`](https://github.com/jatolentino/Django-notes/tree/
     	<img src="https://raw.githubusercontent.com/jatolentino/Django-notes/main/sources/img/Step50-test-1.png">
 </p>
 
-## Installation
+## Quick Installation
+Previous considerations: 
+ - Python 3.9 installed
+ - Pip installed (comes with Python 3, no worries)
+ - Virtualenv installed (comes with Python 3, no worries)
+ - Python added to your local variables
+	If you have python 3.11 or other versions, it's necessary to configure a new environment because the default environment with which this project runs works under Python 3.9.
+	To configure a new environment with your Python version, do this:
+	- Delete the `env` folder on the root of this project
+	- Create a new env: `python -m venv env`
+	> Note: It's known that the package psycopg2-binary==2.9.5 is compatible with python 3.11 version and psycopg2-binary==2.9.3 (used in this project) is compatible with python 3.9
+	> If you have python 3.11, be careful to make this change in the requirements.txt (meaning change to psycopg2-binary==2.9.5 as we use Python 3.9 that works with psycopg2 2.9.3)
+
+This project uses PostgreSQL as database (like described in step 52), so you will need to follow that step to download and configure your database if you want to use PostgreSQL. But, if you just want to use the default sqlite3 database that comes with django and run the project as quick as possible. Follow these steps :)
+
 - Clone the repository to your local folder
-- Open the folder of the repo with VS code
-- In VS terminal, input the following (you must have installed python, pip and virtualenv before)
+- Open the folder repo with VS code or git bash
+- In VS terminal or git bash, input the following commands
 	```bash
 	python -m venv env
-	env/Scripts/activate #if you're using MINGW consider utilizing: source env/Scripts/activate
-	pip install -r requirements.txt
+	env/Scripts/activate #for vscode  # for git bash: source env/Scripts/activate
+	pip install -r requirements.txt # don't forget to change here to psycopg2-binary==2.9.5 if you use python 3.11
+	```
+- Comment out the postgresql database config under `crm/settings.py`, so that you can switch to sqlite3, and change it to the default sqlite3
+	```python
+	# DATABASES = {
+	    # 'default': {
+		# 'ENGINE': 'django.db.backends.postgresql_psycopg2',
+		# 'NAME': env("DB_NAME"),
+		# 'USER': env("DB_USER"),
+		# 'PASSWORD': env("DB_PASSWORD"),
+		# 'HOST': env("DB_HOST"),
+		# 'PORT': env("DB_PORT"),
+	    # }
+	# }
+
+	DATABASES = {
+	    'default': {
+		'ENGINE': 'django.db.backends.sqlite3',
+		'NAME': BASE_DIR / 'db.sqlite3',
+	    }
+	}
+	```
+- Continue the setup in the terminal, we are about to set this thing up :D
+	```bash
 	python manage.py collectstatic
 	python manage.py makemigrations
 	python manage.py migrate
 	python manage.py createsuperuser #create a user and assign a password as you like
 	python manage.py runserver #add a port if the django default port (8000) is in use by other apps on your machine
 	```
+- Learn how to use below ...
+
 ## How to use
 
-- Navigate to the home page `http://192.168.0.127:8000/` and login with the superuser your created, add leads and agents as you want in `http://192.168.0.127:8000/admin` or create your agent acc in the home page.
+- Navigate to the home page `http://192.168.0.127:8000/` and login with the superuser you created, add leads and agents as you want in `http://192.168.0.127:8000/admin` or create your agent acc in the home page.
 
 <br>
 
