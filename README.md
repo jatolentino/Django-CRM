@@ -45,7 +45,6 @@ This project uses PostgreSQL as database (like described in step 52), so you wil
 - Open the folder repo with VS code or git bash
 - In VS terminal or git bash, input the following commands
 	```bash
-	python -m venv env
 	env/Scripts/activate #for vscode  # for git bash: source env/Scripts/activate
 	pip install -r requirements.txt # don't forget to change here to psycopg2-binary==2.9.5 if you use python 3.11
 	```
