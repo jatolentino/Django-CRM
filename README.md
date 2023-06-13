@@ -7,7 +7,6 @@
 
 [`https://crm.josetolentino.site/`](https://crm.josetolentino.site/)
 
-
 ## Features 
 Project features @ [`ver-1.9`](https://github.com/jatolentino/Django-notes/tree/jatolentino-ver-1.9)
 <details>
