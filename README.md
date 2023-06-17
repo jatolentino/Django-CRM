@@ -5,7 +5,6 @@
 
 # Customer Relationship Management - Django
 
-
 [`https://crm.josetolentino.site/`](https://crm.josetolentino.site/)
 
 ## Features 
