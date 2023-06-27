@@ -5,7 +5,7 @@
     A Customer Relationship Management for your clients and deals
 </p>
 
-
+[![Docs-en](https://shields.io/badge/Docs-English-blue?logo=Read%20The%20Docs)](#create-a-link-to-jump-to-a-specific-part-of-a-page)
 ![Github All Releases](https://img.shields.io/github/downloads/jatolentino/Django-CRM/total?logo=GitHub&style=plastic)
 ![GitHub repo size](https://img.shields.io/github/repo-size/jatolentino/Django-CRM)
 ![GitHub language count](https://img.shields.io/github/languages/count/jatolentino/Django-CRM?color=success&logo=CodersRank&logoColor=%23FFFFFF)
@@ -94,6 +94,7 @@ This project uses PostgreSQL as database (like described in step 52), so you wil
 
 <br>
 
+<a id="Begin-Docs"></a>
 ## Comprehensive guide to progressively implement this project
 The pictures portray the results reached on every step and the versions keep track of the project's progress
 
