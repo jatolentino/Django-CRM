@@ -1,5 +1,5 @@
 <h1 align="center">
-	<img src="https://github.com/jatolentino/Django-CRM/blob/main/sources/img/logo.svg" width="400" alt="crm-logo">
+	<img src="https://github.com/jatolentino/Django-CRM/blob/main/sources/img/logo.svg" width="300" alt="crm-logo">
 </h1>
 
 
