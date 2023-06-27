@@ -5,7 +5,7 @@
     A Customer Relationship Management for your clients and deals
 </p>
 
-<p align="center">
+
 [![Docs-en](https://shields.io/badge/Docs-English-blue?logo=Read%20The%20Docs)](#comprehensive-guide-to-progressively-implement-this-project)
 ![Github All Releases](https://img.shields.io/github/downloads/jatolentino/Django-CRM/total?logo=GitHub&style=plastic)
 ![GitHub repo size](https://img.shields.io/github/repo-size/jatolentino/Django-CRM)
@@ -16,7 +16,8 @@
 ![rating](https://img.shields.io/badge/rating-★★★★★-yellow)
 ![coverage](https://img.shields.io/badge/coverage-80%25-yellowgreen)
 ![uptime](https://img.shields.io/badge/uptime-100%25-brightgreen)
-</p>
+
+
 ## Features 
 Project features @ [`ver-1.9`](https://github.com/jatolentino/Django-notes/tree/jatolentino-ver-1.9)
 <details>
