@@ -7,7 +7,7 @@
 
 <div align="center">
 	
-	<a href="">![Github All Releases](https://img.shields.io/github/downloads/jatolentino/Django-CRM/total?logo=GitHub&style=plastic) </a>
+![Github All Releases](https://img.shields.io/github/downloads/jatolentino/Django-CRM/total?logo=GitHub&style=plastic)</a>
   	
 </div>
 
