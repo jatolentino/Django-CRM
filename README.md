@@ -7,8 +7,17 @@
 
 <div align="center">
 	
-![Github All Releases](https://img.shields.io/github/downloads/jatolentino/Django-CRM/total?logo=GitHub&style=plastic)</a>
-  	
+![Github All Releases](https://img.shields.io/github/downloads/jatolentino/Django-CRM/total?logo=GitHub&style=plastic)
+![GitHub repo size](https://img.shields.io/github/repo-size/jatolentino/Django-CRM)
+![GitHub repo size](https://img.shields.io/github/repo-size/jatolentino/Django-CRM)
+![GitHub language count](https://img.shields.io/github/languages/count/jatolentino/Django-CRM?color=success&logo=CodersRank&logoColor=%23FFFFFF)
+[![version](https://img.shields.io/badge/version-1.8-red.svg)](//npmjs.com/package/Django-CRM)
+![GitHub watchers](https://img.shields.io/github/watchers/jatolentino/Django-CRM)
+[![Awesome](https://awesome.re/badge.svg)](https://awesome.re)
+![rating](https://img.shields.io/badge/rating-★★★★★-yellow)
+![coverage](https://img.shields.io/badge/coverage-80%25-yellowgreen)
+![uptime](https://img.shields.io/badge/uptime-100%25-brightgreen)
+
 </div>
 
 ## Features 
