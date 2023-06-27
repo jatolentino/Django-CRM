@@ -6,12 +6,12 @@
    stroke-linejoin="round"
    stroke-width="2"
    class="w-10 h-10 text-white p-2 bg-indigo-500 rounded-full"
-   viewBox="0 0 29.999998 30.000002"
+   viewBox="0 0 21.80275 24.92536"
    version="1.1"
    id="svg4"
    sodipodi:docname="logo.svg"
-   width="29.999998"
-   height="30.000002"
+   width="21.80275"
+   height="24.92536"
    inkscape:version="1.2.2 (732a01da63, 2022-12-09)"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
@@ -30,8 +30,8 @@
      inkscape:deskcolor="#d1d1d1"
      showgrid="false"
      inkscape:zoom="17.4375"
-     inkscape:cx="-1.7491039"
-     inkscape:cy="18.236559"
+     inkscape:cx="-6.8530466"
+     inkscape:cy="13.247312"
      inkscape:window-width="1920"
      inkscape:window-height="1017"
      inkscape:window-x="-8"
@@ -40,7 +40,7 @@
      inkscape:current-layer="svg4" />
   <g
      id="g1516"
-     transform="matrix(0.64282637,0,0,0.64282637,5,0)">
+     transform="matrix(0.48211978,0,0,0.48211978,3.4014999,0)">
     <circle
        style="fill:#6366f1;fill-opacity:1;stroke:none;stroke-width:5.625;stroke-dasharray:none"
        id="path1569"
@@ -52,15 +52,22 @@
        id="path2"
        style="stroke:#ffffff" />
   </g>
-  <text
-     xml:space="preserve"
-     style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:10.6667px;line-height:0px;font-family:'For the love of hate';-inkscape-font-specification:'For the love of hate, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;fill:#ffffff;stroke:#ffffff;stroke-width:5.625"
-     x="3.5864985"
-     y="29.733358"
-     id="text4032"><tspan
-       sodipodi:role="line"
-       id="tspan4030"
-       x="3.5864985"
-       y="29.733358"
-       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:10.6667px;font-family:'For the love of hate';-inkscape-font-specification:'For the love of hate, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;fill:#000000;stroke:none">CRM</tspan></text>
+  <g
+     aria-label="CRM"
+     id="text4032"
+     style="font-size:10.6667px;line-height:0px;font-family:'For the love of hate';-inkscape-font-specification:'For the love of hate, Normal';fill:#ffffff;stroke:#ffffff;stroke-width:5.625"
+     transform="translate(-4.0985001,-5)">
+    <path
+       d="m 8.2265132,29.925359 q -1.8133391,0 -2.9653427,-1.120004 -1.1626704,-1.13067 -1.1626704,-2.837342 0,-1.696005 1.1626704,-2.826675 1.173337,-1.141337 2.9653427,-1.141337 0.9706697,0 2.0266728,0.330667 v 1.045337 q -1.0133363,-0.384001 -2.0266728,-0.384001 -1.2800041,0 -2.1226734,0.864002 -0.8320026,0.853337 -0.8320026,2.112007 0,1.280004 0.8320026,2.122674 0.853336,0.853336 2.1226734,0.853336 0.9813364,0 2.0266728,-0.416002 v 1.06667 q -0.5333348,0.160001 -1.0346697,0.245334 -0.5013349,0.08533 -0.9920031,0.08533 z"
+       style="fill:#000000;stroke:none"
+       id="path343" />
+    <path
+       d="m 15.063878,29.733358 -1.717339,-3.13601 h -0.821336 v 3.13601 H 11.3412 v -7.200022 q 1.248003,-0.522669 2.282673,-0.522669 1.013337,0 1.717339,0.640002 0.714669,0.640002 0.714669,1.589339 0,0.704002 -0.394668,1.29067 -0.394668,0.576002 -1.045336,0.87467 l 1.866672,3.32801 z M 13.623873,23.00267 q -0.469334,0 -1.09867,0.181334 v 2.485342 h 0.885336 q 0.597336,0 1.024004,-0.426668 0.437334,-0.437335 0.437334,-1.00267 0,-0.490669 -0.373334,-0.864003 -0.373335,-0.373335 -0.87467,-0.373335 z"
+       style="fill:#000000;stroke:none"
+       id="path345" />
+    <path
+       d="m 24.727913,29.733358 v -5.557351 l -2.464007,5.557351 h -1.056004 l -2.453341,-5.557351 v 5.557351 h -1.184004 v -7.53069 h 1.589339 l 2.581341,5.834685 2.570675,-5.834685 h 1.589338 v 7.53069 z"
+       style="fill:#000000;stroke:none"
+       id="path347" />
+  </g>
 </svg>
