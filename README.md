@@ -6,9 +6,10 @@
 </p>
 
 <div align="center">
-	
+
+ [![Docs-en](https://shields.io/badge/Docs-English-blue?logo=Read%20The%20Docs)](#comprehensive-guide-to-progressively-implement-this-project)
+![Github All Releases](https://img.shields.io/github/downloads/jatolentino/Django-CRM/1000?logo=GitHub&style=plastic)
 ![Github All Releases](https://img.shields.io/github/downloads/jatolentino/Django-CRM/total?logo=GitHub&style=plastic)
-![GitHub repo size](https://img.shields.io/github/repo-size/jatolentino/Django-CRM)
 ![GitHub repo size](https://img.shields.io/github/repo-size/jatolentino/Django-CRM)
 ![GitHub language count](https://img.shields.io/github/languages/count/jatolentino/Django-CRM?color=success&logo=CodersRank&logoColor=%23FFFFFF)
 [![version](https://img.shields.io/badge/version-1.8-red.svg)](//npmjs.com/package/Django-CRM)
