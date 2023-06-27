@@ -6,12 +6,12 @@
    stroke-linejoin="round"
    stroke-width="2"
    class="w-10 h-10 text-white p-2 bg-indigo-500 rounded-full"
-   viewBox="0 0 31.1126 31.1126"
+   viewBox="0 0 29.999998 30.000002"
    version="1.1"
    id="svg4"
    sodipodi:docname="logo.svg"
-   width="31.1126"
-   height="31.1126"
+   width="29.999998"
+   height="30.000002"
    inkscape:version="1.2.2 (732a01da63, 2022-12-09)"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
@@ -30,22 +30,37 @@
      inkscape:deskcolor="#d1d1d1"
      showgrid="false"
      inkscape:zoom="17.4375"
-     inkscape:cx="10.580645"
-     inkscape:cy="13.878136"
+     inkscape:cx="-1.7491039"
+     inkscape:cy="18.236559"
      inkscape:window-width="1920"
      inkscape:window-height="1017"
      inkscape:window-x="-8"
      inkscape:window-y="-8"
      inkscape:window-maximized="1"
      inkscape:current-layer="svg4" />
-  <circle
-     style="fill:#6366f1;fill-opacity:1;stroke:none;stroke-width:5.625;stroke-dasharray:none"
-     id="path1569"
-     cx="15.5563"
-     cy="15.5563"
-     r="15.5563" />
-  <path
-     d="m 15.5563,5.5562884 -9.9999998,4.9999996 9.9999998,5 10,-5 z m -9.9999998,14.9999996 9.9999998,5 10,-5 m -19.9999998,-5 9.9999998,5 10,-5"
-     id="path2"
-     style="stroke:#ffffff" />
+  <g
+     id="g1516"
+     transform="matrix(0.64282637,0,0,0.64282637,5,0)">
+    <circle
+       style="fill:#6366f1;fill-opacity:1;stroke:none;stroke-width:5.625;stroke-dasharray:none"
+       id="path1569"
+       cx="15.5563"
+       cy="15.5563"
+       r="15.5563" />
+    <path
+       d="m 15.5563,5.5562884 -9.9999998,4.9999996 9.9999998,5 10,-5 z m -9.9999998,14.9999996 9.9999998,5 10,-5 m -19.9999998,-5 9.9999998,5 10,-5"
+       id="path2"
+       style="stroke:#ffffff" />
+  </g>
+  <text
+     xml:space="preserve"
+     style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:10.6667px;line-height:0px;font-family:'For the love of hate';-inkscape-font-specification:'For the love of hate, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;fill:#ffffff;stroke:#ffffff;stroke-width:5.625"
+     x="3.5864985"
+     y="29.733358"
+     id="text4032"><tspan
+       sodipodi:role="line"
+       id="tspan4030"
+       x="3.5864985"
+       y="29.733358"
+       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:10.6667px;font-family:'For the love of hate';-inkscape-font-specification:'For the love of hate, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;fill:#000000;stroke:none">CRM</tspan></text>
 </svg>
