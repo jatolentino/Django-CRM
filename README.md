@@ -1,6 +1,7 @@
 <h1 align="center">
 	<img src="https://github.com/jatolentino/Django-CRM/blob/main/sources/img/logo.svg" width="200" alt="crm-logo">
 </h1>
+
 <p align="center">
     A Customer Relationship Management for your clients and deals
 </p>
