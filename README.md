@@ -38,7 +38,7 @@ Project features @ [`ver-1.9`](https://github.com/jatolentino/Django-notes/tree/
 </details>
 
 <p align="center">
-	https://github.com/jatolentino/Django-CRM/assets/61167951/670cd211-3f82-449b-a708-fead049da50a
+	https://github.com/jatolentino/Django-CRM/assets/61167951/7228be20-eafb-421c-9da7-0f137447f258
 </p>
 <p align="center">
     	<img src="https://raw.githubusercontent.com/jatolentino/Django-notes/main/sources/img/Step50-test-1.png">
