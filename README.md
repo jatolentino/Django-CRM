@@ -40,9 +40,9 @@ Project features @ [`ver-1.9`](https://github.com/jatolentino/Django-notes/tree/
 <p align="center">
 	https://github.com/jatolentino/Django-CRM/assets/61167951/7228be20-eafb-421c-9da7-0f137447f258
 </p>
-<p align="center">
+
     	<img src="https://raw.githubusercontent.com/jatolentino/Django-notes/main/sources/img/Step50-test-1.png">
-</p>
+
 
 ## Quick Installation
 Previous considerations: 
