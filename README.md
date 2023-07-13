@@ -38,8 +38,7 @@ Project features @ [`ver-1.9`](https://github.com/jatolentino/Django-notes/tree/
 </details>
 
 
-
-https://github.com/jatolentino/Django-CRM/assets/61167951/7f0ce09a-d11c-4693-96d4-bf6b5f13c3f6
+https://github.com/jatolentino/Django-CRM/assets/61167951/e1d5a130-3951-4319-b8be-ea264394de4e
 
 
 <p align="center">
