@@ -8,7 +8,6 @@
 
 <div align="center">
 
-
 [![Docs-en](https://shields.io/badge/Docs-English-blue?logo=Read%20The%20Docs)](#comprehensive-guide-to-progressively-implement-this-project)
 ![Static Badge](https://img.shields.io/badge/downloads-1.3k-red?logo=GitHub)
 ![GitHub repo size](https://img.shields.io/github/repo-size/jatolentino/Django-CRM)
