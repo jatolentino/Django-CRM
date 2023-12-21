@@ -6,6 +6,7 @@
     A Customer Relationship Management for your clients and deals
 </p>
 
+
 <div align="center">
 
 [![Docs-en](https://shields.io/badge/Docs-English-blue?logo=Read%20The%20Docs)](#comprehensive-guide-to-progressively-implement-this-project)
